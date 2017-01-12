@@ -1,0 +1,39 @@
+{
+    "name": "Geodesign-Hub-Globe-3D-Veiwer",
+    "version": "1.0.1",
+    "description": "A tool to view synthesized designs built on Geodesign Hub on a Cesium 3D viewer.",
+    "homepage": "",
+    "license": "MIT",
+    "author": {
+        "name": "Hrishikesh Ballal",
+        "url": "http://www.hrishikeshballal.net"
+    },
+
+    "keywords": [
+        "3D",
+        "Geodesign Hub",
+        "Geodesign",
+        "webgl",
+        "geospatial",
+        "map",
+        "globe"
+    ],
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+
+    "dependencies": {
+        "requirejs": "2.2.0",
+        "express": "4.13.4",
+        "request": "2.69.0",
+        "compression": "1.6.1",
+        "yargs": "4.3.2",
+        "body-parser": "^1.15.1",
+        "async": "^1.5.2",
+        "ejs": "^2.5.1"
+    },
+    "scripts": {
+        "start": "node server.js"
+    }
+}
