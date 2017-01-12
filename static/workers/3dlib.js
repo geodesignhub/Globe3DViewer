@@ -787,19 +787,20 @@ function generatePolicyFeatures(curFeat) {
     var curFeatprops = curFeat.properties;
     const elevationoffset = 1;
 
-    function getCW(d) {
-        return d > 10000000 ? 1 :
-            d > 6000000 ? 0.75 :
-            d > 5000000 ? 0.5 :
-            d > 3000000 ? 0.3 :
-            d > 2000000 ? 0.15 :
-            d > 1000000 ? 0.08 :
-            0.04;
-    }
+    // function getCW(d) {
+    //     return d > 10000000 ? 1 :
+    //         d > 6000000 ? 0.75 :
+    //         d > 5000000 ? 0.5 :
+    //         d > 3000000 ? 0.3 :
+    //         d > 2000000 ? 0.15 :
+    //         d > 1000000 ? 0.08 :
+    //         0.04;
+    // }
     var policyFeats = [];
     var fe = turf.bbox(curFeat);
-    var area = Math.round(turf.area(curFeat));
-    var cw = getCW(area);
+    // var area = Math.round(turf.area(curFeat));
+    // var cw = getCW(area);
+    var cw = 0.05;
     var unit = 'kilometers';
     var dJSON = {
         "type": "FeatureCollection",
