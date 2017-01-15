@@ -314,7 +314,7 @@
             threeDWorker.onerror = function(e) {
                 $("#loadingGIF").hide();
                 console.log('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
-                humane.log("There was a error in processing, please try again with a new geometry.. ", {
+                humane.log("There was a error in processing, please try again by clicking the Regenrate Scene button.. ", {
                     addnCls: 'humane-flatty-error'
                 });
             };
