@@ -808,7 +808,7 @@ function generatePolicyFeatures(curFeat) {
     }
     var policyFeats = [];
     var fe = turf.bbox(curFeat);
-    // var area = Math.round(turf.area(curFeat));
+    var area = Math.round(turf.area(curFeat));
     var cw = getCW(area);
     // var cw = 0.05;
     var unit = 'kilometers';
