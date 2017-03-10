@@ -11,7 +11,7 @@ This is one-click 3D viewer plugin to view designs generated in Geodesign Hub wi
 ![zoomout] (https://i.imgur.com/RPmGGcL.jpg)
 
 ### Download
-![download](http://i.imgur.com/qc3oKK8.png)
+![download](https://i.imgur.com/qc3oKK8.png)
 
 ### Showing more features
 ![morefeats](https://i.imgur.com/Bzb1Az9.jpg)
