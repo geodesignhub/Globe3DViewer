@@ -1,4 +1,4 @@
-# Geodesign Hub Globe 3D viewe
+# Globe 3D viewer
 This is one-click 3D viewer plugin to view designs generated in Geodesign Hub with a [CesiumJS](https://cesiumjs.org/) Globe. It takes diagrammatic designs from Geodesign Hub API and generates buildings, roads and renders them. In addition you can download the building footprints generated as GeoJSON.
 
 ####Some  screenshots
