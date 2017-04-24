@@ -8,6 +8,128 @@
     display: inline-block;
 }
 
+.c-331196-policy,
+.c-E54C00-policy,
+.c-FFAA00-policy,
+.c-E69800-policy,
+.c-E7E600-policy,
+.c-014B73-policy,
+.c-0086A7-policy,
+.c-704425-policy,
+.c-71A701-policy,
+.c-9ae32c-policy,
+.c-f4a261-policy,
+.c-fffd38-policy,
+.c-fc6621-policy,
+.c-da0a16-policy,
+.c-fc1999-policy,
+.c-331196-policy,
+.c-071ac8-policy,
+.c-1a9bfc-policy,
+.c-18a81b-policy,
+.c-0a650c-policy,
+.c-653308-policy,
+.c-986638-policy,
+.c-bbbbbb-policy,
+.c-888888-policy,
+.c-444444-policy,
+.c-000000-policy,
+.c-9cec5b-policy,
+.c-50c5b7-policy,
+.c-e76f51-policy,
+.c-8d99ae-policy {
+    color: black;
+    background-size: 5px 5px;
+    background-position: 2px 2px;
+    font-weight: 400;
+    /*border:1px solid;*/
+    /*background-image: url(img/hatch.png);*/
+    /*background-repeat: repeat-x*/
+}
+
+.c-331196-policy span,
+.c-E54C00-policy span,
+.c-FFAA00-policy span,
+.c-E69800-policy span,
+.c-E7E600-policy span,
+.c-014B73-policy span,
+.c-0086A7-policy span,
+.c-704425-policy span,
+.c-71A701-policy span,
+.c-9ae32c-policy span,
+.c-f4a261-policy span,
+.c-fffd38-policy span,
+.c-fc6621-policy span,
+.c-da0a16-policy span,
+.c-fc1999-policy span,
+.c-331196-policy span,
+.c-071ac8-policy span,
+.c-1a9bfc-policy span,
+.c-18a81b-policy span,
+.c-0a650c-policy span,
+.c-653308-policy span,
+.c-986638-policy span,
+.c-bbbbbb-policy span,
+.c-888888-policy span,
+.c-444444-policy span,
+.c-000000-policy span,
+.c-9cec5b-policy span,
+.c-50c5b7-policy span,
+.c-e76f51-policy span,
+.c-8d99ae-policy span {
+    background: #FFFFFF;
+}
+
+.c-331196 {
+    background-color: #331196;
+    color: #FFFFFF;
+}
+
+.c-E54C00 {
+    background-color: #E54C00;
+    color: #FFFFFF;
+}
+
+.c-FFAA00 {
+    background-color: #FFAA00;
+    color: #FFFFFF;
+}
+
+.c-E69800 {
+    background-color: #E69800;
+    color: #FFFFFF;
+}
+
+.c-E7E600 {
+    background-color: #E7E600;
+    color: #FFFFFF;
+}
+
+.c-014B73 {
+    background-color: #014B73;
+    color: #FFFFFF;
+}
+
+.c-0086A7 {
+    background-color: #0086A7;
+    color: #FFFFFF;
+}
+
+.c-704425 {
+    background-color: #704425;
+    color: #FFFFFF;
+}
+
+.c-71A701 {
+    background-color: #71A701;
+    color: #FFFFFF;
+}
+
+.c-9ae32c {
+    background-color: #9ae32c;
+    color: #FFFFFF;
+}
+
 .c-f4a261 {
     background-color: #f4a261;
     color: #FFFFFF;
@@ -83,11 +205,6 @@
     color: #FFFFFF;
 }
 
-.c-fffd38 {
-    background-color: #fffd38;
-    color: #FFFFFF;
-}
-
 .c-f4a261 {
     background-color: #f4a261;
     color: #FFFFFF;
@@ -111,6 +228,40 @@
 .c-8d99ae {
     background-color: #8d99ae;
     color: #FFFFFF;
+}
+
+.c-331196-policy,
+.c-E54C00-policy,
+.c-FFAA00-policy,
+.c-E69800-policy,
+.c-E7E600-policy,
+.c-014B73-policy,
+.c-0086A7-policy,
+.c-704425-policy,
+.c-71A701-policy,
+.c-9ae32c-policy,
+.c-fffd38-policy,
+.c-fc6621-policy,
+.c-da0a16-policy,
+.c-fc1999-policy,
+.c-f4a261-policy,
+.c-331196-policy,
+.c-071ac8-policy,
+.c-1a9bfc-policy,
+.c-18a81b-policy,
+.c-0a650c-policy,
+.c-653308-policy,
+.c-986638-policy,
+.c-bbbbbb-policy,
+.c-888888-policy,
+.c-444444-policy,
+.c-000000-policy,
+.c-9cec5b-policy,
+.c-50c5b7-policy,
+.c-e76f51-policy,
+.c-8d99ae-policy {
+    /*background-color: #8d99ae;*/
+    background-image: linear-gradient(45deg, transparent 45%, #8d99ae 50%, transparent 55%, transparent 100%), linear-gradient(-45deg, transparent 45%, #8d99ae 50%, transparent 55%, transparent 100%);
 }
 
 @media (min-width: 768px) {
