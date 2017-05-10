@@ -937,12 +937,13 @@ function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroad
                             finalGJFeats.push(comfinalFeatures[k1]);
                         }
                     }
-                } else if (curFeat.properties.areatype === 'policy') { // whitelisted policy
-                    var policyF = generatePolicyFeatures(curFeat);
-                    for (var pf = 0; pf < policyF.length; pf++) {
-                        finalGJFeats.push(policyF[pf]);
-                    }
                 }
+                // else if (curFeat.properties.areatype === 'policy') { // whitelisted policy
+                //     var policyF = generatePolicyFeatures(curFeat);
+                //     for (var pf = 0; pf < policyF.length; pf++) {
+                //         finalGJFeats.push(policyF[pf]);
+                //     }
+                // }
 
             }
             // for non white listed systems that are buildings
@@ -1000,12 +1001,13 @@ function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroad
                     }
                     curFeat.properties = prop;
                     finalGJFeats.push.apply(finalGJFeats, [curFeat]);
-                } else if (curFeat.properties.areatype === 'policy') {
-                    var policyF = generatePolicyFeatures(curFeat);
-                    for (var pf = 0; pf < policyF.length; pf++) {
-                        finalGJFeats.push(policyF[pf]);
-                    }
                 }
+                // else if (curFeat.properties.areatype === 'policy') {
+                //     var policyF = generatePolicyFeatures(curFeat);
+                //     for (var pf = 0; pf < policyF.length; pf++) {
+                //         finalGJFeats.push(policyF[pf]);
+                //     }
+                // }
             }
 
         }
