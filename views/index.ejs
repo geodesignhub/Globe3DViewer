@@ -417,7 +417,6 @@
             // for projects
             var promise = Cesium.GeoJsonDataSource.load(gjsonData);
             promise.then(function(dataSource) {
-
                 viewer.dataSources.add(dataSource);
                 var allGeometryInstances = [];
                 var allpolicies = [];
@@ -426,9 +425,10 @@
                 for (var i = 0; i < entities.length; i++) {
                     var curFeat = entities[i];
                     // var projectorpolicy = curFeat['properties']['areatype'];
-                    var rgb = hexToRgb(curFeat.properties.roofColor);
+                    var curProps = curFeat.properties.getValue();
+                    var rgb = hexToRgb(curProps.roofColor);
                     var color;
-                    if (curFeat.properties.isBuilding == 0) {
+                    if (curProps.isBuilding == 0) {
                         color = Cesium.Color.fromBytes(rgb.r, rgb.g, rgb.b, 100);
                     } else {
                         color = Cesium.Color.fromBytes(rgb.r, rgb.g, rgb.b);
@@ -436,7 +436,7 @@
                     // curFeat.polygon.perPositionHeight = true;
                     curFeat.polygon.material = color;
                     curFeat.polygon.outline = false;
-                    curFeat.polygon.extrudedHeight = curFeat.properties.height;
+                    curFeat.polygon.extrudedHeight = curProps.height;
                 }
             }).otherwise(function(error) {
                 //Display any errrors encountered while loading.
