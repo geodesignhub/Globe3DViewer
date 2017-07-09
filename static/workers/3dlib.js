@@ -841,7 +841,7 @@ function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroad
 
     const elevationoffset = 1;
     var genstreets = (genstreets === 'false') ? false : true;
-    var whiteListedSysName = ['HDH', 'LDH', 'IND', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD'];
+    var whiteListedSysName = ['LOW-H', 'HDH', 'LDH', 'IND', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD'];
     var finalGJFeats = [];
     // get the center of the design so that the map once returned can be recentered.
     var centerPt = turf.center(constraintedModelDesigns);
@@ -900,7 +900,7 @@ function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroad
                         for (var k3 = 0; k3 < mxdbld.features.length; k3++) {
                             finalGJFeats.push(mxdbld.features[k3]);
                         }
-                    } else if (featProps.sysname === 'LDH') {
+                    } else if ((featProps.sysname === 'LDH') || (featProps.sysname === 'LOW-H')) {
                         var ldh = new LDHousing();
                         var p = ldh.genGrid(curFeat);
                         var ptsWithin = p[0];
