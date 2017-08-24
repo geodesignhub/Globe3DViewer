@@ -9,6 +9,9 @@ var COMBuilding = function() {
     const units = 'kilometers';
     const bufferWidth = gridsize - 0.01; //30 meter buffer
     const nearestSearch = [0, 1, 2];
+    const floorHeight = 5;
+    const avgUnitsize = 50;
+
     var featProps;
     var featExtent;
     this.genGrid = function(curFeat) {
@@ -90,7 +93,11 @@ var COMBuilding = function() {
                     }
                     if (hasIntersect === false) {
                         var height = elevationoffset + comHeights[Math.floor(Math.random() * comHeights.length)];
+                        var numFloors = Math.round(height / floorHeight); // 5 meter per floor
+                        var numUnitsperFloor = Math.round(area / avgUnitsize);
+                        var totalUnits = numUnitsperFloor * numFloors;
                         var p = {
+                            'totalunits': totalUnits,
                             'height': height,
                             'color': "#d0d0d0",
                             'roofColor': color,
@@ -114,6 +121,7 @@ var COMBuilding = function() {
                 var bldg = turf.buffer(centrepoint, bldgfootprint, units);
                 var bdgply = turf.bbox(bldg); // get the extent of the buffered features
                 var bpoly = turf.bboxPolygon(bdgply);
+                var area = turf.area(bpoly);
                 alreadyaddedlen = alreadyAdded.features.length;
                 var hasIntersect = false;
 
@@ -131,11 +139,14 @@ var COMBuilding = function() {
                 }
                 if (hasIntersect === false) {
                     var height = elevationoffset + comHeights[Math.floor(Math.random() * comHeights.length)];
-
+                    var numFloors = Math.round(height / floorHeight); // 5 meter per floor
+                    var numUnitsperFloor = Math.round(area / avgUnitsize);
+                    var totalUnits = numUnitsperFloor * numFloors;
                     var chosenValue = Math.random() < 0.5 ? true : false;
                     var chosenValue = true;
                     if (chosenValue) {
                         var p = {
+                            'totalunits': totalUnits,
                             'height': height,
                             'color': "#d0d0d0",
                             'roofColor': color,
@@ -164,6 +175,9 @@ var LDHousing = function() {
     const ldhheights = [1, 2, 3]; // in meters 
     const units = 'kilometers';
     const elevationoffset = 1;
+
+    const floorHeight = 5;
+    const avgUnitsize = 100;
 
     var featProps;
     var featExtent;
@@ -200,9 +214,14 @@ var LDHousing = function() {
             var bldg = turf.buffer(centrepoint, bldgfootprint, units);
             var bdgply = turf.bbox(bldg); // get the extent of the buffered features
             var bpoly = turf.bboxPolygon(bdgply);
+            var area = turf.area(bpoly);
             var height = elevationoffset + ldhheights[Math.floor(Math.random() * ldhheights.length)];
 
+            var numFloors = Math.round(height / floorHeight); // 5 meter per floor
+            var numUnitsperFloor = Math.round(area / avgUnitsize);
+            var totalUnits = numUnitsperFloor * numFloors;
             var p = {
+                'totalunits': totalUnits,
                 'height': height,
                 'color': "#d0d0d0",
                 'roofColor': color,
@@ -228,6 +247,9 @@ var HDHousing = function() {
     const units = 'kilometers';
     const elevationoffset = 1;
     var featProps;
+    const floorHeight = 5;
+    const avgUnitsize = 50;
+
 
     this.generateSquareGridandConstrain = function(featureGeometry) {
         var featarea = turf.area(featureGeometry);
@@ -311,7 +333,13 @@ var HDHousing = function() {
                     var bbox = turf.bbox(bufferedCentroid);
                     var bboxpoly = turf.bboxPolygon(bbox);
                     var height = elevationoffset + heights[Math.floor(Math.random() * heights.length)];
+                    var area = turf.area(bboxpoly);
+                    var numFloors = Math.round(height / floorHeight); // 5 meter per floor
+                    var numUnitsperFloor = Math.round(area / avgUnitsize);
+                    var totalUnits = numUnitsperFloor * numFloors;
+
                     var props = {
+                        "totalunits": totalUnits,
                         "height": height,
                         "color": "#d0d0d0",
                         "roofColor": featProps.color,
@@ -340,6 +368,9 @@ var MXDBuildings = function() {
 
     const heights = [9, 12, 8, 11]; // in meters 
     const units = 'kilometers';
+
+    const floorHeight = 5;
+    const avgUnitsize = 75;
 
     var featProps;
     this.generateSquareGridandConstrain = function(featureGeometry) {
@@ -402,8 +433,13 @@ var MXDBuildings = function() {
 
                     // erease middle from hybrid hole
                     var buildingpoly = turf.difference(hybridhole, middleringpoly);
-                    var height = elevationoffset + heights[Math.floor(Math.random() * heights.length)]
+                    var height = elevationoffset + heights[Math.floor(Math.random() * heights.length)];
+
+                    var numFloors = Math.round(height / floorHeight); // 5 meter per floor
+                    var numUnitsperFloor = Math.round(area / avgUnitsize);
+                    var totalUnits = numUnitsperFloor * numFloors;
                     var props = {
+                        "totalunits": totalUnits,
                         "height": height,
                         "color": "#d0d0d0",
                         "roofColor": featProps.color,
@@ -458,6 +494,8 @@ var LABBuildings = function() {
     var featProps;
     var featExtent;
 
+    const floorHeight = 5;
+    const avgUnitsize = 100;
 
     this.genGrid = function(curFeat) {
         featProps = curFeat.properties;
@@ -538,14 +576,17 @@ var LABBuildings = function() {
                     if (hasIntersect === false) {
 
                         var height = elevationoffset + labHeights[Math.floor(Math.random() * labHeights.length)];
+                        var numFloors = Math.round(height / floorHeight); // 5 meter per floor
+                        var numUnitsperFloor = Math.round(area / avgUnitsize);
+                        var totalUnits = numUnitsperFloor * numFloors;
 
                         var p = {
+                            'totalunits': totalUnits,
                             'height': height,
                             'color': "#d0d0d0",
                             'roofColor': featProps.color,
                             'isStreet': 0,
                             'isBuilding': 1,
-
                             'sysname': featProps.sysname
                         };
                         bldg.properties = p;
@@ -585,6 +626,16 @@ var SMBBuildings = function() {
         return [ptsWithin, featExtent];
     };
 
+    const floorHeight = 5;
+    const avgUnitsize = 75;
+
+    this.generateUnits = function(area) {
+        var height = elevationoffset + smbHeights[Math.floor(Math.random() * smbHeights.length)];
+        var numFloors = Math.round(height / floorHeight); // 5 meter per floor
+        var numUnitsperFloor = Math.round(area / avgUnitsize);
+        var totalUnits = numUnitsperFloor * numFloors;
+        return totalUnits;
+    };
     this.generateBuildingFootprints = function(ptsWithin) {
         var allGeneratedFeats = [];
         var color = featProps.color;
@@ -603,9 +654,13 @@ var SMBBuildings = function() {
                 var bldg = turf.buffer(centrepoint, bldgfootprint, units);
                 var bdgply = turf.bbox(bldg); // get the extent of the buffered features
                 var bpoly = turf.bboxPolygon(bdgply);
+                var area = turf.area(bpoly);
                 var height = elevationoffset + smbHeights[Math.floor(Math.random() * smbHeights.length)];
-
+                var numFloors = Math.round(height / floorHeight); // 5 meter per floor
+                var numUnitsperFloor = Math.round(area / avgUnitsize);
+                var totalUnits = numUnitsperFloor * numFloors;
                 var p = {
+                    "totalunits": totalUnits,
                     "height": height,
                     "color": "#d0d0d0",
                     "roofColor": color,
@@ -837,10 +892,9 @@ function generatePolicyFeatures(curFeat) {
 }
 
 function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroads) {
-
     const elevationoffset = 1;
     var genstreets = (genstreets === 'false') ? false : true;
-    var whiteListedSysName = ['LOW-H', 'HDH', 'LDH', 'IND', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD'];
+    var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH', 'IND', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD'];
     var finalGJFeats = [];
     // get the center of the design so that the map once returned can be recentered.
     var centerPt = turf.center(constraintedModelDesigns);
@@ -1045,7 +1099,6 @@ function constrainFeatures(allFeaturesList, selectedsystems) {
 
 function generate3DGeoms(allFeaturesList, genstreets, existingroads, selectedsystems) {
     var allFeaturesList = JSON.parse(allFeaturesList);
-
     var existingroads = JSON.parse(existingroads);
     var selectedsystems = JSON.parse(selectedsystems);
     // console.log(JSON.stringify(existingroads));
