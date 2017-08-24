@@ -48,6 +48,15 @@
          #controlPanel span{
              color:white;
          }
+         .systitle
+            {
+                border-bottom: 1px solid #e0e0e0;
+                
+    font-size: 16px;
+    padding-bottom: 5px;
+    padding-top: 5px;
+            }
+
     </style>
 </head>
 
@@ -59,25 +68,24 @@
 
                 <h1 class="page-header">Geodesignhub Globe 3D Viewer</h1>
                 <section class="information">
-                    
+                    <div id="loadingGIF"><img src="/assets/objs/loading.gif">&nbsp;<span id="procstatus">Processing</span>...</div>
+                    <br>
                     <h4>Streets</h4>
                     <input id="showStreetsCB" class="checkbox-custom" name="checkbox-1" type="checkbox" checked> Display generated streets<br><br>
 
                     <div id="systemsCBCont" style="display:none">
                         <h4>Systems</h4>
-                        <div id="systemsCB"></div>
+                        <table class="table" id="systemsCB"></table>
                     </div>
                     <br>
-                    <h4>Refresh</h4>
+                    <!-- <h4>Refresh</h4>
                     <div>
                         <p>
-                            <button class="button" onclick="submitGJ()">Regenerate Scene</button>
-                            <div id="loadingGIF"><img src="/assets/objs/loading.gif">&nbsp;<span id="procstatus">Processing</span>...</div>
-                        </p>
-                    </div>
+                            <button class="button" onclick="submitGJ()">Regenerate Scene</button>-->
+                           
+                        <!--</p>
+                    </div> -->
 
-                    <br>
-                    <p></p>
                     <div id="toolbar">
                         <h4>Basemap</h4>
                         <table>
@@ -107,7 +115,7 @@
                 <div id="cesiumContainer"></div>
                 <div id="controlPanel">
                   
-                    <p> <span>Camera Position</span>:
+                    <p>
                          <button class="cesium-button" id="def" onClick="setCameraHeadingPitch(this.id);">Default</button>
                 <button class="cesium-button" id="td" onClick="setCameraHeadingPitch(this.id);">Top Down</button>
                 <button class="cesium-button" id="ne" onClick="setCameraHeadingPitch(this.id);">North East</button>
@@ -282,7 +290,8 @@
 
         function generateSystemCB(systems) {
             for (var x = 0; x < systems.length; x++) {
-                $('#systemsCB').append('<input name="sysCB" id=' + "'" + systems[x].sysname + "'" + 'type="checkbox" /> <span class="square c-' + systems[x].syscolor.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;');
+        
+                $('#systemsCB').append('<tr><td class="systitle"><input name="sysCB" id=' + "'" + systems[x].sysname + "'" + 'type="checkbox" /> <span class="square c-' + systems[x].syscolor.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;</td><td>desc</td></tr>');
             }
         }
 
