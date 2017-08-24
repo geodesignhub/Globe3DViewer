@@ -1,6 +1,5 @@
 importScripts('../js/turfjs/turf.min.js');
 
-
 var COMBuilding = function() {
     // this.name = name;
     const gridsize = 0.03;

@@ -37,6 +37,17 @@
     <script src="/assets/Build/Cesium/Cesium.js"></script>
     <style>
         @import url(/assets/Build/Cesium/Widgets/widgets.css);
+        #controlPanel {
+        position: absolute;
+        top: 5px;
+        right: 20px;
+        background: rgba(42, 42, 42, 0.8);
+        padding: 2px 2px;
+        border-radius: 2px;
+        }
+         #controlPanel span{
+             color:white;
+         }
     </style>
 </head>
 
@@ -46,18 +57,9 @@
 
             <div class="col-sm-3 col-md-3 main">
 
-                <h1 class="page-header">Geodesign Hub Globe 3D Viewer</h1>
+                <h1 class="page-header">Geodesignhub Globe 3D Viewer</h1>
                 <section class="information">
-                    <p class="description">This plugin uses <a href="http://cesiumjs.org" target="_blank">CesiumJS</a> library for visualization and design data from <a href="http://www.geodesignhub.com/">Geodesign Hub</a>. Please see the <a href="https://github.com/geodesignhub/Globe3DViewer/">GitHub repository</a>                        for more information.</p><br>
-                    <div class="instruction">
-                        <ol>
-                            <li>Wait till the processing is complete</li>
-                            <li>Turn on or off streets and systems</li>
-                            <li>Click "Regenerate Scene" button to rebuild</li>
-
-                        </ol>
-                    </div>
-                    <textarea id="gjTA" style="display:none" name="styled-textarea">Paste Synthesis GeoJSON from Geodesign Hub here...</textarea>
+                    
                     <h4>Streets</h4>
                     <input id="showStreetsCB" class="checkbox-custom" name="checkbox-1" type="checkbox" checked> Display generated streets<br><br>
 
@@ -89,22 +91,8 @@
                                 </tr>
                             </tbody>
                         </table>
-
                 </section>
-
-                <br>
-
-                <div id="ccontrols" class="cameracontrols">
-                    <h4>Camera Heading</h4>
-                    <span class="default">
-                <button id="def" onClick="setCameraHeadingPitch(this.id);">Default</button>
-                <button id="td" onClick="setCameraHeadingPitch(this.id);">Top Down</button>
-                <button id="ne" onClick="setCameraHeadingPitch(this.id);">North East</button>
-                <button id="se" onClick="setCameraHeadingPitch(this.id);">South West</button>
-                <button id="sw" onClick="setCameraHeadingPitch(this.id);">South East</button>
-                <button id="nw" onClick="setCameraHeadingPitch(this.id);">North West</button>
-              </span>
-                </div>
+                
                 <div id='downloadLink' style='display:none'>
                     <h4>Download</h4>
                     <div>
@@ -117,6 +105,18 @@
 
             <div class="col-sm-9 col-md-9 sidebar">
                 <div id="cesiumContainer"></div>
+                <div id="controlPanel">
+                  
+                    <p> <span>Camera Position</span>:
+                         <button class="cesium-button" id="def" onClick="setCameraHeadingPitch(this.id);">Default</button>
+                <button class="cesium-button" id="td" onClick="setCameraHeadingPitch(this.id);">Top Down</button>
+                <button class="cesium-button" id="ne" onClick="setCameraHeadingPitch(this.id);">North East</button>
+                <button class="cesium-button" id="se" onClick="setCameraHeadingPitch(this.id);">South West</button>
+                <button class="cesium-button" id="sw" onClick="setCameraHeadingPitch(this.id);">South East</button>
+                <button class="cesium-button" id="nw" onClick="setCameraHeadingPitch(this.id);">North West</button>
+                
+                    </p>
+                    </div>
             </div>
         </div>
     </div>
@@ -189,7 +189,7 @@
         var allPolygons;
 
 
-        document.getElementById("ccontrols").style.visibility = "hidden";
+        // document.getElementById("ccontrols").style.visibility = "hidden";
         //default terrain
         // var cesiumTerrainProviderMeshes = new Cesium.CesiumTerrainProvider({
         //     url: 'https://assets.agi.com/stk-terrain/world',
@@ -291,15 +291,17 @@
             $('#systemsCB input:checked').each(function() {
                 selectedsystems.push($(this).attr('id'));
             });
-            var gj = document.getElementById("gjTA").value;
-            var gjerrors = geojsonhint.hint(gj);
+
+            // var gj = document.getElementById("gjTA").value;
+
+            var gjerrors = geojsonhint.hint(inputGJ);
 
             if (gjerrors.length > 0) {
                 humane.log("The GeoJSON you have entered is invalid.. ", {
                     addnCls: 'humane-flatty-error'
                 });
             } else {
-                gj = JSON.parse(gj);
+                gj = JSON.parse(inputGJ);
                 var genstreets = document.getElementById("showStreetsCB").checked;
                 start3dWorker(gj, genstreets, selectedsystems);
                 $("#loadingGIF").show();
@@ -333,8 +335,8 @@
 
                     generatedData = e.data.polygons;
                     var latlng = e.data.center;
-                    console.log(typeof(generatedData));
                     setMapCenter(latlng);
+                    $("#loadingGIF").hide();
                     // updateGLData(JSON.parse(generatedData));
                 }
             }, false);
@@ -348,7 +350,7 @@
 
         function setMapCenter(latlng) {
 
-            document.getElementById("ccontrols").style.visibility = "visible";
+            // document.getElementById("ccontrols").style.visibility = "visible";
             // set new center
             latlng = JSON.parse(latlng);
             var lat = latlng[0];
@@ -456,17 +458,21 @@
         var systems = <%- systems %>; //var test is now assigned to getTest which will only work on browsers  
         var gjresults = <%- result %>;
         var roads = <%- roads %>;
+        var inputGJ;
         (function() {
             if ((apitoken !== "0" && projectid !== "0" && diagramid !== "0")) {
                 // it is synthesis. 
                 if (gjresults.features.length > 0) {
-                    $("#gjTA").text(JSON.stringify(gjresults));
+                    inputGJ = JSON.stringify(gjresults);
+                    // $("#gjTA").text(JSON.stringify(gjresults));
                     submitGJ();
                 }
             } else if (apitoken !== "0" && projectid !== "0" && cteamid !== "0" && synthesisid !== "0") {
 
                 if (gjresults.features.length > 0) {
-                    $("#gjTA").text(JSON.stringify(gjresults));
+                    // $("#gjTA").text(JSON.stringify(gjresults));
+
+                    inputGJ = JSON.stringify(gjresults);
                     generateSystemCB(systems);
                     $('#systemsCBCont').show();
                     submitGJ();
