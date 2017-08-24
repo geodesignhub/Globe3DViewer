@@ -16,7 +16,11 @@ function unitCountonFeatures(allFeaturesList) {
             if (sysUnits.hasOwnProperty(curFeatSys)) {
                 sysUnits[curFeatSys] += curfeatprop.totalunits;
             } else {
-                sysUnits[curFeatSys] = curfeatprop.totalunits;
+
+                sysUnits[curFeatSys] = 0;
+                if (data === parseInt(curfeatprop.totalunits, 10)) {
+                    sysUnits[curFeatSys] = curfeatprop.totalunits;
+                }
             }
         }
         // counter += 1;
