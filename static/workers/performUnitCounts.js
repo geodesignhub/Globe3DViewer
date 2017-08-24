@@ -18,8 +18,10 @@ function unitCountonFeatures(allFeaturesList) {
             } else {
 
                 sysUnits[curFeatSys] = 0;
-                if (curfeatprop.totalunits === parseInt(curfeatprop.totalunits, 10)) {
-                    sysUnits[curFeatSys] = curfeatprop.totalunits;
+                if (curfeatprop.hasOwnProperty(totalunits)) {
+                    if (curfeatprop.totalunits === parseInt(curfeatprop.totalunits, 10)) {
+                        sysUnits[curFeatSys] = curfeatprop.totalunits;
+                    }
                 }
             }
         }
