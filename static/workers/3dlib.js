@@ -436,7 +436,7 @@ var MXDBuildings = function() {
                     var height = elevationoffset + heights[Math.floor(Math.random() * heights.length)];
 
                     var numFloors = Math.round(height / floorHeight); // 5 meter per floor
-                    var numUnitsperFloor = Math.round(area / avgUnitsize);
+                    var numUnitsperFloor = Math.round(curarea / avgUnitsize);
                     var totalUnits = numUnitsperFloor * numFloors;
                     var props = {
                         "totalunits": totalUnits,
