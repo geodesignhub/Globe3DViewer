@@ -369,6 +369,7 @@
             };
             unitsCountWorker.postMessage({
                 'allFeaturesList': generatedData,
+                'systems': JSON.stringify(systems)
             });
 
             unitsCountWorker.addEventListener('message', function(e) {
