@@ -172,31 +172,29 @@
 
                     async.map([synthesisid], function(sid, done) {
 
-                        redisclient.get(sid, function(err, results) {
+                            redisclient.get(sid, function(err, results) {
 
-                            if (err || results == null) {
-                                console.log('setting')
-                                var tmp = tools.generate3DGeoms(JSON.parse(gj), 1, rfc, sys);
-                                const final3DGeoms = tmp[0];
-                                const center = tmp[1];
-                                var unitCounts = tools.unitCountonFeatures(final3DGeoms, sys);
-                                redisclient.set(synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
-                                return done({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts });
-                            } else {
-                                return done(null, results);
-                            }
+                                if (err || results == null) {
+                                    console.log('setting')
+                                    var tmp = tools.generate3DGeoms(JSON.parse(gj), 1, rfc, sys);
+                                    const final3DGeoms = tmp[0];
+                                    const center = tmp[1];
+                                    var unitCounts = tools.unitCountonFeatures(final3DGeoms, sys);
+                                    redisclient.set(synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
+                                    return done({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts });
+                                } else {
+                                    return done(null, results);
+                                }
+                            });
+                        },
+                        function(error, op) {
+                            //only OK once set
+                            op = JSON.parse(op);
+                            opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
+                            opts['unitCounts'] = JSON.stringify(op.unitCounts);
+                            opts['center'] = op.center;
+                            response.render('index', opts);
                         });
-                    }, function(error, op) {
-                        console.log(JSON.stringify(op));
-                        op = JSON.parse(op);
-
-                        opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
-                        opts['unitCounts'] = JSON.stringify(op.unitCounts);
-                        opts['center'] = op.center;
-                        response.render('index', opts);
-                    });
-
-
 
                     // opts['final3DGeoms'] = JSON.stringify(final3DGeoms);
                     // opts['unitCounts'] = JSON.stringify(unitCounts);
