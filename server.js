@@ -188,7 +188,7 @@
                         });
                     }, function(error, op) {
                         console.log(JSON.stringify(op));
-                        // op = JSON.parse(op);
+                        op = JSON.parse(op);
 
                         opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
                         opts['unitCounts'] = JSON.stringify(op.unitCounts);
