@@ -1,4 +1,4 @@
-importScripts('../js/turfjs/turf.min.js');
+var turf = require('turf');
 
 var COMBuilding = function() {
     // this.name = name;
@@ -1064,55 +1064,130 @@ function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroad
 
         }
         counter += 1;
-        self.postMessage({
-            'percentcomplete': parseInt((100 * counter) / fullproc),
-            'mode': 'status',
-        });
+        // console.log(parseInt((100 * counter) / fullproc));
+        // self.postMessage({
+        //     'percentcomplete': parseInt((100 * counter) / fullproc),
+        //     'mode': 'status',
+        // });
     }
     var fpolygons = {
         "type": "FeatureCollection",
         "features": finalGJFeats
     };
-    // console.log(JSON.stringify(fpolygons));
-    self.postMessage({
-        'polygons': JSON.stringify(fpolygons),
-        'center': JSON.stringify([lat, lng])
-    });
+    return [fpolygons, [lat, lng]];
+    // // console.log(JSON.stringify(fpolygons));
+    // self.postMessage({
+    //     'polygons': JSON.stringify(fpolygons),
+    //     'center': JSON.stringify([lat, lng])
+    // });
 
 }
 
-function constrainFeatures(allFeaturesList, selectedsystems) {
-    // constrain output ot only features in the list. 
-    var cFeats = allFeaturesList.features;
-    var constraintedFeatures = { "type": "FeatureCollection", "features": [] };
-    var featlen = cFeats.length;
-    for (var d = 0; d < featlen; d++) {
-        var curfeatprop = cFeats[d].properties;
-        var curFeatSys = curfeatprop.sysname;
-        if (selectedsystems.indexOf(curFeatSys) > -1) {
-            constraintedFeatures.features.push(cFeats[d]);
-        }
-    }
-    return constraintedFeatures
-}
+// function constrainFeatures(allFeaturesList, selectedsystems) {
 
-function generate3DGeoms(allFeaturesList, genstreets, existingroads, selectedsystems) {
-    var allFeaturesList = JSON.parse(allFeaturesList);
-    var existingroads = JSON.parse(existingroads);
-    var selectedsystems = JSON.parse(selectedsystems);
-    // console.log(JSON.stringify(existingroads));
+//     // constrain output ot only features in the list. 
+//     var cFeats = allFeaturesList.features;
+//     var constraintedFeatures = { "type": "FeatureCollection", "features": [] };
+//     var featlen = cFeats.length;
+//     for (var d = 0; d < featlen; d++) {
+//         var curfeatprop = cFeats[d].properties;
+//         var curFeatSys = curfeatprop.sysname;
+//         if (selectedsystems.indexOf(curFeatSys) > -1) {
+//             constraintedFeatures.features.push(cFeats[d]);
+//         }
+//     }
+//     return constraintedFeatures
+// }
+
+function generate3DGeoms(allFeaturesList, genstreets, existingroads) {
+    // var allFeaturesList = JSON.parse(allFeaturesList);
+    // var existingroads = JSON.parse(existingroads);
+    // var selectedsystems = JSON.parse(selectedsystems);
+
     if (existingroads) {
         existingroads = bufferExistingRoads(existingroads);
     }
-    var threeDOutput;
-    if (selectedsystems.length > 0) {
-        var constraintedFeatures = constrainFeatures(allFeaturesList, selectedsystems);
-        threeDOutput = generateFinal3DGeoms(constraintedFeatures, genstreets, existingroads);
-    } else {
-        threeDOutput = generateFinal3DGeoms(allFeaturesList, genstreets, existingroads);
-    }
+    var threeDOutput = generateFinal3DGeoms(allFeaturesList, genstreets, existingroads);
+    return threeDOutput
 }
 
-self.onmessage = function(e) {
-    generate3DGeoms(e.data.allFeaturesList, e.data.genstreets, e.data.existingroads, e.data.selectedsystems);
+// Unit counts
+
+function unitCountonFeatures(allFeaturesList, systems) {
+    // constrain output ot only features in the list. 
+    var constraintedFeatures = { "type": "FeatureCollection", "features": [] };
+
+    var sysUnits = {};
+    for (var i = 0; i < systems.length; i++) {
+        var element = systems[i];
+        sysUnits[element['sysname']] = 0;
+    }
+
+    var af = allFeaturesList.features;
+    var featlen = af.length;
+    var counter = 0;
+    var fullproc = featlen;
+    for (var d = 0; d < featlen; d++) {
+        var curfeatprop = af[d].properties;
+        var curFeatSys = curfeatprop.sysname;
+        var isStreet = curfeatprop.isStreet;
+        if (isStreet) {} else {
+
+            if (curfeatprop.hasOwnProperty('totalunits')) {
+                if (curfeatprop.totalunits === parseInt(curfeatprop.totalunits, 10)) {
+                    sysUnits[curFeatSys] += curfeatprop.totalunits;
+                }
+            }
+        }
+        // counter += 1;
+        // self.postMessage({
+        //     'percentcomplete': parseInt((100 * counter) / fullproc),
+        //     'mode': 'status',
+        // });
+    }
+
+    return sysUnits
+
 }
+
+// Constrain
+
+// function constrainFeatures(allFeaturesList, selectedsystems, showstreets) {
+//     // constrain output ot only features in the list. 
+//     var constraintedFeatures = { "type": "FeatureCollection", "features": [] };
+//     var allFeatures = JSON.parse(allFeaturesList);
+//     var selectedsystems = JSON.parse(selectedsystems);
+//     var af = allFeatures.features;
+//     var featlen = af.length;
+//     var counter = 0;
+//     var fullproc = featlen;
+//     for (var d = 0; d < featlen; d++) {
+//         var curfeatprop = af[d].properties;
+//         var curFeatSys = curfeatprop.sysname;
+//         var isStreet = curfeatprop.isStreet;
+//         if (isStreet && JSON.parse(showstreets)) {
+//             constraintedFeatures.features.push(af[d]);
+//         } else {
+//             if (selectedsystems.indexOf(curFeatSys) > -1) {
+//                 constraintedFeatures.features.push(af[d]);
+//             }
+//         }
+//         counter += 1;
+//         self.postMessage({
+//             'percentcomplete': parseInt((100 * counter) / fullproc),
+//             'mode': 'status',
+//         });
+//     }
+
+//     self.postMessage({
+//         'polygons': JSON.stringify(constraintedFeatures)
+//     });
+// }
+
+
+
+module.exports = {
+    // constrainFeatures: constrainFeatures,
+    unitCountonFeatures: unitCountonFeatures,
+    generate3DGeoms: generate3DGeoms
+};
