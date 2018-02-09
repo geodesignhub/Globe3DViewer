@@ -12,6 +12,8 @@
     var express = require('express');
     var bodyParser = require('body-parser');
     var compression = require('compression');
+    var Queue = require('bull');
+    var ThreeDQueue = new Queue('Job Processor', (process.env.REDIS_URL || { host: 'localhost', port: 6379 }));
     var url = require('url');
     var req = require('request');
     var async = require('async');
@@ -101,6 +103,20 @@
             bypassUpstreamProxyHosts[host.toLowerCase()] = true;
         });
     }
+    ThreeDQueue.process(function(job, done) {
+        // job.progress(0);
+        var tmp = tools.generate3DGeoms(JSON.parse(job.data.gj), 1, job.data.rfc, JSON.parse(job.data.sys));
+        // job.progress(50);
+        const final3DGeoms = tmp[0];
+        const center = tmp[1];
+        var unitCounts = tools.unitCountonFeatures(final3DGeoms, JSON.parse(job.data.sys));
+
+        // job.progress(100);
+        redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
+        console.log("Set");
+        // job.progress(100);
+        done();
+    });
 
     app.get('/', function(request, response) {
         var opts = {};
@@ -175,26 +191,31 @@
                             redisclient.get(sid, function(err, results) {
 
                                 if (err || results == null) {
-                                    console.log('setting')
-                                    var tmp = tools.generate3DGeoms(JSON.parse(gj), 1, rfc, sys);
-                                    const final3DGeoms = tmp[0];
-                                    const center = tmp[1];
-                                    var unitCounts = tools.unitCountonFeatures(final3DGeoms, sys);
-                                    redisclient.set(synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
-                                    return done({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts });
+                                    console.log('setting');
+                                    ThreeDQueue.add({
+                                        "gj": gj,
+                                        "rfc": rfc,
+                                        "sys": JSON.stringify(sys),
+                                        "synthesisid": sid
+
+                                    })
+
+                                    return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
                                 } else {
+                                    console.log('getting')
                                     return done(null, results);
                                 }
                             });
                         },
                         function(error, op) {
                             //only OK once set
-                            if (typeof op === 'string') {
-                                op = JSON.parse(op);
-                            }
+
+                            op = JSON.parse(op);
+
                             opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
                             opts['unitCounts'] = JSON.stringify(op.unitCounts);
                             opts['center'] = op.center;
+
                             response.render('index', opts);
                         });
 
