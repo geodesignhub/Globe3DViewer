@@ -189,7 +189,9 @@
                         },
                         function(error, op) {
                             //only OK once set
-                            op = JSON.parse(op);
+                            if (typeof op === 'string') {
+                                op = JSON.parse(op);
+                            }
                             opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
                             opts['unitCounts'] = JSON.stringify(op.unitCounts);
                             opts['center'] = op.center;
