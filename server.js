@@ -126,7 +126,6 @@
 
             var baseurl = 'https://www.geodesignhub.com/api/v1/projects/';
             // var baseurl = 'http://local.dev:8000/api/v1/projects/';
-
             var apikey = request.query.apitoken;
             var cred = "Token " + apikey;
             var projectid = request.query.projectid;
@@ -202,7 +201,7 @@
 
                                     return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
                                 } else {
-                                    console.log('getting')
+                                    console.log('getting');
                                     return done(null, results);
                                 }
                             });
