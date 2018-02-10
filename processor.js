@@ -17,5 +17,5 @@ module.exports = function(job) {
     console.log('Computation Complete..');
     redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
 
-    return Promise.resolve(synthesisid);
+    return Promise.resolve(job.data.synthesisid);
 }

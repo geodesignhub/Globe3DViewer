@@ -19,6 +19,7 @@
 
     ThreeDQueue.on('completed', function(job, synthesisid) {
         // A job successfully completed with a `result`.
+
         sendStdMsg(synthesisid, synthesisid);
     });
     var url = require('url');
@@ -142,7 +143,6 @@
                     if (err || results == null) {
                         return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
                     } else {
-                        console.log('getting12');
                         return done(null, results);
                     }
                 });
