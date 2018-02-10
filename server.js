@@ -16,6 +16,11 @@
     var compression = require('compression');
     var Queue = require('bull');
     var ThreeDQueue = new Queue('3D-proc', (process.env.REDIS_URL || { host: 'localhost', port: 6379 }));
+
+    ThreeDQueue.on('completed', function(job, synthesisid) {
+        // A job successfully completed with a `result`.
+        sendStdMsg(synthesisid, synthesisid);
+    });
     var url = require('url');
     var req = require('request');
     var async = require('async');
@@ -244,10 +249,6 @@
                                     "sys": JSON.stringify(sys),
                                     "synthesisid": synthesisid
                                 })
-                                ThreeDQueue.on('completed', function(job, result) {
-                                    // A job successfully completed with a `result`.
-                                    sendStdMsg(synthesisid, synthesisid);
-                                });
                             }
 
                             opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
