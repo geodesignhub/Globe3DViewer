@@ -105,8 +105,8 @@
             bypassUpstreamProxyHosts[host.toLowerCase()] = true;
         });
     }
-    ThreeDQueue.process(function(job, done) {
-        // job.progress(0);
+
+    function genBuildingsAsync(job) {
         var tmp = tools.generate3DGeoms(JSON.parse(job.data.gj), 1, job.data.rfc, JSON.parse(job.data.sys));
         // job.progress(50);
         const final3DGeoms = tmp[0];
@@ -115,11 +115,20 @@
 
         // job.progress(100);
         redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
-        console.log("set");
+    }
+
+    function sendSocketMsg(synthesisid) {
+        console.log(synthesisid);
+        sendStdMsg(synthesisid, synthesisid);
+    }
+    ThreeDQueue.process(function(job) {
+        // job.progress(0);
+        return genBuildingsAsync(job).then(sendSocketMsg(job.data.synthesisid));
+
+        // console.log("set");
         // job.progress(100);
 
-        sendStdMsg(job.data.synthesisid, job.data.synthesisid);
-        done();
+
     });
 
     app.post('/getthreeddata', function(request, response) {
