@@ -219,13 +219,11 @@
                             redisclient.get(sid, function(err, results) {
 
                                 if (err || results == null) {
-
                                     ThreeDQueue.add({
                                         "gj": gj,
                                         "rfc": rfc,
                                         "sys": JSON.stringify(sys),
                                         "synthesisid": sid
-
                                     });
                                     console.log('setting');
                                     return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
