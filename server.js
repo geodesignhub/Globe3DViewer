@@ -15,7 +15,7 @@
     var bodyParser = require('body-parser');
     var compression = require('compression');
     var Queue = require('bull');
-    var ThreeDQueue = new Queue('Job Processor', (process.env.REDIS_URL || { host: 'localhost', port: 6379 }));
+    var ThreeDQueue = new Queue('3d-proc', (process.env.REDIS_URL || { host: 'localhost', port: 6379 }));
     var url = require('url');
     var req = require('request');
     var async = require('async');
@@ -239,12 +239,12 @@
                             if (op.center === "") {
 
                                 console.log('setting');
-                                ThreeDQueue.add({
-                                    "gj": gj,
-                                    "rfc": rfc,
-                                    "sys": JSON.stringify(sys),
-                                    "synthesisid": synthesisid
-                                });
+                                // ThreeDQueue.add({
+                                //     "gj": gj,
+                                //     "rfc": rfc,
+                                //     "sys": JSON.stringify(sys),
+                                //     "synthesisid": synthesisid
+                                // });
                             }
 
                             opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
