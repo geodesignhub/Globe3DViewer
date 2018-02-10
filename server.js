@@ -243,9 +243,9 @@
                                     "rfc": rfc,
                                     "sys": JSON.stringify(sys),
                                     "synthesisid": synthesisid
-                                }).on('completed', function(job, result) {
+                                })
+                                ThreeDQueue.on('completed', function(job, result) {
                                     // A job successfully completed with a `result`.
-
                                     sendStdMsg(synthesisid, synthesisid);
                                 });
                             }
