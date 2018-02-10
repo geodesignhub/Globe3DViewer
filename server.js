@@ -115,20 +115,18 @@
 
         // job.progress(100);
         redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
+        return true;
     }
 
     function sendSocketMsg(synthesisid) {
-        console.log(synthesisid);
+        console.log("sending.." + synthesisid);
         sendStdMsg(synthesisid, synthesisid);
     }
     ThreeDQueue.process(function(job) {
         // job.progress(0);
         return genBuildingsAsync(job).then(sendSocketMsg(job.data.synthesisid));
-
         // console.log("set");
         // job.progress(100);
-
-
     });
 
     app.post('/getthreeddata', function(request, response) {
@@ -226,14 +224,7 @@
                     async.map([synthesisid], function(sid, done) {
 
                             redisclient.get(sid, function(err, results) {
-
                                 if (err || results == null) {
-                                    ThreeDQueue.add({
-                                        "gj": gj,
-                                        "rfc": rfc,
-                                        "sys": JSON.stringify(sys),
-                                        "synthesisid": sid
-                                    });
                                     console.log('setting');
                                     return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
                                 } else {
@@ -246,6 +237,15 @@
                             //only OK once set
 
                             op = JSON.parse(op);
+                            if (op.center === "") {
+
+                                ThreeDQueue.add({
+                                    "gj": gj,
+                                    "rfc": rfc,
+                                    "sys": JSON.stringify(sys),
+                                    "synthesisid": synthesisid
+                                });
+                            }
 
                             opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
                             opts['unitCounts'] = JSON.stringify(op.unitCounts);
