@@ -225,7 +225,7 @@
 
                             redisclient.get(sid, function(err, results) {
                                 if (err || results == null) {
-                                    return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
+                                    return done(null, JSON.stringify({ "finalGeoms": "", "center": "0", "unitCounts": "" }));
                                 } else {
                                     console.log('getting');
                                     return done(null, results);
@@ -236,8 +236,7 @@
                             //only OK once set
 
                             op = JSON.parse(op);
-                            if (op.center === "") {
-
+                            if (op.center === "0") {
                                 console.log('sending to q');
                                 ThreeDQueue.add({
                                     "gj": gj,
