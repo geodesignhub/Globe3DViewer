@@ -10,6 +10,8 @@
     //     console.log("Error in Redis");
     // });
     var express = require('express');
+    const Server = require('socket.io');
+    const socketIO = new Server();
     var bodyParser = require('body-parser');
     var compression = require('compression');
     var Queue = require('bull');
@@ -113,11 +115,38 @@
 
         // job.progress(100);
         redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
-        console.log("Set");
+        console.log("set");
         // job.progress(100);
+
+        sendStdMsg(job.data.synthesisid, job.data.synthesisid);
         done();
     });
 
+    app.post('/getthreeddata', function(request, response) {
+        var synthesisid = request.body.synthesisid;
+
+        async.map([synthesisid], function(sid, done) {
+                redisclient.get(sid, function(err, results) {
+                    if (err || results == null) {
+                        return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
+                    } else {
+                        console.log('getting');
+                        return done(null, results);
+                    }
+                });
+            },
+            function(error, op) {
+                //only OK once set
+                op = JSON.parse(op);
+                response.contentType('application/json');
+                response.send({
+                    "status": 1,
+                    "final3DGeoms": op.finalGeoms,
+                    "unitCounts": op.unitCounts,
+                    "center": op.center,
+                });
+            });
+    });
     app.get('/', function(request, response) {
         var opts = {};
         if (request.query.apitoken && request.query.projectid && request.query.synthesisid && request.query.cteamid) {
@@ -244,6 +273,30 @@
     // });
 
     var server = app.listen(process.env.PORT || 5000); // for Heroku
+
+    var io = socketIO.listen(server);
+
+    io.on('connection', function(socket) {
+        socket.on('room', function(room) {
+            socket.join(room);
+            sendWelcomeMsg(room);
+        });
+        socket.on('message', function(msg) {
+            var room = msg.room;
+            var data = msg.data;
+            sendStdMsg(room, data);
+        });
+    });
+
+    function sendWelcomeMsg(room) {
+        io.sockets.in(room).emit('welcome', 'Joined ' + room);
+    }
+
+    function sendStdMsg(room, data) {
+        io.sockets.in(room).emit('message', data);
+    }
+
+
     server.on('error', function(e) {
         if (e.code === 'EADDRINUSE') {
             console.log('Error: Port %d is already in use, select a different port.', argv.port);

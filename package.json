@@ -32,7 +32,8 @@
         "yargs": "^4.3.2",
         "redis": "^2.8.0",
         "turf": "^3.0.14",
-        "bull": "^3.3.9"
+        "bull": "^3.3.9",
+        "socket.io": "2.0.4"
     },
     "scripts": {
         "start": "node server.js"

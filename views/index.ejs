@@ -32,8 +32,8 @@
 
     <script type="text/javascript" src="/assets/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="/assets/js/geojsonlint/geojsonlint.js"></script>
-    <script type="text/javascript" src="/assets/js/humane/humane.min.js">
-    </script>
+    <script type="text/javascript" src="/assets/js/humane/humane.min.js"></script>
+    <script type="text/javascript" src="/assets/js/socket.io/socket.io.js"></script>
     <script src="/assets/Build/Cesium/Cesium.js"></script>
     <style>
         @import url(/assets/Build/Cesium/Widgets/widgets.css);
@@ -441,23 +441,60 @@
         }
     </script>
     <script>
-        $("#loadingGIF").hide();
-        var generatedData;
-        var apitoken = "<%= apitoken  %>"; //var test is now assigned to getTest which will only work on browsers
-        var projectid = "<%= projectid %>"; //var test is now assigned to getTest which will only work on browsers 
-        var diagramid = "<%= diagramid %>"; //var test is now assigned to getTest which will only work on browsers 
-        var synthesisid = "<%= synthesisid %>"; //var test is now assigned to getTest which will only work on browsers  
-        var cteamid = "<%= cteamid %>"; //var test is now assigned to getTest which will only work on browsers  
-        var systems = <%- systems %>; //var test is now assigned to getTest which will only work on browsers  
-        var gjresults = <%- result %>;
-        var roads = <%- roads %>;
-        var center = "<%= center %>";
-        var final3DGeoms = <%- final3DGeoms %>;
-        var unitCounts = <%- unitCounts %>;
-        // var inputGJ;
-        (function() {
-            if (apitoken !== "0" && projectid !== "0" && cteamid !== "0" && synthesisid !== "0") {
+        var socketHost = location.origin.replace(/^http/, 'ws');
+        
 
+    var socket = io.connect(socketHost);
+    socket.on('connect_failed', function() {
+        errorMsg('Data connection failed, please contact your administrator.');
+    });
+    socket.on('disconnect', function() {
+        console.log('disconnected');
+    });
+    socket.on('welcome', function(msg) {
+        console.log('Welcome message:', msg);
+    });
+    socket.on('connect', function() {
+        socket.emit('room', synthesisid);
+    });
+    socket.on('connect_timeout', function() {
+        console.log("timed out");
+        
+    });
+    socket.on('message', function(data) {
+        getSyndata(data);
+    });
+    function getSyndata(synthesisid){
+        const d = {"synthesisid" : synthesisid};
+        var url = '/getthreeddata/';
+        var promise = $.ajax({
+            url: url,
+            type: 'POST',
+            data: d
+        });
+        promise.done(function(data) {
+          
+        center = data.center;
+        final3DGeoms = data.final3DGeoms;
+        unitCounts = data.unitCounts;
+        center = center.join();
+
+        $("#loadingGIF").hide();
+
+        $('#systemsCBCont').show();
+        processGeoms();
+        });
+
+        promise.fail(function(data) {
+            humane.log("Error in getting 3D data, you can refresh your screen.", {
+                addnCls: 'humane-flatty-error'
+            });
+        });
+    }
+
+    function processGeoms(){
+
+                   
                     setMapCenter(center);
                     $("#loadingGIF").hide();
                     displayUnitCounts(unitCounts);
@@ -469,7 +506,7 @@
                     // inputGJ = JSON.stringify(gjresults);
                     generateSystemCB(systems);
 
-                                // updateGLData(final3DGeoms, true);
+                    // updateGLData(final3DGeoms, true);
                     $('#systemsCBCont').show();
                     // submitGJ();
                     $("#showStreetsCB").click(function() {
@@ -524,7 +561,6 @@
                         });
                         constrainWorker.addEventListener('message', function(e) {
                             if (e.data.mode === 'status') {
-
                                 updateWorkerStatus(e.data.percentcomplete);
                             } else {
                                 updateGLData(JSON.parse(e.data.polygons), true);
@@ -533,7 +569,33 @@
 
                     });
                 }
-            }
+    }
+        $("#loadingGIF").hide();
+        var generatedData;
+        var apitoken = "<%= apitoken  %>"; //var test is now assigned to getTest which will only work on browsers
+        var projectid = "<%= projectid %>"; //var test is now assigned to getTest which will only work on browsers 
+        var diagramid = "<%= diagramid %>"; //var test is now assigned to getTest which will only work on browsers 
+        var synthesisid = "<%= synthesisid %>"; //var test is now assigned to getTest which will only work on browsers  
+        var cteamid = "<%= cteamid %>"; //var test is now assigned to getTest which will only work on browsers  
+        var systems = <%- systems %>; //var test is now assigned to getTest which will only work on browsers  
+        var gjresults = <%- result %>;
+        var roads = <%- roads %>;
+        var center = "<%= center %>";
+        var final3DGeoms = <%- final3DGeoms %>;
+        var unitCounts = <%- unitCounts %>;
+        // var inputGJ;
+   
+        (function() {
+            if (apitoken !== "0" && projectid !== "0" && cteamid !== "0" && synthesisid !== "0") {
+                if (center !== "")
+                {
+                    processGeoms();
+                }
+                else{
+                    $("#loadingGIF").show();
+                }
+                }
+
         })();
         (function(console) {
             console.save = function(data, filename) {
@@ -576,6 +638,7 @@
             console.save(filteredGJ);
 
         }
+
     </script>
 </body>
 
