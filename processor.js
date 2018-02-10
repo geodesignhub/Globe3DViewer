@@ -10,6 +10,7 @@ module.exports = function(job) {
     const center = tmp[1];
     var unitCounts = tools.unitCountonFeatures(final3DGeoms, JSON.parse(job.data.sys));
     // job.progress(100);
+    console.log('Computation Complete..')
     redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
 
     sendStdMsg(synthesisid, synthesisid);
