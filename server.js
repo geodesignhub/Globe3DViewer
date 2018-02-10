@@ -15,7 +15,7 @@
     var bodyParser = require('body-parser');
     var compression = require('compression');
     var Queue = require('bull');
-    var ThreeDQueue = new Queue('3d-proc', (process.env.REDIS_URL || { host: 'localhost', port: 6379 }));
+    var ThreeDQueue = new Queue('3D-proc', (process.env.REDIS_URL || { host: 'localhost', port: 6379 }));
     var url = require('url');
     var req = require('request');
     var async = require('async');
@@ -106,29 +106,29 @@
         });
     }
 
-    function genBuildingsAsync(job) {
-        var tmp = tools.generate3DGeoms(JSON.parse(job.data.gj), 1, job.data.rfc, JSON.parse(job.data.sys));
-        // job.progress(50);
-        const final3DGeoms = tmp[0];
-        const center = tmp[1];
-        var unitCounts = tools.unitCountonFeatures(final3DGeoms, JSON.parse(job.data.sys));
+    // function genBuildingsAsync(job) {
+    //     var tmp = tools.generate3DGeoms(JSON.parse(job.data.gj), 1, job.data.rfc, JSON.parse(job.data.sys));
+    //     // job.progress(50);
+    //     const final3DGeoms = tmp[0];
+    //     const center = tmp[1];
+    //     var unitCounts = tools.unitCountonFeatures(final3DGeoms, JSON.parse(job.data.sys));
+    //     // job.progress(100);
+    //     redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
+    //     return true;
+    // }
 
-        // job.progress(100);
-        redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
-        return true;
-    }
+    // function sendSocketMsg(synthesisid) {
+    //     console.log("sending.." + synthesisid);
+    //     sendStdMsg(synthesisid, synthesisid);
+    // }
+    // ThreeDQueue.process(function(job) {
+    //     // job.progress(0);
+    //     return genBuildingsAsync(job).then(sendSocketMsg(job.data.synthesisid));
+    //     // console.log("set");
+    //     // job.progress(100);
+    // });
 
-    function sendSocketMsg(synthesisid) {
-        console.log("sending.." + synthesisid);
-        sendStdMsg(synthesisid, synthesisid);
-    }
-    ThreeDQueue.process(function(job) {
-        // job.progress(0);
-        return genBuildingsAsync(job).then(sendSocketMsg(job.data.synthesisid));
-        // console.log("set");
-        // job.progress(100);
-    });
-
+    ThreeDQueue.process(__dirname + '/processor.js')
     app.post('/getthreeddata', function(request, response) {
         var synthesisid = request.body.synthesisid;
 
@@ -137,7 +137,7 @@
                     if (err || results == null) {
                         return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
                     } else {
-                        console.log('getting');
+                        console.log('getting12');
                         return done(null, results);
                     }
                 });
@@ -238,13 +238,13 @@
                             op = JSON.parse(op);
                             if (op.center === "") {
 
-                                console.log('setting');
-                                // ThreeDQueue.add({
-                                //     "gj": gj,
-                                //     "rfc": rfc,
-                                //     "sys": JSON.stringify(sys),
-                                //     "synthesisid": synthesisid
-                                // });
+                                console.log('sending to q');
+                                ThreeDQueue.add({
+                                    "gj": gj,
+                                    "rfc": rfc,
+                                    "sys": JSON.stringify(sys),
+                                    "synthesisid": synthesisid
+                                });
                             }
 
                             opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
