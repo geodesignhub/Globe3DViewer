@@ -314,7 +314,6 @@
     server.on('close', function() {
         console.log('Cesium development server stopped.');
     });
-
     var isFirstSig = true;
     process.on('SIGINT', function() {
         if (isFirstSig) {
