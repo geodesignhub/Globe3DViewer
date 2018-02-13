@@ -165,8 +165,8 @@
             // synthesis ID is given
             opts = { 'apitoken': request.query.apitoken, 'projectid': request.query.projectid, 'synthesisid': request.query.synthesisid, 'cteamid': request.query.cteamid, 'diagramid': '0' };
 
-            var baseurl = 'https://www.geodesignhub.com/api/v1/projects/';
-            // var baseurl = 'http://local.dev:8000/api/v1/projects/';
+            var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
+
             var apikey = request.query.apitoken;
             var cred = "Token " + apikey;
             var projectid = request.query.projectid;

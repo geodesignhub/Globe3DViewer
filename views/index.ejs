@@ -75,7 +75,7 @@
 
                 <h1 class="page-header">Geodesignhub Globe 3D Viewer</h1>
                 <section class="information">
-                    <div id="loadingGIF"><img src="/assets/objs/loading.gif">&nbsp;<span id="procstatus">Processing</span>...</div>
+                    <div id="loadingGIF"><img src="/assets/objs/loading.gif">&nbsp;<span id="procstatus">Processing</span>...<br><small>It may take some time for the server to process all geometries, the scene will refresh once the processing is complete.</small></div>
                     <br>
                     <div id="systemsCBCont" style="display:none">
                         <h4>Systems</h4>
@@ -442,134 +442,137 @@
     </script>
     <script>
         var socketHost = location.origin.replace(/^http/, 'ws');
-        
 
-    var socket = io.connect(socketHost);
-    socket.on('connect_failed', function() {
-        errorMsg('Data connection failed, please contact your administrator.');
-    });
-    socket.on('disconnect', function() {
-        console.log('disconnected');
-    });
-    socket.on('welcome', function(msg) {
-        console.log('Welcome message:', msg);
-    });
-    socket.on('connect', function() {
-        socket.emit('room', synthesisid);
-    });
-    socket.on('connect_timeout', function() {
-        console.log("timed out");
-        
-    });
-    socket.on('message', function(data) {
-        getSyndata(data);
-    });
-    function getSyndata(synthesisid){
-        const d = {"synthesisid" : synthesisid};
-        var url = '/getthreeddata/';
-        var promise = $.ajax({
-            url: url,
-            type: 'POST',
-            data: d
+
+        var socket = io.connect(socketHost);
+        socket.on('connect_failed', function() {
+            errorMsg('Data connection failed, please contact your administrator.');
         });
-        promise.done(function(data) {
-          
-        center = data.center;
-        final3DGeoms = data.final3DGeoms;
-        unitCounts = data.unitCounts;
-        center = center.join();
+        socket.on('disconnect', function() {
+            console.log('disconnected');
+        });
+        socket.on('welcome', function(msg) {
+            console.log('Welcome message:', msg);
+        });
+        socket.on('connect', function() {
+            socket.emit('room', synthesisid);
+        });
+        socket.on('connect_timeout', function() {
+            console.log("timed out");
 
-        $("#loadingGIF").hide();
-
-        $('#systemsCBCont').show();
-        processGeoms();
+        });
+        socket.on('message', function(data) {
+            getSyndata(data);
         });
 
-        promise.fail(function(data) {
-            humane.log("Error in getting 3D data, you can refresh your screen.", {
-                addnCls: 'humane-flatty-error'
+        function getSyndata(synthesisid) {
+            const d = {
+                "synthesisid": synthesisid
+            };
+            var url = '/getthreeddata/';
+            var promise = $.ajax({
+                url: url,
+                type: 'POST',
+                data: d
             });
-        });
-    }
+            promise.done(function(data) {
 
-    function processGeoms(){
+                center = data.center;
+                final3DGeoms = data.final3DGeoms;
+                unitCounts = data.unitCounts;
+                center = center.join();
 
-                   
-                    setMapCenter(center);
-                    $("#loadingGIF").hide();
-                    displayUnitCounts(unitCounts);
-                    updateUnitCounts(final3DGeoms, systems);
+                $("#loadingGIF").hide();
 
-                if (final3DGeoms.features.length > 0) {
-                    // $("#gjTA").text(JSON.stringify(gjresults));
+                $('#systemsCBCont').show();
+                processGeoms();
+            });
 
-                    // inputGJ = JSON.stringify(gjresults);
-                    generateSystemCB(systems);
+            promise.fail(function(data) {
+                humane.log("Error in getting 3D data, you can refresh your screen.", {
+                    addnCls: 'humane-flatty-error'
+                });
+            });
+        }
 
-                    // updateGLData(final3DGeoms, true);
-                    $('#systemsCBCont').show();
-                    // submitGJ();
-                    $("#showStreetsCB").click(function() {
-                        var showstreets = ($(this).is(":checked")) ? 1 : 0;
-                        var selectedsystems = [];
-                        $('#systemsCB input:checked').each(function() {
-                            selectedsystems.push($(this).attr('id'));
-                        });
-                        // $("#loadingGIF").show();
-                        // var constrainWorker = new Worker('/assets/workers/constrainGeneratedFeatures.js');
-                        // constrainWorker.onerror = function(e) {
-                        //     console.log('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
-                        //     $("#loadingGIF").hide();
-                        //     humane.log("There was a error in processing, please try again.. ", {
-                        //         addnCls: 'humane-flatty-error'
-                        //     });
-                        // };
-                        // // console.log(selectedsystems);
-                        // constrainWorker.postMessage({
-                        //     'allFeaturesList': final3DGeoms,
-                        //     'selectedsystems': JSON.stringify(selectedsystems),
-                        //     'showstreets': showstreets
-                        // });
-                        // constrainWorker.addEventListener('message', function(e) {
-                        //     if (e.data.mode === 'status') {
-                        //         updateWorkerStatus(e.data.percentcomplete);
-                        //     } else {
-                        //         updateGLData(JSON.parse(e.data.polygons), true);
-                        //     }
-                        // }, false);
+        function processGeoms() {
+
+
+            setMapCenter(center);
+            $("#loadingGIF").hide();
+            displayUnitCounts(unitCounts);
+            updateUnitCounts(final3DGeoms, systems);
+
+            if (final3DGeoms.features.length > 0) {
+                // $("#gjTA").text(JSON.stringify(gjresults));
+
+                // inputGJ = JSON.stringify(gjresults);
+                generateSystemCB(systems);
+
+                // updateGLData(final3DGeoms, true);
+                $('#systemsCBCont').show();
+                // submitGJ();
+                $("#showStreetsCB").click(function() {
+                    var showstreets = ($(this).is(":checked")) ? 1 : 0;
+                    var selectedsystems = [];
+                    $('#systemsCB input:checked').each(function() {
+                        selectedsystems.push($(this).attr('id'));
                     });
-                    $('#systemsCB').click(function() {
-                        var selectedsystems = [];
-                        $('#systemsCB input:checked').each(function() {
-                            selectedsystems.push($(this).attr('id'));
-                        });
-                        var showStreets = ($('#showStreetsCB').is(":checked")) ? 1 : 0;
-                        $("#loadingGIF").show();
-                        var constrainWorker = new Worker('/assets/workers/constrainGeneratedFeatures.js');
-                        constrainWorker.onerror = function(e) {
-                            console.log('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
-                            $("#loadingGIF").hide();
-                            humane.log("There was a error in processing, please try again.. ", {
-                                addnCls: 'humane-flatty-error'
-                            });
-                        };
-                        // console.log(selectedsystems);
-                        constrainWorker.postMessage({
-                            'allFeaturesList': JSON.stringify(final3DGeoms),
-                            'selectedsystems': JSON.stringify(selectedsystems),
-                            'showstreets': showStreets
-                        });
-                        constrainWorker.addEventListener('message', function(e) {
-                            if (e.data.mode === 'status') {
-                                updateWorkerStatus(e.data.percentcomplete);
-                            } else {
-                                updateGLData(JSON.parse(e.data.polygons), true);
-                            }
-                        }, false);
-
+                    // $("#loadingGIF").show();
+                    // var constrainWorker = new Worker('/assets/workers/constrainGeneratedFeatures.js');
+                    // constrainWorker.onerror = function(e) {
+                    //     console.log('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
+                    //     $("#loadingGIF").hide();
+                    //     humane.log("There was a error in processing, please try again.. ", {
+                    //         addnCls: 'humane-flatty-error'
+                    //     });
+                    // };
+                    // // console.log(selectedsystems);
+                    // constrainWorker.postMessage({
+                    //     'allFeaturesList': final3DGeoms,
+                    //     'selectedsystems': JSON.stringify(selectedsystems),
+                    //     'showstreets': showstreets
+                    // });
+                    // constrainWorker.addEventListener('message', function(e) {
+                    //     if (e.data.mode === 'status') {
+                    //         updateWorkerStatus(e.data.percentcomplete);
+                    //     } else {
+                    //         updateGLData(JSON.parse(e.data.polygons), true);
+                    //     }
+                    // }, false);
+                });
+                $('#systemsCB').click(function() {
+                    var selectedsystems = [];
+                    $('#systemsCB input:checked').each(function() {
+                        selectedsystems.push($(this).attr('id'));
                     });
-                }
-    }
+                    var showStreets = ($('#showStreetsCB').is(":checked")) ? 1 : 0;
+                    $("#loadingGIF").show();
+                    var constrainWorker = new Worker('/assets/workers/constrainGeneratedFeatures.js');
+                    constrainWorker.onerror = function(e) {
+                        console.log('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
+                        $("#loadingGIF").hide();
+                        humane.log("There was a error in processing, please try again.. ", {
+                            addnCls: 'humane-flatty-error'
+                        });
+                    };
+                    // console.log(selectedsystems);
+                    constrainWorker.postMessage({
+                        'allFeaturesList': JSON.stringify(final3DGeoms),
+                        'selectedsystems': JSON.stringify(selectedsystems),
+                        'showstreets': showStreets
+                    });
+                    constrainWorker.addEventListener('message', function(e) {
+                        if (e.data.mode === 'status') {
+                            updateWorkerStatus(e.data.percentcomplete);
+                        } else {
+                            updateGLData(JSON.parse(e.data.polygons), true);
+                        }
+                    }, false);
+
+                });
+            }
+        }
         $("#loadingGIF").hide();
         var generatedData;
         var apitoken = "<%= apitoken  %>"; //var test is now assigned to getTest which will only work on browsers
@@ -584,17 +587,15 @@
         var final3DGeoms = <%- final3DGeoms %>;
         var unitCounts = <%- unitCounts %>;
         // var inputGJ;
-   
+
         (function() {
             if (apitoken !== "0" && projectid !== "0" && cteamid !== "0" && synthesisid !== "0") {
-                if (center !== "0")
-                {
+                if (center !== "0") {
                     processGeoms();
-                }
-                else{
+                } else {
                     $("#loadingGIF").show();
                 }
-                }
+            }
 
         })();
         (function(console) {
@@ -638,7 +639,6 @@
             console.save(filteredGJ);
 
         }
-
     </script>
 </body>
 
