@@ -624,12 +624,12 @@
 
         function downloadGJ() {
             // filter out streets
-            var gd = JSON.parse(generatedData);
+            var gd = JSON.parse(gj);
             var filteredGJ = {
                 "type": "FeatureCollection",
                 "features": []
             };
-            var gendataFeatlen = gd.features.length;
+            var gendataFeatlen = gjresults.features.length;
             for (var k = 0; k < gendataFeatlen; k++) {
                 var curFeat = gd.features[k];
                 var prop = curFeat.properties;
