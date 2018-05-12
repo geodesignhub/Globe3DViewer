@@ -624,7 +624,7 @@
 
         function downloadGJ() {
             // filter out streets
-            var gd = JSON.parse(gjresults);
+            const gd = gjresults;
             var filteredGJ = {
                 "type": "FeatureCollection",
                 "features": []
