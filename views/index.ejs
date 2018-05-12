@@ -567,7 +567,9 @@
                         if (e.data.mode === 'status') {
                             updateWorkerStatus(e.data.percentcomplete);
                         } else {
-                            updateGLData(JSON.parse(e.data.polygons), true);
+                            const tmppl = JSON.parse(e.data.polygons);
+                            updateGLData(tmppl, true);
+                            dlData = tmppl;
                         }
                     }, false);
 
@@ -587,6 +589,7 @@
         var center = "<%= center %>";
         var final3DGeoms = <%- final3DGeoms %>;
         var unitCounts = <%- unitCounts %>;
+        var dlData;
         // var inputGJ;
 
         (function() {
