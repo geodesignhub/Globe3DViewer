@@ -33,7 +33,10 @@ var COMBuilding = function() {
         var systag = featProps.systag;
         var sysname = featProps.sysname;
         var ptslen = ptsWithin.features.length;
-        var alreadyAdded = { "type": "FeatureCollection", "features": [] };
+        var alreadyAdded = {
+            "type": "FeatureCollection",
+            "features": []
+        };
         // create a unique ID for each feature.
         var availablePts = {};
         var ptslen = ptsWithin.features.length;
@@ -59,7 +62,10 @@ var COMBuilding = function() {
             if (nearest) {
                 for (var k6 = 0; k6 < nearest; k6++) {
                     // already added
-                    var availPts = { "type": "FeatureCollection", "features": [] };
+                    var availPts = {
+                        "type": "FeatureCollection",
+                        "features": []
+                    };
                     for (key in availablePts) {
                         var cpt = availablePts[key];
                         availPts.features.push(cpt);
@@ -258,7 +264,10 @@ var HDHousing = function() {
         var featExtent = turf.bbox(featureGeometry);
         var sqgrid = turf.squareGrid(featExtent, gridsize, units);
         // constrain grid.
-        var constrainedgrid = { "type": "FeatureCollection", "features": [] };
+        var constrainedgrid = {
+            "type": "FeatureCollection",
+            "features": []
+        };
         var sqfeatslen = sqgrid.features.length;
         // number of extrusions is counted. 
         // console.log(numberofextrusions, sqfeatslen);
@@ -314,7 +323,10 @@ var HDHousing = function() {
 
     this.generateBuildings = function(constrainedgrid) {
         var consgridlen = constrainedgrid.features.length;
-        var generatedGeoJSON = { "type": "FeatureCollection", "features": [] };
+        var generatedGeoJSON = {
+            "type": "FeatureCollection",
+            "features": []
+        };
         // find centroid
         var extrusionconter = 0;
         for (var k1 = 0; k1 < consgridlen; k1++) {
@@ -379,7 +391,10 @@ var MXDBuildings = function() {
         var sqgrid = turf.squareGrid(featExtent, gridsize, units);
 
         // constrain grid.
-        var constrainedgrid = { "type": "FeatureCollection", "features": [] };
+        var constrainedgrid = {
+            "type": "FeatureCollection",
+            "features": []
+        };
         var sqfeatslen = sqgrid.features.length;
 
         for (var x = 0; x < sqfeatslen; x++) {
@@ -401,7 +416,10 @@ var MXDBuildings = function() {
 
     this.generateBuildings = function(constrainedgrid) {
         var consgridlen = constrainedgrid.features.length;
-        var generatedGeoJSON = { "type": "FeatureCollection", "features": [] };
+        var generatedGeoJSON = {
+            "type": "FeatureCollection",
+            "features": []
+        };
         // find centroid
         for (var k1 = 0; k1 < consgridlen; k1++) {
             var curconsfeat = constrainedgrid.features[k1];
@@ -515,7 +533,10 @@ var LABBuildings = function() {
         var roofColor = color;
         var systag = featProps.systag;
         var sysname = featProps.sysname;
-        var alreadyAdded = { "type": "FeatureCollection", "features": [] };
+        var alreadyAdded = {
+            "type": "FeatureCollection",
+            "features": []
+        };
         // if it is HDH type feature
         // create a unique ID for each feature.
         var availablePts = {};
@@ -541,7 +562,10 @@ var LABBuildings = function() {
             if (nearest) {
                 for (var k6 = 0; k6 < nearest; k6++) {
                     // already added
-                    var availPts = { "type": "FeatureCollection", "features": [] };
+                    var availPts = {
+                        "type": "FeatureCollection",
+                        "features": []
+                    };
                     for (key in availablePts) {
                         var cpt = availablePts[key];
                         availPts.features.push(cpt);
@@ -642,7 +666,10 @@ var SMBBuildings = function() {
         var roofColor = color;
         var systag = featProps.systag;
         var sysname = featProps.sysname;
-        var alreadyAdded = { "type": "FeatureCollection", "features": [] };
+        var alreadyAdded = {
+            "type": "FeatureCollection",
+            "features": []
+        };
         for (var k = 0, ptslen = ptsWithin.features.length; k < ptslen; k++) {
             var chosenValue = Math.random() < 0.5 ? true : false;
             if (chosenValue) {
@@ -752,7 +779,10 @@ var StreetsHelper = function() {
                 distance = (distance > Math.round(d)) ? distance : Math.round(d);
                 var street = turf.buffer(linestring, 0.0075, 'kilometers');
                 if (street['type'] === "Feature") {
-                    street = { "type": "FeatureCollection", "features": [street] }
+                    street = {
+                        "type": "FeatureCollection",
+                        "features": [street]
+                    }
                 }
                 var height = elevationoffset + 0.1;
                 street.features[0].properties = {
@@ -779,7 +809,10 @@ var StreetsHelper = function() {
                     var linestring = turf.lineString(tmpPts);
                     var street = turf.buffer(linestring, 0.0075, 'kilometers');
                     if (street['type'] === "Feature") {
-                        street = { "type": "FeatureCollection", "features": [street] }
+                        street = {
+                            "type": "FeatureCollection",
+                            "features": [street]
+                        }
                     }
                     var height = elevationoffset + 0.1;
                     street.features[0].properties = {
@@ -844,7 +877,10 @@ function bufferExistingRoads(inputroads) {
             streets.push(street);
         }
     }
-    return { "type": "FeatureCollection", "features": streets }
+    return {
+        "type": "FeatureCollection",
+        "features": streets
+    }
 }
 
 function generatePolicyFeatures(curFeat) {
@@ -913,7 +949,10 @@ function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroad
         if (curFeat.geometry.type === "LineString") {
             f = turf.buffer(curFeat, 0.005, 'kilometers');
             if (f['type'] === "Feature") {
-                f = { "type": "FeatureCollection", "features": [f] }
+                f = {
+                    "type": "FeatureCollection",
+                    "features": [f]
+                }
             }
             var linefeats = f.features;
             var linefeatlen = linefeats.length;
@@ -922,6 +961,7 @@ function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroad
                 var height = elevationoffset + 0.5;
                 curlineFeat.properties = {
                     "color": curFeat.properties.color,
+                    "description": curFeat.properties.description,
                     "roofColor": curFeat.properties.color,
                     "isStreet": 0,
                     'isBuilding': 0,
@@ -1045,6 +1085,7 @@ function generateFinal3DGeoms(constraintedModelDesigns, genstreets, existingroad
                 if (curFeat.properties.areatype === 'project') {
                     var height = elevationoffset + 0.01;
                     var prop = {
+                        "description": curFeat.properties.description,
                         "roofColor": curFeat.properties.color,
                         "isStreet": 0,
                         'isBuilding': 0,
@@ -1115,7 +1156,10 @@ function generate3DGeoms(allFeaturesList, genstreets, existingroads) {
 
 function unitCountonFeatures(allFeaturesList, systems) {
     // constrain output ot only features in the list. 
-    var constraintedFeatures = { "type": "FeatureCollection", "features": [] };
+    var constraintedFeatures = {
+        "type": "FeatureCollection",
+        "features": []
+    };
 
     var sysUnits = {};
     for (var i = 0; i < systems.length; i++) {
