@@ -1,5 +1,5 @@
 # Globe 3D viewer
-This is a 3D viewer plugin to view designs generated in Geodesign Hub on a [CesiumJS](https://cesiumjs.org/) Globe. It takes diagrammatic designs from a geodesign project using the [Geodesign Hub API](https://www.geodesignhub.com/api) and generates building footprints, roads and renders them. In addition, you can download the building footprints generated as GeoJSON and use in GIS and other software and further processing and visualization. It is particularly useful if the study area is large and you want to see various features over a large study area and landscape.
+This is a 3D viewer plugin to view designs generated in Geodesign Hub on a [CesiumJS](https://cesiumjs.org/) Globe. It takes diagrammatic designs from a geodesign project using the [Geodesignhub API](https://www.geodesignhub.com/api) and generates building footprints, roads and renders them. In addition, you can download the building footprints generated as GeoJSON and use in GIS and other software and further processing and visualization. It is particularly useful if the study area is large and you want to see various features over a large study area and landscape.
 
 
 ## Building Generation
