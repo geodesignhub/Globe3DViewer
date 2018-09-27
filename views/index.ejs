@@ -463,8 +463,20 @@
 
         });
         socket.on('message', function(data) {
-            getSyndata(data);
+            
+            if(data.type =='message') {
+                getSyndata(data.synthesisid);
+            }
+            else if (data.type =='progress'){
+                // console.log(data.percentcomplete);
+                $("#procstatus").html(data.percentcomplete + ' % complete');
+            }
         });
+        
+        socket.on('message', function(data) {
+            console.log(data)
+        });
+
 
         function getSyndata(synthesisid) {
             const d = {

@@ -1,27 +1,34 @@
 (function() {
     'use strict';
     /*jshint node:true*/
-    var redisclient = require('redis').createClient(process.env.REDIS_URL || { host: 'localhost', port: 6379 });
-    // redisclient.on('ready', function() {
-    //     console.log("Redis is ready");
-    // });
+    var redisclient = require('redis').createClient(process.env.REDIS_URL || { host: '127.0.0.1', port: 6379 });
 
-    // redisclient.on('error', function() {
-    //     console.log("Error in Redis");
-    // });
     var express = require('express');
     const Server = require('socket.io');
     const socketIO = new Server();
     var bodyParser = require('body-parser');
     var compression = require('compression');
     var Queue = require('bull');
-    var ThreeDQueue = new Queue('3D-proc', (process.env.REDIS_URL || { host: 'localhost', port: 6379 }));
+    // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
+    var ThreeDQueue = new Queue('3D-proc', (process.env.REDIS_URL || { host: '127.0.0.1', port: 6379 }));
 
+    // Once a job is completed, then send a message via a socket. 
     ThreeDQueue.on('completed', function(job, synthesisid) {
         // A job successfully completed with a `result`.
-
         sendStdMsg(synthesisid, synthesisid);
+    }).on('progress', function(job, progressdata){
+        console.log(progressdata.percent, progressdata.synthesisid);
+        sendProgressMsg(progressdata.synthesisid,progressdata.percent );
+          // Job progress updated!
     });
+
+    // Report Progress  suing
+    // ThreeDQueue.on('completed', function(job, synthesisid) {
+    //     // A job successfully completed with a `result`.
+
+    //     sendStdMsg(synthesisid, synthesisid);
+    // });
+
     var url = require('url');
     var req = require('request');
     var async = require('async');
@@ -112,33 +119,12 @@
         });
     }
 
-    // function genBuildingsAsync(job) {
-    //     var tmp = tools.generate3DGeoms(JSON.parse(job.data.gj), 1, job.data.rfc, JSON.parse(job.data.sys));
-    //     // job.progress(50);
-    //     const final3DGeoms = tmp[0];
-    //     const center = tmp[1];
-    //     var unitCounts = tools.unitCountonFeatures(final3DGeoms, JSON.parse(job.data.sys));
-    //     // job.progress(100);
-    //     redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
-    //     return true;
-    // }
-
-    // function sendSocketMsg(synthesisid) {
-    //     console.log("sending.." + synthesisid);
-    //     sendStdMsg(synthesisid, synthesisid);
-    // }
-    // ThreeDQueue.process(function(job) {
-    //     // job.progress(0);
-    //     return genBuildingsAsync(job).then(sendSocketMsg(job.data.synthesisid));
-    //     // console.log("set");
-    //     // job.progress(100);
-    // });
-
     ThreeDQueue.process(__dirname + '/processor.js')
     app.post('/getthreeddata', function(request, response) {
         var synthesisid = request.body.synthesisid;
 
         async.map([synthesisid], function(sid, done) {
+                
                 redisclient.get(sid, function(err, results) {
                     if (err || results == null) {
                         return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
@@ -242,13 +228,14 @@
 
                             op = JSON.parse(op);
                             if (op.center === "0") {
-                                console.log('sending to q');
+                                // console.log('sending to q');
                                 ThreeDQueue.add({
-                                    "gj": gj,
+                                    "gj": results[0],
                                     "rfc": rfc,
-                                    "sys": JSON.stringify(sys),
+                                    "sys": sys,
                                     "synthesisid": synthesisid
-                                })
+                                });
+                                
                             }
 
                             opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
@@ -268,20 +255,12 @@
             });
 
         } else {
-            opts = { 'apitoken': '0', 'projectid': '0', 'diagramid': '0', 'result': '0', 'cteamid': '0', 'systems': '0', 'synthesisid': '0', 'roads': '0' };
-            response.render('index', opts);
+            response.status(400);
+            response.send('Please pass all the valid parameters.');
         }
 
     });
 
-
-    // var server = app.listen(process.env.PORT || 5000, argv.public ? undefined : 'localhost', function() {
-    //     if (argv.public) {
-    //         console.log('Cesium development server running publicly.  Connect to http://localhost:%d/', server.address().port);
-    //     } else {
-    //         console.log('Cesium development server running locally.  Connect to http://localhost:%d/', server.address().port);
-    //     }
-    // });
 
     var server = app.listen(process.env.PORT || 5000); // for Heroku
 
@@ -303,8 +282,11 @@
         io.sockets.in(room).emit('welcome', 'Joined ' + room);
     }
 
-    function sendStdMsg(room, data) {
-        io.sockets.in(room).emit('message', data);
+    function sendStdMsg(room, synthesisid) {
+        io.sockets.in(room).emit('message', {'type':'message', 'synthesisid':synthesisid});
+    }
+    function sendProgressMsg(room, percentcomplete){
+        io.sockets.in(room).emit('message', {'type':'progress', 'percentcomplete':percentcomplete});
     }
 
 
