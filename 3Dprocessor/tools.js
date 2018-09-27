@@ -935,7 +935,7 @@ function generateCenter(constraintedModelDesigns){
     var centerPt = turf.center(constraintedModelDesigns);
     var lat = centerPt.geometry.coordinates[1];
     var lng = centerPt.geometry.coordinates[0];
-    return [lat, lng]
+    return [lat, lng];
 }
 
 function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
@@ -1254,5 +1254,6 @@ module.exports = {
     generateCenter: generateCenter,
     generateFinal3DGeoms: generateFinal3DGeoms,
     bufferExistingRoads: bufferExistingRoads
+
     // generate3DGeoms: generate3DGeoms
 };

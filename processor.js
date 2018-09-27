@@ -10,7 +10,7 @@ var redisclient = require('redis').createClient(process.env.REDIS_URL || { host:
 var tools = require('./3Dprocessor/tools');
 module.exports = function(job) {
     // Do some heavy work
-    
+    const synthesisid =job.data.synthesisid;
     var existingroads = job.data.rfc;
     
     var constraintedDesigns = job.data.gj;
@@ -33,7 +33,7 @@ module.exports = function(job) {
         const cur3DGeom = tools.generateFinal3DGeoms(curFeat, 1, existingroads);
         finalGJFeats.push.apply(finalGJFeats, cur3DGeom);
         counter += 1;
-        job.progress({'percent': parseInt((100 * counter) / fullproc),'synthesisid':job.data.synthesisid} );
+        job.progress({'percent': parseInt((100 * counter) / fullproc),'synthesisid':synthesisid} );
             
     }
 
@@ -47,11 +47,12 @@ module.exports = function(job) {
     console.log('Computation finished, counting units..');
     // job.progress(50);
 
-    const center = tools.generateCenter(constraintedDesigns)
+    const center = tools.generateCenter(constraintedDesigns);
     var unitCounts = tools.unitCountonFeatures(final3DGeoms, systems);
+    console.log(center, unitCounts);
     // job.progress(100);
     console.log('Computation Complete..');
-    redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
+    redisclient.set(synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
 
-    return Promise.resolve(job.data.synthesisid);
+    return Promise.resolve(synthesisid);
 }
