@@ -1253,5 +1253,6 @@ module.exports = {
     unitCountonFeatures: unitCountonFeatures,
     generateCenter: generateCenter,
     generateFinal3DGeoms: generateFinal3DGeoms,
+    bufferExistingRoads: bufferExistingRoads
     // generate3DGeoms: generate3DGeoms
 };
