@@ -47,9 +47,9 @@ module.exports = function(job) {
     console.log('Computation finished, counting units..');
     // job.progress(50);
 
-    const center = tools.generateCenter(constraintedDesigns);
+    var center = tools.generateCenter(constraintedDesigns);
     var unitCounts = tools.unitCountonFeatures(final3DGeoms, systems);
-    console.log(center, unitCounts);
+    // console.log(center, unitCounts);
     // job.progress(100);
     console.log('Computation Complete..');
     redisclient.set(synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
