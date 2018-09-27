@@ -1,12 +1,12 @@
 // processor.js
 var redisclient = require('redis').createClient(process.env.REDIS_URL || { host: '127.0.0.1', port: 6379 });
-redisclient.on('ready', function() {
-    console.log("Redis is ready");
-});
+// redisclient.on('ready', function() {
+//     console.log("Redis is ready");
+// });
 
-redisclient.on('error', function() {
-    console.log("Error in Redis");
-});
+// redisclient.on('error', function() {
+//     console.log("Error in Redis");
+// });
 var tools = require('./3Dprocessor/tools');
 module.exports = function(job) {
     // Do some heavy work
@@ -21,6 +21,7 @@ module.exports = function(job) {
     if (existingroads.features.length > 0) {
         existingroads = tools.bufferExistingRoads(existingroads);
     }
+    console.log("Existing roads: " + typeof(existingroads));
 
     var curFeats = constraintedDesigns.features;
     var flen = curFeats.length;
