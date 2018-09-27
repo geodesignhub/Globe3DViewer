@@ -17,7 +17,7 @@ module.exports = function(job) {
     
     const systems = job.data.sys;
 
-    // console.log('Computation starting..');
+    console.log('Computation starting..');
     if (existingroads.features.length > 0) {
         existingroads = tools.bufferExistingRoads(existingroads);
     }
@@ -46,13 +46,13 @@ module.exports = function(job) {
     // const final3DGeoms = tools.generateFinal3DGeoms(constraintedDesigns, 1, existingroads);
 
 
-    // console.log('Computation finished, counting units..');
+    console.log('Computation finished, counting units..');
     // job.progress(50);
 
     const center = tools.generateCenter(constraintedDesigns)
     var unitCounts = tools.unitCountonFeatures(final3DGeoms, systems);
     // job.progress(100);
-    // console.log('Computation Complete..');
+    console.log('Computation Complete..');
     redisclient.set(job.data.synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
 
     return Promise.resolve(job.data.synthesisid);

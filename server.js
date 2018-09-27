@@ -228,7 +228,7 @@
 
                             op = JSON.parse(op);
                             if (op.center === "0") {
-                                // console.log('sending to q');
+                                console.log('sending to q');
                                 ThreeDQueue.add({
                                     "gj": results[0],
                                     "rfc": rfc,
