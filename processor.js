@@ -31,6 +31,7 @@ module.exports = function(job) {
         // for every feature , create a point grid.
         var curFeat = curFeats[h];
         
+        console.log('Feature ' + h + ' of ' + fullproc);
         const cur3DGeom = tools.generateFinal3DGeoms(curFeat, 1, existingroads);
 
         finalGJFeats.push.apply(finalGJFeats, cur3DGeom);
