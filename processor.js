@@ -17,9 +17,11 @@ module.exports = function(job) {
     
     const systems = job.data.sys;
 
+    console.log("Before existing roads");
     if (existingroads.features.length > 0) {
         existingroads = tools.bufferExistingRoads(existingroads);
     }
+    console.log("After existing roads");
     
     var curFeats = constraintedDesigns.features;
     var flen = curFeats.length;
@@ -27,16 +29,16 @@ module.exports = function(job) {
     var counter = 0;
     var finalGJFeats = [];
     for (var h = 0; h < flen; h++) {
+        console.log(h);
         // for every feature , create a point grid.
         var curFeat = curFeats[h];
-     
         const cur3DGeom = tools.generateFinal3DGeoms(curFeat, 1, existingroads);
         finalGJFeats.push.apply(finalGJFeats, cur3DGeom);
         counter += 1;
         job.progress({'percent': parseInt((100 * counter) / fullproc),'synthesisid':synthesisid} );
             
     }
-
+    console.log('GeoJSON')
     var final3DGeoms = {
         "type": "FeatureCollection",
         "features": finalGJFeats
