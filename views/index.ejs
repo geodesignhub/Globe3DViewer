@@ -463,7 +463,8 @@
 
         });
         socket.on('message', function(data) {
-            // console.log(data);
+           
+            
             if(data.type =='message') {
                 getSyndata(data.synthesisid);
             }

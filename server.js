@@ -119,7 +119,7 @@
         });
     }
 
-    ThreeDQueue.process(__dirname + '/processor.js')
+    ThreeDQueue.process(5, __dirname + '/processor.js')
     app.post('/getthreeddata', function(request, response) {
         var synthesisid = request.body.synthesisid;
 
@@ -152,6 +152,7 @@
             opts = { 'apitoken': request.query.apitoken, 'projectid': request.query.projectid, 'synthesisid': request.query.synthesisid, 'cteamid': request.query.cteamid, 'diagramid': '0' };
 
             var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
+            
             
 
             var apikey = request.query.apitoken;
@@ -230,7 +231,8 @@
                             op = JSON.parse(op);
                             if (op.center === "0") {
                                 const newLocal = 'sending to q';
-                                console.log(newLocal);
+                                
+                                
                                 ThreeDQueue.add({
                                     "gj": results[0],
                                     "rfc": rfc,
@@ -288,6 +290,7 @@
         io.sockets.in(room).emit('message', {'type':'message', 'synthesisid':synthesisid});
     }
     function sendProgressMsg(room, percentcomplete){
+        
         io.sockets.in(room).emit('message', {'type':'progress', 'percentcomplete':percentcomplete});
     }
 
