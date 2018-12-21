@@ -28,11 +28,14 @@ module.exports = function(job) {
     var fullproc = flen;
     var counter = 0;
     var finalGJFeats = [];
+    console.log(flen)
+    
     for (var h = 0; h < flen; h++) {
         
         // for every feature , create a point grid.
         var curFeat = curFeats[h];
-        const cur3DGeom = tools.generateFinal3DGeoms(curFeat, 1, existingroads);
+        
+        const cur3DGeom = tools.generateFinal3DGeoms(curFeat, 0, existingroads);
         finalGJFeats.push.apply(finalGJFeats, cur3DGeom);
         counter += 1;
         job.progress({'percent': parseInt((100 * counter) / fullproc),'synthesisid':synthesisid} );
