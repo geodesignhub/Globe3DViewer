@@ -127,7 +127,7 @@
                 
                 redisclient.get(sid, function(err, results) {
                     if (err || results == null) {
-                        return done(null, JSON.stringify({ "finalGeoms": "", "center": "", "unitCounts": "" }));
+                        return done(null, JSON.stringify({ "finalGeoms": "", "center": ""}));
                     } else {
                         return done(null, results);
                     }
@@ -140,7 +140,6 @@
                 response.send({
                     "status": 1,
                     "final3DGeoms": op.finalGeoms,
-                    "unitCounts": op.unitCounts,
                     "center": op.center,
                 });
             });
@@ -218,7 +217,7 @@
 
                             redisclient.get(sid, function(err, results) {
                                 if (err || results == null) {
-                                    return done(null, JSON.stringify({ "finalGeoms": "", "center": "0", "unitCounts": "" }));
+                                    return done(null, JSON.stringify({ "finalGeoms": "", "center": "0"}));
                                 } else {
                                     console.log('getting');
                                     return done(null, results);
@@ -243,14 +242,13 @@
                             }
 
                             opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
-                            opts['unitCounts'] = JSON.stringify(op.unitCounts);
                             opts['center'] = op.center;
 
                             response.render('index', opts);
                         });
 
                     // opts['final3DGeoms'] = JSON.stringify(final3DGeoms);
-                    // opts['unitCounts'] = JSON.stringify(unitCounts);
+                    
                     // opts['center'] = JSON.stringify(center);
 
 

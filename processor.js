@@ -46,15 +46,14 @@ module.exports = function(job) {
     // const final3DGeoms = tools.generateFinal3DGeoms(constraintedDesigns, 1, existingroads);
 
 
-    console.log('Computation finished, counting units..');
     // job.progress(50);
 
     var center = tools.generateCenter(constraintedDesigns);
-    var unitCounts = tools.unitCountonFeatures(final3DGeoms, systems);
+    
     // console.log(center, unitCounts);
     // job.progress(100);
     console.log('Computation Complete..');
-    redisclient.set(synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center, "unitCounts": unitCounts }));
+    redisclient.set(synthesisid, JSON.stringify({ "finalGeoms": final3DGeoms, "center": center }));
 
     return Promise.resolve(synthesisid);
 }

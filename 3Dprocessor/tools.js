@@ -1172,45 +1172,6 @@ function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
 
 // Unit counts
 
-function unitCountonFeatures(allFeaturesList, systems) {
-    // constrain output ot only features in the list. 
-    var constraintedFeatures = {
-        "type": "FeatureCollection",
-        "features": []
-    };
-
-    var sysUnits = {};
-    for (var i = 0; i < systems.length; i++) {
-        var element = systems[i];
-        sysUnits[element['sysname']] = 0;
-    }
-
-    var af = allFeaturesList.features;
-    var featlen = af.length;
-    var counter = 0;
-    var fullproc = featlen;
-    for (var d = 0; d < featlen; d++) {
-        var curfeatprop = af[d].properties;
-        var curFeatSys = curfeatprop.sysname;
-        var isStreet = curfeatprop.isStreet;
-        if (isStreet) {} else {
-
-            if (curfeatprop.hasOwnProperty('totalunits')) {
-                if (curfeatprop.totalunits === parseInt(curfeatprop.totalunits, 10)) {
-                    sysUnits[curFeatSys] += curfeatprop.totalunits;
-                }
-            }
-        }
-        // counter += 1;
-        // self.postMessage({
-        //     'percentcomplete': parseInt((100 * counter) / fullproc),
-        //     'mode': 'status',
-        // });
-    }
-
-    return sysUnits
-
-}
 
 // Constrain
 
@@ -1250,7 +1211,7 @@ function unitCountonFeatures(allFeaturesList, systems) {
 
 module.exports = {
     // constrainFeatures: constrainFeatures,
-    unitCountonFeatures: unitCountonFeatures,
+    
     generateCenter: generateCenter,
     generateFinal3DGeoms: generateFinal3DGeoms,
     bufferExistingRoads: bufferExistingRoads

@@ -298,43 +298,12 @@
 
         function generateSystemCB(systems) {
             for (var x = 0; x < systems.length; x++) {
-                $('#systemsCB').append('<tr><td class="systitle"><input name="sysCB" id=' + "'" + systems[x].sysname + "'" + 'type="checkbox"/> <span class="square c-' + systems[x].syscolor.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;</td><td class="densitydetails"><h6 id=' + "'" + systems[x].sysname + "-units'" + '><h6></td></tr>');
+                $('#systemsCB').append('<tr><td class="systitle"><input name="sysCB" id=' + "'" + systems[x].sysname + "'" + 'type="checkbox"/> <span class="square c-' + systems[x].syscolor.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;</td></tr>');
             }
         }
 
 
-        function updateUnitCounts(generatedData, systems) {
-            var unitsCountWorker = new Worker('/assets/workers/performUnitCounts.js');
-            unitsCountWorker.onerror = function(e) {
-                console.log('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
-                humane.log("There was a error in counting units, please try again by clicking the Regenrate Scene button.. ", {
-                    addnCls: 'humane-flatty-error'
-                });
-            };
-            unitsCountWorker.postMessage({
-                'allFeaturesList': JSON.stringify(generatedData),
-                'systems': JSON.stringify(systems)
-            });
 
-            unitsCountWorker.addEventListener('message', function(e) {
-
-                if (e.data.mode === 'status') {
-                    // update status. 
-                    updateWorkerStatus(e.data.percentcomplete);
-                } else {
-                    var sysUnits = e.data.sysUnits;
-                    displayUnitCounts(JSON.parse(sysUnits));
-                }
-            }, false);
-        }
-
-        function displayUnitCounts(sysUnits) {
-            for (var sysname in sysUnits) {
-                var curUnitCount = sysUnits[sysname];
-                $("#" + sysname + "-units").html(curUnitCount + " units");
-            }
-
-        }
 
         function updateWorkerStatus(percentcomplete) {
             var pc = percentcomplete.toString() + '% processing completed';
@@ -489,7 +458,6 @@
 
                 center = data.center;
                 final3DGeoms = data.final3DGeoms;
-                unitCounts = data.unitCounts;
                 center = center.join();
 
                 $("#loadingGIF").hide();
@@ -510,9 +478,7 @@
 
             setMapCenter(center);
             $("#loadingGIF").hide();
-            displayUnitCounts(unitCounts);
-            updateUnitCounts(final3DGeoms, systems);
-
+            
             if (final3DGeoms.features.length > 0) {
                 // $("#gjTA").text(JSON.stringify(gjresults));
 
@@ -597,7 +563,7 @@
         var roads = <%- roads %>;
         var center = "<%= center %>";
         var final3DGeoms = <%- final3DGeoms %>;
-        var unitCounts = <%- unitCounts %>;
+        
         var dlData;
         // var inputGJ;
 
