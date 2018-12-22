@@ -46,8 +46,12 @@ var COMBuilding = function() {
             ptsWithin.features[k].properties.id = id;
             availablePts[id] = ptsWithin.features[k];
         }
+
+        ptslen = (ptslen > 5000) ? 5000 : ptslen;
+        console.log(ptslen)
         // every point is avaiaable 
         for (var k1 = 0; k1 < ptslen; k1++) {
+            console.log(k1);
             var ifeat;
             var curalreadyadded;
             var alreadyaddedlen;
@@ -209,8 +213,11 @@ var LDHousing = function() {
         var ptslen = ptsWithin.features.length;
         var bufferWidth = gridsize - 0.01; //30 meter buffer
 
+        ptslen = (ptslen > 5000) ? 5000 : ptslen;
+        console.log(ptslen)
         // if it is HDH type feature
         for (var k = 0, ptslen = ptsWithin.features.length; k < ptslen; k++) {
+            console.log(k)
             var curPt = ptsWithin.features[k];
             var buffered = turf.buffer(curPt, bufferWidth, units); // buffer 48 meters
             var bds = turf.bbox(buffered); // get the extent of the buffered features
@@ -328,8 +335,12 @@ var HDHousing = function() {
             "features": []
         };
         // find centroid
+        
+        consgridlen = (consgridlen > 5000) ? 5000 : consgridlen;
+        console.log(consgridlen)
         var extrusionconter = 0;
         for (var k1 = 0; k1 < consgridlen; k1++) {
+            console.log(k1)
             var curconsfeat = constrainedgrid.features[k1];
             var curarea;
             try {
@@ -420,8 +431,13 @@ var MXDBuildings = function() {
             "type": "FeatureCollection",
             "features": []
         };
+        
+        
+        consgridlen = (consgridlen > 5000) ? 5000 : consgridlen;
+        console.log(consgridlen);
         // find centroid
         for (var k1 = 0; k1 < consgridlen; k1++) {
+            console.log(k1);
             var curconsfeat = constrainedgrid.features[k1];
             var curarea;
             try {
@@ -539,8 +555,12 @@ var LABBuildings = function() {
         };
         // if it is HDH type feature
         // create a unique ID for each feature.
+        
         var availablePts = {};
         var ptslen = ptsWithin.features.length;
+
+        ptslen = (ptslen>5000)? 5000: ptslen;
+        console.log(ptslen);
         for (var k = 0; k < ptslen; k++) {
             var id = makeid();
             ptsWithin.features[k].properties.id = id;
@@ -548,6 +568,7 @@ var LABBuildings = function() {
         }
         // every point is avaiaable 
         for (var k1 = 0; k1 < ptslen; k1++) {
+            console.log(k1);
             var ifeat;
             var curalreadyadded;
             var alreadyaddedlen;
@@ -670,7 +691,10 @@ var SMBBuildings = function() {
             "type": "FeatureCollection",
             "features": []
         };
-        for (var k = 0, ptslen = ptsWithin.features.length; k < ptslen; k++) {
+        var ptslen = ptsWithin.features.length;
+        ptslen = (ptslen>5000)?5000 :ptslen;
+        for (var k = 0;  k < ptslen; k++) {
+            console.log(k);
             var chosenValue = Math.random() < 0.5 ? true : false;
             if (chosenValue) {
                 var curPt = ptsWithin.features[k];

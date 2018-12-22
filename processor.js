@@ -32,7 +32,7 @@ module.exports = function(job) {
         
         // for every feature , create a point grid.
         var curFeat = curFeats[h];
-        const cur3DGeom = tools.generateFinal3DGeoms(curFeat, 1, existingroads);
+        const cur3DGeom = tools.generateFinal3DGeoms(curFeat, 0, existingroads);
         finalGJFeats.push.apply(finalGJFeats, cur3DGeom);
         counter += 1;
         job.progress({'percent': parseInt((100 * counter) / fullproc),'synthesisid':synthesisid} );
