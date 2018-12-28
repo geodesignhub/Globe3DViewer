@@ -1,6 +1,6 @@
 var turf = require('turf');
 
-var COMBuilding = function() {
+var COMBuilding = function () {
     // this.name = name;
     const gridsize = 0.03;
     const elevationoffset = 1;
@@ -14,7 +14,7 @@ var COMBuilding = function() {
 
     var featProps;
     var featExtent;
-    this.genGrid = function(curFeat) {
+    this.genGrid = function (curFeat) {
         featProps = curFeat.properties;
         featExtent = turf.bbox(curFeat);
         var diagJSON = {
@@ -27,7 +27,7 @@ var COMBuilding = function() {
     };
 
 
-    this.generateBuildingFootprints = function(ptsWithin) {
+    this.generateBuildingFootprints = function (ptsWithin) {
         var allGeneratedFeats = [];
         var color = featProps.color;
         var systag = featProps.systag;
@@ -47,11 +47,11 @@ var COMBuilding = function() {
             availablePts[id] = ptsWithin.features[k];
         }
 
-        ptslen = (ptslen > 5000) ? 5000 : ptslen;
-        console.log(ptslen)
-        // every point is avaiaable 
+        ptslen = (ptslen > 7500) ? 7500 : ptslen;
+        // console.log(ptslen);
+        // every point is avaiable 
         for (var k1 = 0; k1 < ptslen; k1++) {
-            console.log(k1);
+            // console.log(k1);
             var ifeat;
             var curalreadyadded;
             var alreadyaddedlen;
@@ -176,7 +176,7 @@ var COMBuilding = function() {
     }
 };
 
-var LDHousing = function() {
+var LDHousing = function () {
     // this.name = name;
     const density = 30; // dwellings / hectare
     const buildingsperhectare = 20;
@@ -192,7 +192,7 @@ var LDHousing = function() {
     var featProps;
     var featExtent;
 
-    this.genGrid = function(curFeat) {
+    this.genGrid = function (curFeat) {
         featProps = curFeat.properties;
         featExtent = turf.bbox(curFeat);
         var diagJSON = {
@@ -204,7 +204,7 @@ var LDHousing = function() {
         return [ptsWithin, featExtent];
     };
 
-    this.generateBuildingFootprints = function(ptsWithin) {
+    this.generateBuildingFootprints = function (ptsWithin) {
 
         var allGeneratedFeats = [];
         var color = featProps.color;
@@ -213,11 +213,11 @@ var LDHousing = function() {
         var ptslen = ptsWithin.features.length;
         var bufferWidth = gridsize - 0.01; //30 meter buffer
 
-        ptslen = (ptslen > 5000) ? 5000 : ptslen;
-        console.log(ptslen)
+        ptslen = (ptslen > 7500) ? 7500 : ptslen;
+        // console.log(ptslen);
         // if it is HDH type feature
         for (var k = 0, ptslen = ptsWithin.features.length; k < ptslen; k++) {
-            console.log(k)
+            // console.log(k)
             var curPt = ptsWithin.features[k];
             var buffered = turf.buffer(curPt, bufferWidth, units); // buffer 48 meters
             var bds = turf.bbox(buffered); // get the extent of the buffered features
@@ -250,7 +250,7 @@ var LDHousing = function() {
     }
 };
 
-var HDHousing = function() {
+var HDHousing = function () {
     // this.name = name;
     const density = 80; // dwellings / hectare
     const buildingsperhectare = 2;
@@ -264,7 +264,7 @@ var HDHousing = function() {
     const avgUnitsize = 50;
 
 
-    this.generateSquareGridandConstrain = function(featureGeometry) {
+    this.generateSquareGridandConstrain = function (featureGeometry) {
         var featarea = turf.area(featureGeometry);
         var numberofextrusions = Math.round((featarea * 0.0001) * buildingsperhectare);
         featProps = featureGeometry.properties;
@@ -328,19 +328,19 @@ var HDHousing = function() {
         return constrainedgrid;
     };
 
-    this.generateBuildings = function(constrainedgrid) {
+    this.generateBuildings = function (constrainedgrid) {
         var consgridlen = constrainedgrid.features.length;
         var generatedGeoJSON = {
             "type": "FeatureCollection",
             "features": []
         };
         // find centroid
-        
-        consgridlen = (consgridlen > 5000) ? 5000 : consgridlen;
-        console.log(consgridlen)
+
+        consgridlen = (consgridlen > 7500) ? 7500 : consgridlen;
+        // console.log(consgridlen);
         var extrusionconter = 0;
         for (var k1 = 0; k1 < consgridlen; k1++) {
-            console.log(k1)
+            // console.log(k1)
             var curconsfeat = constrainedgrid.features[k1];
             var curarea;
             try {
@@ -379,7 +379,7 @@ var HDHousing = function() {
     }
 };
 
-var MXDBuildings = function() {
+var MXDBuildings = function () {
     const density = 40; // dwellings per hectare.
     const outerringradius = 0.04;
     const middleringradius = 0.02;
@@ -396,7 +396,7 @@ var MXDBuildings = function() {
     const avgUnitsize = 75;
 
     var featProps;
-    this.generateSquareGridandConstrain = function(featureGeometry) {
+    this.generateSquareGridandConstrain = function (featureGeometry) {
         featProps = featureGeometry.properties;
         var featExtent = turf.bbox(featureGeometry);
         var sqgrid = turf.squareGrid(featExtent, gridsize, units);
@@ -425,19 +425,17 @@ var MXDBuildings = function() {
         return constrainedgrid;
     };
 
-    this.generateBuildings = function(constrainedgrid) {
+    this.generateBuildings = function (constrainedgrid) {
         var consgridlen = constrainedgrid.features.length;
         var generatedGeoJSON = {
             "type": "FeatureCollection",
             "features": []
         };
-        
-        
-        consgridlen = (consgridlen > 5000) ? 5000 : consgridlen;
-        console.log(consgridlen);
+        consgridlen = (consgridlen > 7500) ? 7500 : consgridlen;
+        // console.log(consgridlen);
         // find centroid
         for (var k1 = 0; k1 < consgridlen; k1++) {
-            console.log(k1);
+            // console.log(k1);
             var curconsfeat = constrainedgrid.features[k1];
             var curarea;
             try {
@@ -517,7 +515,7 @@ var MXDBuildings = function() {
 
 }
 
-var LABBuildings = function() {
+var LABBuildings = function () {
     var reqtype;
     var labHeights = [10, 15];
     const nearestSearch = [0, 1, 2];
@@ -531,7 +529,7 @@ var LABBuildings = function() {
     const floorHeight = 5;
     const avgUnitsize = 100;
 
-    this.genGrid = function(curFeat) {
+    this.genGrid = function (curFeat) {
         featProps = curFeat.properties;
         featExtent = turf.bbox(curFeat);
         var diagJSON = {
@@ -543,7 +541,7 @@ var LABBuildings = function() {
         return [ptsWithin, featExtent];
     };
 
-    this.generateBuildingFootprints = function(ptsWithin) {
+    this.generateBuildingFootprints = function (ptsWithin) {
         var allGeneratedFeats = [];
         var color = featProps.color;
         var roofColor = color;
@@ -555,12 +553,12 @@ var LABBuildings = function() {
         };
         // if it is HDH type feature
         // create a unique ID for each feature.
-        
+
         var availablePts = {};
         var ptslen = ptsWithin.features.length;
 
-        ptslen = (ptslen>5000)? 5000: ptslen;
-        console.log(ptslen);
+        ptslen = (ptslen > 7500) ? 7500 : ptslen;
+        // console.log(ptslen);
         for (var k = 0; k < ptslen; k++) {
             var id = makeid();
             ptsWithin.features[k].properties.id = id;
@@ -568,7 +566,7 @@ var LABBuildings = function() {
         }
         // every point is avaiaable 
         for (var k1 = 0; k1 < ptslen; k1++) {
-            console.log(k1);
+            // console.log(k1);
             var ifeat;
             var curalreadyadded;
             var alreadyaddedlen;
@@ -646,7 +644,7 @@ var LABBuildings = function() {
     }
 };
 
-var SMBBuildings = function() {
+var SMBBuildings = function () {
     var reqtype;
     var smbHeights = [2, 3, 5, 6, 7, 10];
     const gridsize = 0.04;
@@ -659,7 +657,7 @@ var SMBBuildings = function() {
     var featExtent;
     const bufferWidth = gridsize - 0.015;
     const bldgfootprint = 0.015;
-    this.genGrid = function(curFeat) {
+    this.genGrid = function (curFeat) {
         featProps = curFeat.properties;
         featExtent = turf.bbox(curFeat);
         var diagJSON = {
@@ -674,14 +672,14 @@ var SMBBuildings = function() {
     const floorHeight = 5;
     const avgUnitsize = 75;
 
-    this.generateUnits = function(area) {
+    this.generateUnits = function (area) {
         var height = elevationoffset + smbHeights[Math.floor(Math.random() * smbHeights.length)];
         var numFloors = Math.round(height / floorHeight); // 5 meter per floor
         var numUnitsperFloor = Math.round(area / avgUnitsize);
         var totalUnits = numUnitsperFloor * numFloors;
         return totalUnits;
     };
-    this.generateBuildingFootprints = function(ptsWithin) {
+    this.generateBuildingFootprints = function (ptsWithin) {
         var allGeneratedFeats = [];
         var color = featProps.color;
         var roofColor = color;
@@ -692,9 +690,9 @@ var SMBBuildings = function() {
             "features": []
         };
         var ptslen = ptsWithin.features.length;
-        ptslen = (ptslen>5000)?5000 :ptslen;
-        for (var k = 0;  k < ptslen; k++) {
-            console.log(k);
+        ptslen = (ptslen > 7500) ? 7500 : ptslen;
+        for (var k = 0; k < ptslen; k++) {
+            // console.log(k);
             var chosenValue = Math.random() < 0.5 ? true : false;
             if (chosenValue) {
                 var curPt = ptsWithin.features[k];
@@ -726,9 +724,9 @@ var SMBBuildings = function() {
         return allGeneratedFeats;
     }
 };
-var StreetsHelper = function() {
+var StreetsHelper = function () {
 
-    this.genStreetsGrid = function(pointsWithin, extent) {
+    this.genStreetsGrid = function (pointsWithin, extent) {
         // This module generates streets. given a grid of points. 
         var rows = [];
         var elevationoffset = 10;
@@ -768,10 +766,10 @@ var StreetsHelper = function() {
 
         var rCounter = 0;
         var cCounter = 0;
-        var sortedCols = allCols.sort(function(a, b) {
+        var sortedCols = allCols.sort(function (a, b) {
             return parseFloat(a.key) - parseFloat(b.key);
         });
-        var sortedRows = allRows.sort(function(a, b) {
+        var sortedRows = allRows.sort(function (a, b) {
             return parseFloat(a.key) - parseFloat(b.key);
         });
         for (var x2 = 0, collen = sortedCols.length; x2 < collen; x2++) {
@@ -856,7 +854,7 @@ var StreetsHelper = function() {
         };
         return s;
     }
-    this.filterStreets = function(streetgrid, inputFeats) {
+    this.filterStreets = function (streetgrid, inputFeats) {
         var filteredFeatures = [];
         for (var l = 0; l < inputFeats.length; l++) {
             var curF1 = inputFeats[l];
@@ -955,7 +953,7 @@ function generatePolicyFeatures(curFeat) {
     return policyFeats;
 }
 
-function generateCenter(constraintedModelDesigns){
+function generateCenter(constraintedModelDesigns) {
     var centerPt = turf.center(constraintedModelDesigns);
     var lat = centerPt.geometry.coordinates[1];
     var lng = centerPt.geometry.coordinates[0];
@@ -965,7 +963,7 @@ function generateCenter(constraintedModelDesigns){
 function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
     const elevationoffset = 1;
     var genstreets = (genstreets === 'false') ? false : true;
-    var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH', 'IND', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD'];
+    var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH',  'COM', 'COMIND', 'HSG', 'HSNG', 'MXD', 'MIX'];
     var curGJFeats = [];
     // get the center of the design so that the map once returned can be recentered.
     // var centerPt = turf.center(constraintedModelDesigns);
@@ -977,268 +975,199 @@ function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
     // var fullproc = flen;
     // var counter = 0;
     // for (var h = 0; h < flen; h++) {
-        // for every feature , create a point grid.
-        // var curFeat = curFeats[h];
-        var curFeat = currentFeature
+    // for every feature , create a point grid.
+    // var curFeat = curFeats[h];
+    var curFeat = currentFeature
 
-        var curFeatSys = curFeat.properties.sysname;
-        // add desctiption
-        const diagramdesc = curFeat.properties.description;
-        
-        // if it is a line then simply buffer it and paint it black with a small height
-        if (curFeat.geometry.type === "LineString") {
-            f = turf.buffer(curFeat, 0.005, 'kilometers');
-            if (f['type'] === "Feature") {
-                f = {
-                    "type": "FeatureCollection",
-                    "features": [f]
+    var curFeatSys = curFeat.properties.sysname;
+    // add desctiption
+    const diagramdesc = curFeat.properties.description;
+
+    // if it is a line then simply buffer it and paint it black with a small height
+    if (curFeat.geometry.type === "LineString") {
+        f = turf.buffer(curFeat, 0.05, 'kilometers');
+        if (f['type'] === "Feature") {
+            f = {
+                "type": "FeatureCollection",
+                "features": [f]
+            }
+        }
+        var linefeats = f.features;
+        var linefeatlen = linefeats.length;
+        for (var x1 = 0; x1 < linefeatlen; x1++) {
+            curlineFeat = linefeats[x1];
+            var height = elevationoffset + 0.5;
+            curlineFeat.properties = {
+                "color": curFeat.properties.color,
+                "description": curFeat.properties.description,
+                "roofColor": curFeat.properties.color,
+                "isStreet": 0,
+                'isBuilding': 0,
+                "sysname": curFeat.properties.sysname,
+                "height": height,
+                "description": diagramdesc
+            };
+
+            curGJFeats.push(curlineFeat);
+        }
+    } else if (curFeat.geometry.type === "Polygon") {
+
+        var featProps = curFeat.properties;
+
+        if (whiteListedSysName.indexOf(curFeatSys) >= 0) { // system is whitelisted
+            if (curFeat.properties.areatype === 'project') {
+                //100 meter cell width
+                if ((featProps.sysname === 'HDH') || (featProps.sysname === 'HSNG') || (featProps.sysname === 'HSG')|| (featProps.sysname === 'MIX')) {
+                    var hdh = new HDHousing();
+                    var constrainedgrid = hdh.generateSquareGridandConstrain(curFeat);
+                    var bldgs = hdh.generateBuildings(constrainedgrid);
+                    for (var k2 = 0; k2 < bldgs.features.length; k2++) {
+                        bldgs.features[k2].properties.description = diagramdesc;
+                        curGJFeats.push(bldgs.features[k2]);
+                    }
+                } else if ((featProps.sysname === 'MXD')) {
+                    var mxd = new MXDBuildings();
+                    var mxdgrid = mxd.generateSquareGridandConstrain(curFeat);
+                    var mxdbld = mxd.generateBuildings(mxdgrid);
+                    
+                    for (var k3 = 0; k3 < mxdbld.features.length; k3++) {
+                        mxdbld.features[k3].properties.description = diagramdesc;
+                        curGJFeats.push(mxdbld.features[k3]);
+                    }
+                } else if ((featProps.sysname === 'LDH') || (featProps.sysname === 'LOW-H')) {
+                    var ldh = new LDHousing();
+                    var p = ldh.genGrid(curFeat);
+                    var ptsWithin = p[0];
+                    var featExtent = p[1];
+                    var bldgs = ldh.generateBuildingFootprints(ptsWithin);
+                    var ldhstreets = new StreetsHelper();
+                    var ldhstreetFeatureCollection = ldhstreets.genStreetsGrid(ptsWithin, featExtent);
+                    var ldhfinalFeatures = ldhstreets.filterStreets(ldhstreetFeatureCollection, bldgs);
+                    if (existingroads) {
+                        ldhfinalFeatures = ldhstreets.filterStreets(existingroads, ldhfinalFeatures);
+                    }
+                    if (genstreets) {
+                        ldhfinalFeatures.push.apply(ldhfinalFeatures, ldhstreetFeatureCollection.features);
+                    }
+                    for (var k1 = 0; k1 < ldhfinalFeatures.length; k1++) {
+                        ldhfinalFeatures[k1].properties.description = diagramdesc;
+                        curGJFeats.push(ldhfinalFeatures[k1]);
+                    }
+                } else if ((featProps.sysname === 'COM') || (featProps.sysname === 'COMIND')) {
+                    var com = new COMBuilding();
+                    var comp = com.genGrid(curFeat);
+                    var comptsWithin = comp[0];
+                    var comfeatExtent = comp[1];
+                    var combldgs = com.generateBuildingFootprints(comptsWithin);
+                    var comstreets = new StreetsHelper();
+                    var comstreetFeatureCollection = comstreets.genStreetsGrid(comptsWithin, comfeatExtent);
+                    var comfinalFeatures = comstreets.filterStreets(comstreetFeatureCollection, combldgs);
+                    if (existingroads) {
+                        comfinalFeatures = comstreets.filterStreets(existingroads, comfinalFeatures);
+                    }
+                    if (genstreets) {
+                        comfinalFeatures.push.apply(comfinalFeatures, comstreetFeatureCollection.features);
+                    }
+                    for (var k1 = 0; k1 < comfinalFeatures.length; k1++) {
+                        comfinalFeatures[k1].properties.description = diagramdesc;
+                        curGJFeats.push(comfinalFeatures[k1]);
+                    }
+                }
+            } else if (curFeat.properties.areatype === 'policy') { // whitelisted policy
+                var policyF = generatePolicyFeatures(curFeat);
+                for (var pf = 0; pf < policyF.length; pf++) {
+                    policyF[pf].properties.description = diagramdesc;
+                    curGJFeats.push(policyF[pf]);
                 }
             }
-            var linefeats = f.features;
-            var linefeatlen = linefeats.length;
-            for (var x1 = 0; x1 < linefeatlen; x1++) {
-                curlineFeat = linefeats[x1];
-                var height = elevationoffset + 0.5;
-                curlineFeat.properties = {
-                    "color": curFeat.properties.color,
+
+        }
+        // for non white listed systems that are buildings
+        else if ((featProps.systag === 'Large buildings, Industry, commerce') && (featProps.areatype === 'project')) { // 
+            // console.log('here')
+            var lab = new LABBuildings();
+            var labgrid = lab.genGrid(curFeat);
+            var labptsWithin = labgrid[0];
+            var labfeatExtent = labgrid[1];
+            var labbldgs = lab.generateBuildingFootprints(labptsWithin);
+
+            var labstreets = new StreetsHelper();
+            var labStreetsFC = labstreets.genStreetsGrid(labptsWithin, labfeatExtent);
+            var labFinalFeatures = labstreets.filterStreets(labStreetsFC, labbldgs);
+            if (existingroads) {
+                labFinalFeatures = labstreets.filterStreets(existingroads, labFinalFeatures);
+            }
+            if (genstreets) {
+                labFinalFeatures.push.apply(labFinalFeatures, labStreetsFC.features);
+            }
+            for (var k6 = 0; k6 < labFinalFeatures.length; k6++) {
+                labFinalFeatures[k6].properties.description = diagramdesc;
+                curGJFeats.push(labFinalFeatures[k6]);
+            }
+
+        } else if ((featProps.systag === 'Small buildings, low density housing') && (featProps.areatype === 'project')) {
+
+            var smb = new SMBBuildings();
+            var smbgrid = smb.genGrid(curFeat);
+            var smbptsWithin = smbgrid[0];
+            var smbfeatExtent = smbgrid[1];
+            var smbbldgs = smb.generateBuildingFootprints(smbptsWithin);
+            var smbStreets = new StreetsHelper();
+            var smbStreetFeat = smbStreets.genStreetsGrid(smbptsWithin, smbfeatExtent);
+            var smbFinalFeatures = smbStreets.filterStreets(smbStreetFeat, smbbldgs);
+            if (existingroads) {
+                smbFinalFeatures = smbStreets.filterStreets(existingroads, smbFinalFeatures);
+            }
+            if (genstreets) {
+                smbFinalFeatures.push.apply(smbFinalFeatures, smbStreetFeat.features);
+            }
+            for (var k1 = 0; k1 < smbFinalFeatures.length; k1++) {
+                smbFinalFeatures[k1].properties.description = diagramdesc;
+                curGJFeats.push(smbFinalFeatures[k1]);
+            }
+
+
+        } else { // all systems that not buildings
+            if (curFeat.properties.areatype === 'project') {
+                var height = elevationoffset + 0.01;
+                var prop = {
                     "description": curFeat.properties.description,
                     "roofColor": curFeat.properties.color,
                     "isStreet": 0,
                     'isBuilding': 0,
-                    "sysname": curFeat.properties.sysname,
                     "height": height,
-                    "description":diagramdesc
-                };
-
-                curGJFeats.push(curlineFeat);
+                    "sysname": curFeat.properties.sysname,
+                    "description": curFeat.properties.description
+                }
+                curFeat.properties = prop;
+                curGJFeats.push.apply(curGJFeats, [curFeat]);
             }
-        } else if (curFeat.geometry.type === "Polygon") {
-
-            var featProps = curFeat.properties;
-
-            if (whiteListedSysName.indexOf(curFeatSys) >= 0) { // system is whitelisted
-                if (curFeat.properties.areatype === 'project') {
-                    //100 meter cell width
-                    if ((featProps.sysname === 'HDH') || (featProps.sysname === 'HSNG') || (featProps.sysname === 'HSG')) {
-                        var hdh = new HDHousing();
-                        var constrainedgrid = hdh.generateSquareGridandConstrain(curFeat);
-                        var bldgs = hdh.generateBuildings(constrainedgrid);
-                        for (var k2 = 0; k2 < bldgs.features.length; k2++) {
-                            bldgs.features[k2].properties.description = diagramdesc;
-                            curGJFeats.push(bldgs.features[k2]);
-                        }
-                    } else if (featProps.sysname === 'MXD') {
-                        var mxd = new MXDBuildings();
-                        var mxdgrid = mxd.generateSquareGridandConstrain(curFeat);
-                        // console.log(JSON.stringify(mxdgrid));
-                        var mxdbld = mxd.generateBuildings(mxdgrid);
-                        // console.log(JSON.stringify(mxdbld));
-                        for (var k3 = 0; k3 < mxdbld.features.length; k3++) {
-                            mxdbld.features[k3].properties.description = diagramdesc;
-                            curGJFeats.push(mxdbld.features[k3]);
-                        }
-                    } else if ((featProps.sysname === 'LDH') || (featProps.sysname === 'LOW-H')) {
-                        var ldh = new LDHousing();
-                        var p = ldh.genGrid(curFeat);
-                        var ptsWithin = p[0];
-                        var featExtent = p[1];
-                        var bldgs = ldh.generateBuildingFootprints(ptsWithin);
-                        var ldhstreets = new StreetsHelper();
-                        var ldhstreetFeatureCollection = ldhstreets.genStreetsGrid(ptsWithin, featExtent);
-                        var ldhfinalFeatures = ldhstreets.filterStreets(ldhstreetFeatureCollection, bldgs);
-                        if (existingroads) {
-                            ldhfinalFeatures = ldhstreets.filterStreets(existingroads, ldhfinalFeatures);
-                        }
-                        if (genstreets) {
-                            ldhfinalFeatures.push.apply(ldhfinalFeatures, ldhstreetFeatureCollection.features);
-                        }
-                        for (var k1 = 0; k1 < ldhfinalFeatures.length; k1++) {
-                            ldhfinalFeatures[k1].properties.description = diagramdesc;
-                            curGJFeats.push(ldhfinalFeatures[k1]);
-                        }
-                    } else if ((featProps.sysname === 'COM') || (featProps.sysname === 'COMIND')) {
-                        var com = new COMBuilding();
-                        var comp = com.genGrid(curFeat);
-                        var comptsWithin = comp[0];
-                        var comfeatExtent = comp[1];
-                        var combldgs = com.generateBuildingFootprints(comptsWithin);
-                        var comstreets = new StreetsHelper();
-                        var comstreetFeatureCollection = comstreets.genStreetsGrid(comptsWithin, comfeatExtent);
-                        var comfinalFeatures = comstreets.filterStreets(comstreetFeatureCollection, combldgs);
-                        if (existingroads) {
-                            comfinalFeatures = comstreets.filterStreets(existingroads, comfinalFeatures);
-                        }
-                        if (genstreets) {
-                            comfinalFeatures.push.apply(comfinalFeatures, comstreetFeatureCollection.features);
-                        }
-                        for (var k1 = 0; k1 < comfinalFeatures.length; k1++) {
-                            comfinalFeatures[k1].properties.description = diagramdesc;
-                            curGJFeats.push(comfinalFeatures[k1]);
-                        }
-                    }
-                } else if (curFeat.properties.areatype === 'policy') { // whitelisted policy
-                    var policyF = generatePolicyFeatures(curFeat);
-                    for (var pf = 0; pf < policyF.length; pf++) {
-                        policyF[pf].properties.description = diagramdesc;
-                        curGJFeats.push(policyF[pf]);
-                    }
-                }
-
-            }
-            // for non white listed systems that are buildings
-            else if ((featProps.systag === 'Large buildings, Industry, commerce') && (featProps.areatype === 'project')) { // 
-                // console.log('here')
-                var lab = new LABBuildings();
-                var labgrid = lab.genGrid(curFeat);
-                var labptsWithin = labgrid[0];
-                var labfeatExtent = labgrid[1];
-                var labbldgs = lab.generateBuildingFootprints(labptsWithin);
-
-                var labstreets = new StreetsHelper();
-                var labStreetsFC = labstreets.genStreetsGrid(labptsWithin, labfeatExtent);
-                var labFinalFeatures = labstreets.filterStreets(labStreetsFC, labbldgs);
-                if (existingroads) {
-                    labFinalFeatures = labstreets.filterStreets(existingroads, labFinalFeatures);
-                }
-                if (genstreets) {
-                    labFinalFeatures.push.apply(labFinalFeatures, labStreetsFC.features);
-                }
-                for (var k6 = 0; k6 < labFinalFeatures.length; k6++) {
-                    labFinalFeatures[k6].properties.description = diagramdesc;
-                    curGJFeats.push(labFinalFeatures[k6]);
-                }
-
-            } else if ((featProps.systag === 'Small buildings, low density housing') && (featProps.areatype === 'project')) {
-
-                var smb = new SMBBuildings();
-                var smbgrid = smb.genGrid(curFeat);
-                var smbptsWithin = smbgrid[0];
-                var smbfeatExtent = smbgrid[1];
-                var smbbldgs = smb.generateBuildingFootprints(smbptsWithin);
-                var smbStreets = new StreetsHelper();
-                var smbStreetFeat = smbStreets.genStreetsGrid(smbptsWithin, smbfeatExtent);
-                var smbFinalFeatures = smbStreets.filterStreets(smbStreetFeat, smbbldgs);
-                if (existingroads) {
-                    smbFinalFeatures = smbStreets.filterStreets(existingroads, smbFinalFeatures);
-                }
-                if (genstreets) {
-                    smbFinalFeatures.push.apply(smbFinalFeatures, smbStreetFeat.features);
-                }
-                for (var k1 = 0; k1 < smbFinalFeatures.length; k1++) {
-                    smbFinalFeatures[k1].properties.description = diagramdesc;
-                    curGJFeats.push(smbFinalFeatures[k1]);
-                }
-
-
-            } else { // all systems that not buildings
-                if (curFeat.properties.areatype === 'project') {
-                    var height = elevationoffset + 0.01;
-                    var prop = {
-                        "description": curFeat.properties.description,
-                        "roofColor": curFeat.properties.color,
-                        "isStreet": 0,
-                        'isBuilding': 0,
-                        "height": height,
-                        "sysname": curFeat.properties.sysname,
-                        "description":curFeat.properties.description
-                    }
-                    curFeat.properties = prop;
-                    curGJFeats.push.apply(curGJFeats, [curFeat]);
-                }
-                // else if (curFeat.properties.areatype === 'policy') {
-                //     var policyF = generatePolicyFeatures(curFeat);
-                //     for (var pf = 0; pf < policyF.length; pf++) {
-                //         curGJFeats.push(policyF[pf]);
-                //     }
-                // }
-            }
-
+            // else if (curFeat.properties.areatype === 'policy') {
+            //     var policyF = generatePolicyFeatures(curFeat);
+            //     for (var pf = 0; pf < policyF.length; pf++) {
+            //         curGJFeats.push(policyF[pf]);
+            //     }
+            // }
         }
-        // counter += 1;
-        // console.log(parseInt((100 * counter) / fullproc));
-        // self.postMessage({
-        //     'percentcomplete': parseInt((100 * counter) / fullproc),
-        //     'mode': 'status',
-        // });
+
+    }
+    // counter += 1;
+    // console.log(parseInt((100 * counter) / fullproc));
+    // self.postMessage({
+    //     'percentcomplete': parseInt((100 * counter) / fullproc),
+    //     'mode': 'status',
+    // });
     // }
 
     return curGJFeats;
 
 }
 
-// function constrainFeatures(allFeaturesList, selectedsystems) {
-
-//     // constrain output ot only features in the list. 
-//     var cFeats = allFeaturesList.features;
-//     var constraintedFeatures = { "type": "FeatureCollection", "features": [] };
-//     var featlen = cFeats.length;
-//     for (var d = 0; d < featlen; d++) {
-//         var curfeatprop = cFeats[d].properties;
-//         var curFeatSys = curfeatprop.sysname;
-//         if (selectedsystems.indexOf(curFeatSys) > -1) {
-//             constraintedFeatures.features.push(cFeats[d]);
-//         }
-//     }
-//     return constraintedFeatures
-// }
-
-// function generate3DGeoms(allFeaturesList, genstreets, existingroads) {
-//     // var allFeaturesList = JSON.parse(allFeaturesList);
-//     // var existingroads = JSON.parse(existingroads);
-//     // var selectedsystems = JSON.parse(selectedsystems);
-
-//     if (existingroads) {
-//         existingroads = bufferExistingRoads(existingroads);
-//     }
-//     var threeDOutput = generateFinal3DGeoms(allFeaturesList, genstreets, existingroads);
-//     return threeDOutput
-// }
-
-// Unit counts
-
-
-// Constrain
-
-// function constrainFeatures(allFeaturesList, selectedsystems, showstreets) {
-//     // constrain output ot only features in the list. 
-//     var constraintedFeatures = { "type": "FeatureCollection", "features": [] };
-//     var allFeatures = JSON.parse(allFeaturesList);
-//     var selectedsystems = JSON.parse(selectedsystems);
-//     var af = allFeatures.features;
-//     var featlen = af.length;
-//     var counter = 0;
-//     var fullproc = featlen;
-//     for (var d = 0; d < featlen; d++) {
-//         var curfeatprop = af[d].properties;
-//         var curFeatSys = curfeatprop.sysname;
-//         var isStreet = curfeatprop.isStreet;
-//         if (isStreet && JSON.parse(showstreets)) {
-//             constraintedFeatures.features.push(af[d]);
-//         } else {
-//             if (selectedsystems.indexOf(curFeatSys) > -1) {
-//                 constraintedFeatures.features.push(af[d]);
-//             }
-//         }
-//         counter += 1;
-//         self.postMessage({
-//             'percentcomplete': parseInt((100 * counter) / fullproc),
-//             'mode': 'status',
-//         });
-//     }
-
-//     self.postMessage({
-//         'polygons': JSON.stringify(constraintedFeatures)
-//     });
-// }
-
-
 
 module.exports = {
     // constrainFeatures: constrainFeatures,
-    
     generateCenter: generateCenter,
     generateFinal3DGeoms: generateFinal3DGeoms,
     bufferExistingRoads: bufferExistingRoads
-
     // generate3DGeoms: generate3DGeoms
 };
