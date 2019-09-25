@@ -12,6 +12,7 @@
 .c-e54c00-policy,
 .c-ffaa00-policy,
 .c-e69800-policy,
+.c-e18cc8-policy,
 .c-e7e600-policy,
 .c-014b73-policy,
 .c-0086a7-policy,
@@ -100,6 +101,7 @@
 .c-0086a7-policy span,
 .c-704425-policy span,
 .c-71a701-policy span,
+.c-e18cc8-policy span,
 .c-9ae32c-policy span,
 .c-f4a261-policy span,
 .c-fffd38-policy span,
@@ -220,6 +222,11 @@
 
 .c-fffd38 {
     background-color: #fffd38;
+    color: #FFFFFF;
+}
+
+.c-e18cc8 {
+    background-color: #e18cc8;
     color: #FFFFFF;
 }
 
@@ -536,6 +543,10 @@
 
 .c-e54c00-policy {
     background-image: linear-gradient(45deg, transparent 45%, #e54c00 50%, transparent 55%, transparent 100%), linear-gradient(-45deg, transparent 45%, #e54c00 50%, transparent 55%, transparent 100%);
+}
+
+.c-e18cc8-policy {
+    background-image: linear-gradient(45deg, transparent 45%, #e18cc8 50%, transparent 55%, transparent 100%), linear-gradient(-45deg, transparent 45%, #e18cc8 50%, transparent 55%, transparent 100%);
 }
 
 .c-ffaa00-policy {
