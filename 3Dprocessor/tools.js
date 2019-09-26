@@ -646,7 +646,7 @@ var LABBuildings = function () {
 
 var SMBBuildings = function () {
     var reqtype;
-    var smbHeights = [2, 3, 5, 6, 7, 10];
+    var smbHeights = [3, 5, 6, 7, 10];
     const gridsize = 0.04;
     const footprintsize = 0.012;
 
