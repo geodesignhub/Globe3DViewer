@@ -74,7 +74,7 @@
             <div class="col-sm-2 col-md-2 main">
 
                 <h1 class="page-header">Geodesignhub Globe 3D Viewer</h1>
-                <small>&copy; 2018 <a href="https://www.geodesignhub.com/">Geodesignhub</a>, see the <a href="https://geodesignhub.github.io/Globe3DViewer">GitHub repository</a> for more information.</small>
+                <small>&copy; 2019 <a href="https://www.geodesignhub.com/">Geodesignhub</a>, see the <a href="https://geodesignhub.github.io/Globe3DViewer">GitHub repository</a> for more information.</small>
                 <section class="information">
                     <div id="loadingGIF"><img src="/assets/objs/loading.gif">&nbsp;<span id="procstatus">Processing</span>...<br><small>It may take some time for the server to process all geometries for the first time, the scene will refresh once the processing is complete.</small></div>
                     <br>
@@ -301,9 +301,6 @@
                 $('#systemsCB').append('<tr><td class="systitle"><input name="sysCB" id=' + "'" + systems[x].sysname + "'" + 'type="checkbox"/> <span class="square c-' + systems[x].syscolor.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;</td></tr>');
             }
         }
-
-
-
 
         function updateWorkerStatus(percentcomplete) {
             var pc = percentcomplete.toString() + '% processing completed';
