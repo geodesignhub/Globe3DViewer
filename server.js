@@ -121,7 +121,7 @@
 
     ThreeDQueue.process(5, __dirname + '/processor.js')
     app.post('/getthreeddata', function (request, response) {
-        console.log('here')
+        
         var synthesisid = request.body.synthesisid;
 
         async.map([synthesisid], function (sid, done) {
