@@ -186,8 +186,8 @@
         });
         var bing = new Cesium.BingMapsImageryProvider({
             url: 'https://dev.virtualearth.net',
-            key: 'Am2dMceshjeLX_Sogy2NHjJ8_yMBVWAm3b2x4LdV0hbAQZiFlkkD_FyoJEyApRm5',
-            mapStyle: Cesium.BingMapsStyle.AERIAL_WITH_LABELS
+            key: 'Am2dMceshjeLX_Sogy2NHjJ8_yMBVWAm3b2x4LdV0hbAQZiFlkkD_FyoJEyApRm5 ',
+            mapStyle: Cesium.BingMapsStyle.AERIAL
         });
         Cesium.BingMapsApi.defaultKey = 'Am2dMceshjeLX_Sogy2NHjJ8_yMBVWAm3b2x4LdV0hbAQZiFlkkD_FyoJEyApRm5';
         var viewer = new Cesium.Viewer('cesiumContainer', {
@@ -304,7 +304,6 @@
 
 
 
-
         function updateWorkerStatus(percentcomplete) {
             var pc = percentcomplete.toString() + '% processing completed';
             $("#procstatus").html(pc);
@@ -320,7 +319,6 @@
             var lng = latlng[1];
             cameralat = lat;
             cameralng = lng;
-
             var headingAngle = Cesium.Math.toRadians(20.0);
             var pitchAngle = Cesium.Math.toRadians(-45.0);
             camera.setView({
@@ -560,7 +558,7 @@
         var cteamid = "<%= cteamid %>"; //var test is now assigned to getTest which will only work on browsers  
         var systems = <%- systems %>; //var test is now assigned to getTest which will only work on browsers  
         var gjresults = <%- result %>;
-        var roads = <%- roads %>;
+        // var roads = <%- roads %>;
         var center = "<%= center %>";
         var final3DGeoms = <%- final3DGeoms %>;
         

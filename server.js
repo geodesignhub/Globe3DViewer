@@ -1,4 +1,4 @@
-(function() {
+(function () {
     'use strict';
     /*jshint node:true*/
     var redisclient = require('redis').createClient(process.env.REDIS_URL || { host: '127.0.0.1', port: 6379 });
@@ -13,13 +13,13 @@
     var ThreeDQueue = new Queue('3D-proc', (process.env.REDIS_URL || { host: '127.0.0.1', port: 6379 }));
 
     // Once a job is completed, then send a message via a socket. 
-    ThreeDQueue.on('completed', function(job, synthesisid) {
+    ThreeDQueue.on('completed', function (job, synthesisid) {
         // A job successfully completed with a `result`.
         sendStdMsg(synthesisid, synthesisid);
-    }).on('progress', function(job, progressdata){
+    }).on('progress', function (job, progressdata) {
         console.log(progressdata.percent, progressdata.synthesisid);
-        sendProgressMsg(progressdata.synthesisid,progressdata.percent );
-          // Job progress updated!
+        sendProgressMsg(progressdata.synthesisid, progressdata.percent);
+        // Job progress updated!
     });
 
     // Report Progress  suing
@@ -103,7 +103,7 @@
     function filterHeaders(req, headers) {
         var result = {};
         // filter out headers that are listed in the regex above
-        Object.keys(headers).forEach(function(name) {
+        Object.keys(headers).forEach(function (name) {
             if (!dontProxyHeaderRegex.test(name)) {
                 result[name] = headers[name];
             }
@@ -114,26 +114,27 @@
     var upstreamProxy = argv['upstream-proxy'];
     var bypassUpstreamProxyHosts = {};
     if (argv['bypass-upstream-proxy-hosts']) {
-        argv['bypass-upstream-proxy-hosts'].split(',').forEach(function(host) {
+        argv['bypass-upstream-proxy-hosts'].split(',').forEach(function (host) {
             bypassUpstreamProxyHosts[host.toLowerCase()] = true;
         });
     }
 
     ThreeDQueue.process(5, __dirname + '/processor.js')
-    app.post('/getthreeddata', function(request, response) {
+    app.post('/getthreeddata', function (request, response) {
+        console.log('here')
         var synthesisid = request.body.synthesisid;
 
-        async.map([synthesisid], function(sid, done) {
-                
-                redisclient.get(sid, function(err, results) {
-                    if (err || results == null) {
-                        return done(null, JSON.stringify({ "finalGeoms": "", "center": ""}));
-                    } else {
-                        return done(null, results);
-                    }
-                });
-            },
-            function(error, op) {
+        async.map([synthesisid], function (sid, done) {
+
+            redisclient.get(sid, function (err, results) {
+                if (err || results == null) {
+                    return done(null, JSON.stringify({ "finalGeoms": "", "center": "" }));
+                } else {
+                    return done(null, results);
+                }
+            });
+        },
+            function (error, op) {
                 //only OK once set
                 op = JSON.parse(op);
                 response.contentType('application/json');
@@ -144,14 +145,14 @@
                 });
             });
     });
-    app.get('/', function(request, response) {
+    app.get('/', function (request, response) {
         var opts = {};
         if (request.query.apitoken && request.query.projectid && request.query.synthesisid && request.query.cteamid) {
             // synthesis ID is given
             opts = { 'apitoken': request.query.apitoken, 'projectid': request.query.projectid, 'synthesisid': request.query.synthesisid, 'cteamid': request.query.cteamid, 'diagramid': '0' };
 
             var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
-            
+
 
             var apikey = request.query.apitoken;
             var cred = "Token " + apikey;
@@ -162,96 +163,99 @@
             var systemsurl = baseurl + projectid + '/systems/';
             var boundsurl = baseurl + projectid + '/bounds/';
             var URLS = [synprojectsurl, boundsurl, systemsurl];
-            async.map(URLS, function(url, done) {
+            async.map(URLS, function (url, done) {
                 req({
                     url: url,
                     headers: {
                         "Authorization": cred,
                         "Content-Type": "application/json"
                     }
-                }, function(err, response, body) {
+                }, function (err, response, body) {
                     if (err || response.statusCode !== 200) {
                         return done(err || new Error());
                     }
                     return done(null, JSON.parse(body));
                 });
-            }, function(err, results) {
+            }, function (err, results) {
 
                 if (err) return response.sendStatus(500);
                 var gj = JSON.stringify(results[0]);
                 var bounds = results[1];
                 var sys = results[2];
-                var roadsURL = "https://geodzn.com/api/v1/sql/gdhsupport?q=SELECT ST_AsGeoJSON(threedviewer.roadsall.the_geom) FROM threedviewer.roadsall WHERE threedviewer.roadsall.the_geom @ ST_MakeEnvelope(" + bounds['bounds'] + ")&key=54ed6c30bec7a53df8202d6057806a03";
-                var rURls = [roadsURL];
+                opts['result'] = gj;
+                opts['systems'] = JSON.stringify(sys);
+                var rfc = { "type": "FeatureCollection", "features": [] };
+                opts['roads'] = JSON.stringify(rfc);
+                // var roadsURL = "https://geodzn.com/api/v1/sql/gdhsupport?q=SELECT ST_AsGeoJSON(threedviewer.roadsall.the_geom) FROM threedviewer.roadsall WHERE threedviewer.roadsall.the_geom @ ST_MakeEnvelope(" + bounds['bounds'] + ")&key=54ed6c30bec7a53df8202d6057806a03";
+                // var rURls = [roadsURL];
                 // console.log(roadsURL);
-                async.map(rURls, function(url, done) {
-                    req({
-                        url: url,
-                        headers: {
-                            "Content-Type": "application/json"
+                // async.map(rURls, function(url, done) {
+                //     req({
+                //         url: url,
+                //         headers: {
+                //             "Content-Type": "application/json"
+                //         }
+                //     }, function(err, response, body) {
+                //         if (err || response.statusCode !== 200) {
+                //             return done(err || new Error());
+                //         }
+                //         return done(null, JSON.parse(body));
+                //     });
+                // }, function(err, roads) {
+                //     if (err) return response.sendStatus(500);
+
+                //     var rfc = { "type": "FeatureCollection", "features": [] };
+                //     if (roads[0].features === null) {} else {
+                //         var rlen = roads[0].features.length;
+                //         for (var x5 = 0; x5 < rlen; x5++) {
+                //             var curroad = roads[0].features[x5];
+                //             var roadgj = JSON.parse(curroad.properties.st_asgeojson);
+                //             var f = { "type": "Feature", "properties": {}, "geometry": roadgj };
+                //             rfc.features.push(f);
+                //         }
+                //     }
+                // opts['roads'] = JSON.stringify(rfc);
+
+                async.map([synthesisid], function (sid, done) {
+
+                    redisclient.get(sid, function (err, results) {
+                        if (err || results == null) {
+                            return done(null, JSON.stringify({ "finalGeoms": "", "center": "0" }));
+                        } else {
+                            console.log('getting');
+                            return done(null, results);
                         }
-                    }, function(err, response, body) {
-                        if (err || response.statusCode !== 200) {
-                            return done(err || new Error());
-                        }
-                        return done(null, JSON.parse(body));
                     });
-                }, function(err, roads) {
-                    if (err) return response.sendStatus(500);
-                    opts['result'] = gj;
-                    opts['systems'] = JSON.stringify(sys);
-                    var rfc = { "type": "FeatureCollection", "features": [] };
-                    if (roads[0].features === null) {} else {
-                        var rlen = roads[0].features.length;
-                        for (var x5 = 0; x5 < rlen; x5++) {
-                            var curroad = roads[0].features[x5];
-                            var roadgj = JSON.parse(curroad.properties.st_asgeojson);
-                            var f = { "type": "Feature", "properties": {}, "geometry": roadgj };
-                            rfc.features.push(f);
-                        }
-                    }
-                    opts['roads'] = JSON.stringify(rfc);
+                },
+                    function (error, op) {
+                        //only OK once set
 
-                    async.map([synthesisid], function(sid, done) {
+                        op = JSON.parse(op);
+                        if (op.center === "0") {
+                            const newLocal = 'sending to q';
 
-                            redisclient.get(sid, function(err, results) {
-                                if (err || results == null) {
-                                    return done(null, JSON.stringify({ "finalGeoms": "", "center": "0"}));
-                                } else {
-                                    console.log('getting');
-                                    return done(null, results);
-                                }
+
+                            ThreeDQueue.add({
+                                "gj": results[0],
+                                // "rfc": rfc,
+                                "sys": sys,
+                                "synthesisid": synthesisid
                             });
-                        },
-                        function(error, op) {
-                            //only OK once set
 
-                            op = JSON.parse(op);
-                            if (op.center === "0") {
-                                const newLocal = 'sending to q';
-                                
-                                
-                                ThreeDQueue.add({
-                                    "gj": results[0],
-                                    "rfc": rfc,
-                                    "sys": sys,
-                                    "synthesisid": synthesisid
-                                });
-                                
-                            }
+                        }
 
-                            opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
-                            opts['center'] = op.center;
+                        opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
+                        opts['center'] = op.center;
 
-                            response.render('index', opts);
-                        });
+                        response.render('index', opts);
+                    });
 
-                    // opts['final3DGeoms'] = JSON.stringify(final3DGeoms);
-                    
-                    // opts['center'] = JSON.stringify(center);
+                // opts['final3DGeoms'] = JSON.stringify(final3DGeoms);
+
+                // opts['center'] = JSON.stringify(center);
 
 
-                });
+                // });
 
             });
 
@@ -267,12 +271,12 @@
 
     var io = socketIO.listen(server);
 
-    io.on('connection', function(socket) {
-        socket.on('room', function(room) {
+    io.on('connection', function (socket) {
+        socket.on('room', function (room) {
             socket.join(room);
             sendWelcomeMsg(room);
         });
-        socket.on('message', function(msg) {
+        socket.on('message', function (msg) {
             var room = msg.room;
             var data = msg.data;
             sendStdMsg(room, data);
@@ -284,15 +288,15 @@
     }
 
     function sendStdMsg(room, synthesisid) {
-        io.sockets.in(room).emit('message', {'type':'message', 'synthesisid':synthesisid});
+        io.sockets.in(room).emit('message', { 'type': 'message', 'synthesisid': synthesisid });
     }
-    function sendProgressMsg(room, percentcomplete){
-        
-        io.sockets.in(room).emit('message', {'type':'progress', 'percentcomplete':percentcomplete});
+    function sendProgressMsg(room, percentcomplete) {
+
+        io.sockets.in(room).emit('message', { 'type': 'progress', 'percentcomplete': percentcomplete });
     }
 
 
-    server.on('error', function(e) {
+    server.on('error', function (e) {
         if (e.code === 'EADDRINUSE') {
             console.log('Error: Port %d is already in use, select a different port.', argv.port);
             console.log('Example: node server.js --port %d', argv.port + 1);
@@ -306,14 +310,14 @@
         process.exit(1);
     });
 
-    server.on('close', function() {
+    server.on('close', function () {
         console.log('Cesium development server stopped.');
     });
     var isFirstSig = true;
-    process.on('SIGINT', function() {
+    process.on('SIGINT', function () {
         if (isFirstSig) {
             console.log('Cesium development server shutting down.');
-            server.close(function() {
+            server.close(function () {
                 process.exit(0);
             });
             isFirstSig = false;

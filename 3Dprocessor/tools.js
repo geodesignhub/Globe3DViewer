@@ -729,7 +729,7 @@ var StreetsHelper = function () {
     this.genStreetsGrid = function (pointsWithin, extent) {
         // This module generates streets. given a grid of points. 
         var rows = [];
-        var elevationoffset = 10;
+        var elevationoffset = 1;
         var columns = [];
         var buildingPoints = [];
         var roadPoints = [];
@@ -894,20 +894,20 @@ function makeid() {
 }
 
 
-function bufferExistingRoads(inputroads) {
-    var streets = [];
-    for (var x = 0; x < inputroads.features.length; x++) {
-        var linestring = inputroads.features[x];
-        var street = turf.buffer(linestring, 0.0075, 'kilometers');
-        if (street['type'] === "Feature") {
-            streets.push(street);
-        }
-    }
-    return {
-        "type": "FeatureCollection",
-        "features": streets
-    }
-}
+// function bufferExistingRoads(inputroads) {
+//     var streets = [];
+//     for (var x = 0; x < inputroads.features.length; x++) {
+//         var linestring = inputroads.features[x];
+//         var street = turf.buffer(linestring, 0.0075, 'kilometers');
+//         if (street['type'] === "Feature") {
+//             streets.push(street);
+//         }
+//     }
+//     return {
+//         "type": "FeatureCollection",
+//         "features": streets
+//     }
+// }
 
 function generatePolicyFeatures(curFeat) {
     var curFeatprops = curFeat.properties;
@@ -960,7 +960,7 @@ function generateCenter(constraintedModelDesigns) {
     return [lat, lng];
 }
 
-function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
+function generateFinal3DGeoms(currentFeature, genstreets) {
     const elevationoffset = 1;
     var genstreets = (genstreets === 'false') ? false : true;
     var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH',  'COM', 'COMIND', 'HSG', 'HSNG', 'MXD', 'MIX'];
@@ -1043,9 +1043,7 @@ function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
                     var ldhstreets = new StreetsHelper();
                     var ldhstreetFeatureCollection = ldhstreets.genStreetsGrid(ptsWithin, featExtent);
                     var ldhfinalFeatures = ldhstreets.filterStreets(ldhstreetFeatureCollection, bldgs);
-                    if (existingroads) {
-                        ldhfinalFeatures = ldhstreets.filterStreets(existingroads, ldhfinalFeatures);
-                    }
+
                     if (genstreets) {
                         ldhfinalFeatures.push.apply(ldhfinalFeatures, ldhstreetFeatureCollection.features);
                     }
@@ -1062,9 +1060,7 @@ function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
                     var comstreets = new StreetsHelper();
                     var comstreetFeatureCollection = comstreets.genStreetsGrid(comptsWithin, comfeatExtent);
                     var comfinalFeatures = comstreets.filterStreets(comstreetFeatureCollection, combldgs);
-                    if (existingroads) {
-                        comfinalFeatures = comstreets.filterStreets(existingroads, comfinalFeatures);
-                    }
+
                     if (genstreets) {
                         comfinalFeatures.push.apply(comfinalFeatures, comstreetFeatureCollection.features);
                     }
@@ -1094,9 +1090,7 @@ function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
             var labstreets = new StreetsHelper();
             var labStreetsFC = labstreets.genStreetsGrid(labptsWithin, labfeatExtent);
             var labFinalFeatures = labstreets.filterStreets(labStreetsFC, labbldgs);
-            if (existingroads) {
-                labFinalFeatures = labstreets.filterStreets(existingroads, labFinalFeatures);
-            }
+
             if (genstreets) {
                 labFinalFeatures.push.apply(labFinalFeatures, labStreetsFC.features);
             }
@@ -1115,9 +1109,7 @@ function generateFinal3DGeoms(currentFeature, genstreets, existingroads) {
             var smbStreets = new StreetsHelper();
             var smbStreetFeat = smbStreets.genStreetsGrid(smbptsWithin, smbfeatExtent);
             var smbFinalFeatures = smbStreets.filterStreets(smbStreetFeat, smbbldgs);
-            if (existingroads) {
-                smbFinalFeatures = smbStreets.filterStreets(existingroads, smbFinalFeatures);
-            }
+
             if (genstreets) {
                 smbFinalFeatures.push.apply(smbFinalFeatures, smbStreetFeat.features);
             }
@@ -1168,6 +1160,6 @@ module.exports = {
     // constrainFeatures: constrainFeatures,
     generateCenter: generateCenter,
     generateFinal3DGeoms: generateFinal3DGeoms,
-    bufferExistingRoads: bufferExistingRoads
+    // bufferExistingRoads: bufferExistingRoads
     // generate3DGeoms: generate3DGeoms
 };
