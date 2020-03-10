@@ -24,17 +24,17 @@
     "dependencies": {
         "async": "^1.5.2",
         "body-parser": "^1.17.2",
+        "bull": "^3.13.0",
         "compression": "^1.6.1",
-        "ejs": "^2.5.7",
+        "ejs": "^2.7.4",
         "express": "^4.13.4",
-        "request": "^2.69.0",
-        "requirejs": "^2.2.0",
-        "yargs": "^4.3.2",
+        "path": "0.12.7",
         "redis": "^2.8.0",
-        "turf": "^3.0.14",
-        "bull": "^3.3.9",
+        "request": "^2.88.2",
+        "requirejs": "^2.2.0",
         "socket.io": "2.0.4",
-        "path": "0.12.7"
+        "turf": "^3.0.14",
+        "yargs": "^4.3.2"
     },
     "scripts": {
         "start": "node server.js"
