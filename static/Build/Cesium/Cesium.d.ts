@@ -847,35 +847,13 @@ export class AxisAlignedBoundingBox {
 }
 
 /**
- * Object for setting and retrieving the default Bing Maps API key.
- *
- * A Bing API key is only required if you are using {@link BingMapsImageryProvider}
- * or {@link BingMapsGeocoderService}. You can create your own key at
- * {@link https://www.bingmapsportal.com/}.
- */
-export namespace BingMapsApi {
-    /**
-     * The default Bing Maps API key to use if one is not provided to the
-     * constructor of an object that uses the Bing Maps API.
-     */
-    var defaultKey: string;
-    /**
-     * Gets the key to use to access the Bing Maps API. If the provided
-     * key is defined, it is returned. Otherwise, returns {@link BingMapsApi.defaultKey}.
-     * @param providedKey - The provided key to use if defined.
-     * @returns The Bing Maps API key to use.
-     */
-    function getKey(providedKey: string | null | undefined): string | undefined;
-}
-
-/**
  * Provides geocoding through Bing Maps.
  * @param options - Object with the following properties:
- * @param [options.key] - A key to use with the Bing Maps geocoding service
+ * @param options.key - A key to use with the Bing Maps geocoding service
  */
 export class BingMapsGeocoderService {
     constructor(options: {
-        key?: string;
+        key: string;
     });
     /**
      * The URL endpoint for the Bing geocoder service
@@ -3355,6 +3333,11 @@ export class Color {
      */
     toCssColorString(): string;
     /**
+     * Creates a string containing CSS hex string color value for this color.
+     * @returns The CSS hex string equivalent of this color.
+     */
+    toCssHexString(): string;
+    /**
      * Converts this color to an array of red, green, blue, and alpha values
      * that are in the range of 0 to 255.
      * @param [result] - The array to store the result in, if undefined a new instance will be created.
@@ -4361,15 +4344,15 @@ export class CompressedTextureBuffer {
 /**
  * A description of a polygon composed of arbitrary coplanar positions.
  * @example
- * var polygon = new Cesium.CoplanarPolygonGeometry({
- *   positions : Cesium.Cartesian3.fromDegreesArrayHeights([
+ * var polygonGeometry = new Cesium.CoplanarPolygonGeometry({
+ *  polygonHierarchy: new Cesium.PolygonHierarchy(
+ *     Cesium.Cartesian3.fromDegreesArrayHeights([
  *      -90.0, 30.0, 0.0,
- *      -90.0, 30.0, 1000.0,
- *      -80.0, 30.0, 1000.0,
+ *      -90.0, 30.0, 300000.0,
+ *      -80.0, 30.0, 300000.0,
  *      -80.0, 30.0, 0.0
- *   ])
+ *   ]))
  * });
- * var geometry = Cesium.CoplanarPolygonGeometry.createGeometry(polygon);
  * @param options - Object with the following properties:
  * @param options.polygonHierarchy - A polygon hierarchy that can include holes.
  * @param [options.stRotation = 0.0] - The rotation of the texture coordinates, in radians. A positive rotation is counter-clockwise.
@@ -5535,6 +5518,13 @@ export class Ellipsoid {
      * @returns the intersection point if it's inside the ellipsoid, undefined otherwise
      */
     getSurfaceNormalIntersectionWithZAxis(position: Cartesian3, buffer?: number, result?: Cartesian3): Cartesian3 | undefined;
+    /**
+     * Computes an approximation of the surface area of a rectangle on the surface of an ellipsoid using
+     * Gauss-Legendre 10th order quadrature.
+     * @param rectangle - The rectangle used for computing the surface area.
+     * @returns The approximate area of the rectangle on the surface of this ellipsoid.
+     */
+    surfaceArea(rectangle: Rectangle): number;
 }
 
 /**
@@ -7929,7 +7919,7 @@ export interface InterpolationAlgorithm {
 /**
  * This enumerated type is used in determining where, relative to the frustum, an
  * object is located. The object can either be fully contained within the frustum (INSIDE),
- * partially inside the frustum and partially outside (INTERSECTING), or somwhere entirely
+ * partially inside the frustum and partially outside (INTERSECTING), or somewhere entirely
  * outside of the frustum's 6 planes (OUTSIDE).
  */
 export enum Intersect {
@@ -8691,19 +8681,6 @@ export class MapProjection {
      *          created and returned.
      */
     unproject(cartesian: Cartesian3, result?: Cartographic): Cartographic;
-}
-
-export namespace MapboxApi {
-    /**
-     * The default Mapbox API access token to use if one is not provided to the
-     * constructor of an object that uses the Mapbox API.  If this property is undefined,
-     * Cesium's default access token is used, which is only suitable for use early in development.
-     * Please supply your own access token as soon as possible and prior to deployment.
-     * Visit {@link https://www.mapbox.com/help/create-api-access-token/} for details.
-     * When Cesium's default access token is used, a message is printed to the console the first
-     * time the Mapbox API is used.
-     */
-    var defaultAccessToken: string;
 }
 
 /**
@@ -10937,7 +10914,7 @@ export class Occluder {
      *                       Visibility.PARTIAL if the occludee is partially visible, or
      *                       Visibility.FULL if the occludee is fully visible.
      */
-    computeVisibility(occludeeBS: BoundingSphere): number;
+    computeVisibility(occludeeBS: BoundingSphere): Visibility;
     /**
      * Computes a point that can be used as the occludee position to the visibility functions.
      * Use a radius of zero for the occludee radius.  Typically, a user computes a bounding sphere around
@@ -14832,8 +14809,9 @@ export class ScreenSpaceEventHandler {
      * @param type - The ScreenSpaceEventType of input event.
      * @param [modifier] - A KeyboardEventModifier key that is held when a <code>type</code>
      * event occurs.
+     * @returns The function to be executed on an input event.
      */
-    getInputAction(type: number, modifier?: number): void;
+    getInputAction(type: number, modifier?: number): (...params: any[]) => any;
     /**
      * Removes the function to be executed on an input event.
      * @param type - The ScreenSpaceEventType of input event.
@@ -17311,8 +17289,9 @@ export type binarySearchComparator = (a: any, b: any) => number;
  *   baseLayerPicker: false,
  * });
  * @param relativeUrl - The relative path.
+ * @returns The absolutely URL representation of the provided path.
  */
-export function buildModuleUrl(relativeUrl: string): void;
+export function buildModuleUrl(relativeUrl: string): string;
 
 /**
  * A browser-independent function to cancel an animation frame requested using {@link requestAnimationFrame}.
@@ -25174,9 +25153,8 @@ export namespace BingMapsImageryProvider {
     /**
      * Initialization options for the BingMapsImageryProvider constructor
      * @property url - The url of the Bing Maps server hosting the imagery.
-     * @property [key] - The Bing Maps key for your application, which can be
+     * @property key - The Bing Maps key for your application, which can be
      *        created at {@link https://www.bingmapsportal.com/}.
-     *        If this parameter is not provided, {@link BingMapsApi.defaultKey} is used, which is undefined by default.
      * @property [tileProtocol] - The protocol to use when loading tiles, e.g. 'http' or 'https'.
      *        By default, tiles are loaded using the same protocol as the page.
      * @property [mapStyle = BingMapsStyle.AERIAL] - The type of Bing Maps imagery to load.
@@ -25191,7 +25169,7 @@ export namespace BingMapsImageryProvider {
      */
     type ConstructorOptions = {
         url: Resource | string;
-        key?: string;
+        key: string;
         tileProtocol?: string;
         mapStyle?: BingMapsStyle;
         culture?: string;
@@ -27631,6 +27609,7 @@ export class Cesium3DTileStyle {
  * @param [options.luminanceAtZenith = 0.2] - The sun's luminance at the zenith in kilo candela per meter squared to use for this model's procedural environment map.
  * @param [options.sphericalHarmonicCoefficients] - The third order spherical harmonic coefficients used for the diffuse color of image-based lighting.
  * @param [options.specularEnvironmentMaps] - A URL to a KTX file that contains a cube map of the specular lighting and the convoluted specular mipmaps.
+ * @param [options.backFaceCulling = true] - Whether to cull back-facing geometry. When true, back face culling is determined by the glTF material's doubleSided property; when false, back face culling is disabled.
  * @param [options.debugHeatmapTilePropertyName] - The tile variable to colorize as a heatmap. All rendered tiles will be colorized relative to each other's specified variable value.
  * @param [options.debugFreezeFrame = false] - For debugging only. Determines if only the tiles from last frame should be used for rendering.
  * @param [options.debugColorizeTiles = false] - For debugging only. When true, assigns a random color to each tile.
@@ -27682,6 +27661,7 @@ export class Cesium3DTileset {
         luminanceAtZenith?: number;
         sphericalHarmonicCoefficients?: Cartesian3[];
         specularEnvironmentMaps?: string;
+        backFaceCulling?: boolean;
         debugHeatmapTilePropertyName?: string;
         debugFreezeFrame?: boolean;
         debugColorizeTiles?: boolean;
@@ -28010,6 +27990,11 @@ export class Cesium3DTileset {
      * A URL to a KTX file that contains a cube map of the specular lighting and the convoluted specular mipmaps.
      */
     specularEnvironmentMaps: string;
+    /**
+     * Whether to cull back-facing geometry. When true, back face culling is determined
+     * by the glTF material's doubleSided property; when false, back face culling is disabled.
+     */
+    backFaceCulling: boolean;
     /**
      * This property is for debugging only; it is not optimized for production use.
      * <p>
@@ -28746,7 +28731,7 @@ export class ClippingPlaneCollection {
      * <code>isDestroyed</code> will result in a {@link DeveloperError} exception.  Therefore,
      * assign the return value (<code>undefined</code>) to the object as done in the example.
      * @example
-     * clippingPlanes = clippingPlanes && clippingPlanes .destroy();
+     * clippingPlanes = clippingPlanes && clippingPlanes.destroy();
      */
     destroy(): void;
 }
@@ -32355,7 +32340,7 @@ export namespace MapboxImageryProvider {
      * Initialization options for the MapboxImageryProvider constructor
      * @property [url = 'https://api.mapbox.com/v4/'] - The Mapbox server url.
      * @property mapId - The Mapbox Map ID.
-     * @property [accessToken] - The public access token for the imagery.
+     * @property accessToken - The public access token for the imagery.
      * @property [format = 'png'] - The format of the image request.
      * @property [ellipsoid] - The ellipsoid.  If not specified, the WGS84 ellipsoid is used.
      * @property [minimumLevel = 0] - The minimum level-of-detail supported by the imagery provider.  Take care when specifying
@@ -32368,7 +32353,7 @@ export namespace MapboxImageryProvider {
     type ConstructorOptions = {
         url?: string;
         mapId: string;
-        accessToken?: string;
+        accessToken: string;
         format?: string;
         ellipsoid?: Ellipsoid;
         minimumLevel?: number;
@@ -32557,7 +32542,7 @@ export namespace MapboxStyleImageryProvider {
      * @property [url = 'https://api.mapbox.com/styles/v1/'] - The Mapbox server url.
      * @property [username = 'mapbox'] - The username of the map account.
      * @property styleId - The Mapbox Style ID.
-     * @property [accessToken] - The public access token for the imagery.
+     * @property accessToken - The public access token for the imagery.
      * @property [tilesize = 512] - The size of the image tiles.
      * @property [scaleFactor] - Determines if tiles are rendered at a @2x scale factor.
      * @property [ellipsoid] - The ellipsoid.  If not specified, the WGS84 ellipsoid is used.
@@ -32572,7 +32557,7 @@ export namespace MapboxStyleImageryProvider {
         url?: Resource | string;
         username?: string;
         styleId: string;
-        accessToken?: string;
+        accessToken: string;
         tilesize?: number;
         scaleFactor?: boolean;
         ellipsoid?: Ellipsoid;
@@ -33360,6 +33345,7 @@ export namespace MaterialAppearance {
  * @param [options.sphericalHarmonicCoefficients] - The third order spherical harmonic coefficients used for the diffuse color of image-based lighting.
  * @param [options.specularEnvironmentMaps] - A URL to a KTX file that contains a cube map of the specular lighting and the convoluted specular mipmaps.
  * @param [options.credit] - A credit for the data source, which is displayed on the canvas.
+ * @param [options.backFaceCulling = true] - Whether to cull back-facing geometry. When true, back face culling is determined by the material's doubleSided property; when false, back face culling is disabled. Back faces are not culled if {@link Model#color} is translucent or {@link Model#silhouetteSize} is greater than 0.0.
  */
 export class Model {
     constructor(options?: {
@@ -33394,6 +33380,7 @@ export class Model {
         sphericalHarmonicCoefficients?: Cartesian3[];
         specularEnvironmentMaps?: string;
         credit?: Credit | string;
+        backFaceCulling?: boolean;
     });
     /**
      * Determines if the model primitive will be shown.
@@ -33469,6 +33456,13 @@ export class Model {
      * any value in-between resulting in a mix of the two.
      */
     colorBlendAmount: number;
+    /**
+     * Whether to cull back-facing geometry. When true, back face culling is
+     * determined by the material's doubleSided property; when false, back face
+     * culling is disabled. Back faces are not culled if {@link Model#color} is
+     * translucent or {@link Model#silhouetteSize} is greater than 0.0.
+     */
+    backFaceCulling: boolean;
     /**
      * This property is for debugging only; it is not for production use nor is it optimized.
      * <p>
@@ -33690,6 +33684,7 @@ export class Model {
      * @param [options.clippingPlanes] - The {@link ClippingPlaneCollection} used to selectively disable rendering the model.
      * @param [options.dequantizeInShader = true] - Determines if a {@link https://github.com/google/draco|Draco} encoded model is dequantized on the GPU. This decreases total memory usage for encoded models.
      * @param [options.credit] - A credit for the model, which is displayed on the canvas.
+     * @param [options.backFaceCulling = true] - Whether to cull back-facing geometry. When true, back face culling is determined by the material's doubleSided property; when false, back face culling is disabled. Back faces are not culled if {@link Model#color} is translucent or {@link Model#silhouetteSize} is greater than 0.0.
      * @returns The newly created model.
      */
     static fromGltf(options: {
@@ -33719,6 +33714,7 @@ export class Model {
         clippingPlanes?: ClippingPlaneCollection;
         dequantizeInShader?: boolean;
         credit?: Credit | string;
+        backFaceCulling?: boolean;
     }): Model;
     /**
      * Returns the glTF node with the given <code>name</code> property.  This is used to
@@ -36014,7 +36010,7 @@ export namespace PostProcessStageLibrary {
      * greenEdge.selected = [feature1];
      *
      * // draw edges around feature0 and feature1
-     * postProcessStages.add(Cesium.PostProcessLibrary.createSilhouetteEffect([yellowEdge, greenEdge]);
+     * postProcessStages.add(Cesium.PostProcessLibrary.createSilhouetteStage([yellowEdge, greenEdge]);
      * @returns A post-process stage that applies an edge detection effect.
      */
     function createEdgeDetectionStage(): PostProcessStageComposite;
@@ -36039,9 +36035,10 @@ export namespace PostProcessStageLibrary {
      * <code>color</code> is the color of the highlighted edge. The default is {@link Color#BLACK}.
      * <code>length</code> is the length of the edges in pixels. The default is <code>0.5</code>.
      * </p>
+     * @param [edgeDetectionStages] - An array of edge detection post process stages.
      * @returns A post-process stage that applies a silhouette effect.
      */
-    function createSilhouetteStage(): PostProcessStageComposite;
+    function createSilhouetteStage(edgeDetectionStages?: PostProcessStage[]): PostProcessStageComposite;
     /**
      * Whether or not a silhouette stage is supported.
      * <p>
@@ -36434,8 +36431,7 @@ export class PrimitiveCollection {
      * @example
      * var billboards = scene.primitives.add(new Cesium.BillboardCollection());
      * @param primitive - The primitive to add.
-     * @param [index] - the index to add the layer at.  If omitted, the primitive will
-     *                         added at the bottom  of all existing primitives.
+     * @param [index] - The index to add the layer at.  If omitted, the primitive will be added at the bottom of all existing primitives.
      * @returns The primitive added to the collection.
      */
     add(primitive: any, index?: number): any;
@@ -37139,7 +37135,7 @@ export class Scene {
      * @param [width = 0.1] - Width of the intersection volume in meters.
      * @returns A promise that resolves to the provided list of positions when the query has completed.
      */
-    sampleHeightMostDetailed(positions: Cartographic[], objectsToExclude?: object[], width?: number): Promise<number[]>;
+    sampleHeightMostDetailed(positions: Cartographic[], objectsToExclude?: object[], width?: number): Promise<Cartographic[]>;
     /**
      * Initiates an asynchronous {@link Scene#clampToHeight} query for an array of {@link Cartesian3} positions
      * using the maximum level of detail for 3D Tilesets in the scene. Returns a promise that is resolved when
@@ -40666,10 +40662,10 @@ export class CesiumWidget {
      * when a render loop error occurs, if showRenderLoopErrors was not false when the
      * widget was constructed.
      * @param title - The title to be displayed on the error panel.  This string is interpreted as text.
-     * @param message - A helpful, user-facing message to display prior to the detailed error information.  This string is interpreted as HTML.
+     * @param [message] - A helpful, user-facing message to display prior to the detailed error information.  This string is interpreted as HTML.
      * @param [error] - The error to be displayed on the error panel.  This string is formatted using {@link formatError} and then displayed as text.
      */
-    showErrorPanel(title: string, message: string, error?: string): void;
+    showErrorPanel(title: string, message?: string, error?: string): void;
     /**
      * @returns true if the object has been destroyed, false otherwise.
      */
@@ -42011,6 +42007,10 @@ export class Viewer {
     trackedEntity: Entity | undefined;
     /**
      * Gets or sets the object instance for which to display a selection indicator.
+     *
+     * If a user interactively picks a Cesium3DTilesFeature instance, then this property
+     * will contain a transient Entity instance with a property named "feature" that is
+     * the instance that was picked.
      */
     selectedEntity: Entity | undefined;
     /**
@@ -42194,7 +42194,6 @@ declare module "cesium/Source/Core/ArcGISTiledElevationTerrainProvider" { import
 declare module "cesium/Source/Core/ArcType" { import { ArcType } from 'cesium'; export default ArcType; }
 declare module "cesium/Source/Core/AssociativeArray" { import { AssociativeArray } from 'cesium'; export default AssociativeArray; }
 declare module "cesium/Source/Core/AxisAlignedBoundingBox" { import { AxisAlignedBoundingBox } from 'cesium'; export default AxisAlignedBoundingBox; }
-declare module "cesium/Source/Core/BingMapsApi" { import { BingMapsApi } from 'cesium'; export default BingMapsApi; }
 declare module "cesium/Source/Core/BingMapsGeocoderService" { import { BingMapsGeocoderService } from 'cesium'; export default BingMapsGeocoderService; }
 declare module "cesium/Source/Core/BoundingRectangle" { import { BoundingRectangle } from 'cesium'; export default BoundingRectangle; }
 declare module "cesium/Source/Core/BoundingSphere" { import { BoundingSphere } from 'cesium'; export default BoundingSphere; }
@@ -42286,7 +42285,6 @@ declare module "cesium/Source/Core/LeapSecond" { import { LeapSecond } from 'ces
 declare module "cesium/Source/Core/LinearApproximation" { import { LinearApproximation } from 'cesium'; export default LinearApproximation; }
 declare module "cesium/Source/Core/LinearSpline" { import { LinearSpline } from 'cesium'; export default LinearSpline; }
 declare module "cesium/Source/Core/MapProjection" { import { MapProjection } from 'cesium'; export default MapProjection; }
-declare module "cesium/Source/Core/MapboxApi" { import { MapboxApi } from 'cesium'; export default MapboxApi; }
 declare module "cesium/Source/Core/Math" { import { Math } from 'cesium'; export default Math; }
 declare module "cesium/Source/Core/Matrix2" { import { Matrix2 } from 'cesium'; export default Matrix2; }
 declare module "cesium/Source/Core/Matrix3" { import { Matrix3 } from 'cesium'; export default Matrix3; }
