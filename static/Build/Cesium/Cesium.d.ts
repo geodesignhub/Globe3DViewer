@@ -5814,8 +5814,9 @@ export class EllipsoidTangentPlane {
      * point of the provided Cartesians.
      * @param cartesians - The list of positions surrounding the center point.
      * @param [ellipsoid = Ellipsoid.WGS84] - The ellipsoid to use.
+     * @returns The new instance of EllipsoidTangentPlane.
      */
-    static fromPoints(cartesians: Cartesian3[], ellipsoid?: Ellipsoid): void;
+    static fromPoints(cartesians: Cartesian3[], ellipsoid?: Ellipsoid): EllipsoidTangentPlane;
     /**
      * Computes the projection of the provided 3D position onto the 2D plane, radially outward from the {@link EllipsoidTangentPlane.ellipsoid} coordinate system origin.
      * @param cartesian - The point to project.
@@ -9866,6 +9867,13 @@ export class Matrix3 implements ArrayLike<number> {
      */
     static inverse(matrix: Matrix3, result: Matrix3): Matrix3;
     /**
+     * Computes the inverse transpose of a matrix.
+     * @param matrix - The matrix to transpose and invert.
+     * @param result - The object onto which to store the result.
+     * @returns The modified result parameter.
+     */
+    static inverseTranspose(matrix: Matrix3, result: Matrix3): Matrix3;
+    /**
      * Compares the provided matrices componentwise and returns
      * <code>true</code> if they are equal, <code>false</code> otherwise.
      * @param [left] - The first matrix.
@@ -10662,6 +10670,13 @@ export class Matrix4 implements ArrayLike<number> {
      * @returns The modified result parameter.
      */
     static inverseTransformation(matrix: Matrix4, result: Matrix4): Matrix4;
+    /**
+     * Computes the inverse transpose of a matrix.
+     * @param matrix - The matrix to transpose and invert.
+     * @param result - The object onto which to store the result.
+     * @returns The modified result parameter.
+     */
+    static inverseTranspose(matrix: Matrix4, result: Matrix4): Matrix4;
     /**
      * An immutable Matrix4 instance initialized to the identity matrix.
      */
@@ -17732,7 +17747,7 @@ export function writeTextToCanvas(text: string, options?: {
     strokeWidth?: number;
     backgroundColor?: Color;
     padding?: number;
-}): HTMLCanvasElement;
+}): HTMLCanvasElement | undefined;
 
 export namespace BillboardGraphics {
     /**
@@ -30338,20 +30353,31 @@ export class GoogleEarthEnterpriseMapsProvider {
 export namespace GridImageryProvider {
     /**
      * Initialization options for the GridImageryProvider constructor
-     * @param [tilingScheme = new GeographicTilingScheme()] - The tiling scheme for which to draw tiles.
-     * @param [ellipsoid] - The ellipsoid.  If the tilingScheme is specified,
+     * @property [tilingScheme = new GeographicTilingScheme()] - The tiling scheme for which to draw tiles.
+     * @property [ellipsoid] - The ellipsoid.  If the tilingScheme is specified,
      *                    this parameter is ignored and the tiling scheme's ellipsoid is used instead. If neither
      *                    parameter is specified, the WGS84 ellipsoid is used.
-     * @param [cells = 8] - The number of grids cells.
-     * @param [color = Color(1.0, 1.0, 1.0, 0.4)] - The color to draw grid lines.
-     * @param [glowColor = Color(0.0, 1.0, 0.0, 0.05)] - The color to draw glow for grid lines.
-     * @param [glowWidth = 6] - The width of lines used for rendering the line glow effect.
-     * @param [backgroundColor = Color(0.0, 0.5, 0.0, 0.2)] - Background fill color.
-     * @param [tileWidth = 256] - The width of the tile for level-of-detail selection purposes.
-     * @param [tileHeight = 256] - The height of the tile for level-of-detail selection purposes.
-     * @param [canvasSize = 256] - The size of the canvas used for rendering.
+     * @property [cells = 8] - The number of grids cells.
+     * @property [color = Color(1.0, 1.0, 1.0, 0.4)] - The color to draw grid lines.
+     * @property [glowColor = Color(0.0, 1.0, 0.0, 0.05)] - The color to draw glow for grid lines.
+     * @property [glowWidth = 6] - The width of lines used for rendering the line glow effect.
+     * @property [backgroundColor = Color(0.0, 0.5, 0.0, 0.2)] - Background fill color.
+     * @property [tileWidth = 256] - The width of the tile for level-of-detail selection purposes.
+     * @property [tileHeight = 256] - The height of the tile for level-of-detail selection purposes.
+     * @property [canvasSize = 256] - The size of the canvas used for rendering.
      */
-    type ConstructorOptions = any;
+    type ConstructorOptions = {
+        tilingScheme?: TilingScheme;
+        ellipsoid?: Ellipsoid;
+        cells?: number;
+        color?: Color;
+        glowColor?: Color;
+        glowWidth?: number;
+        backgroundColor?: Color;
+        tileWidth?: number;
+        tileHeight?: number;
+        canvasSize?: number;
+    };
 }
 
 /**
@@ -41771,7 +41797,7 @@ export namespace Viewer {
         contextOptions?: any;
         sceneMode?: SceneMode;
         mapProjection?: MapProjection;
-        globe?: Globe;
+        globe?: Globe | false;
         orderIndependentTranslucency?: boolean;
         creditContainer?: Element | string;
         creditViewport?: Element | string;
