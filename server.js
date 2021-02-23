@@ -186,36 +186,6 @@
                 opts['systems'] = JSON.stringify(sys);
                 var rfc = { "type": "FeatureCollection", "features": [] };
                 opts['roads'] = JSON.stringify(rfc);
-                // var roadsURL = "https://geodzn.com/api/v1/sql/gdhsupport?q=SELECT ST_AsGeoJSON(threedviewer.roadsall.the_geom) FROM threedviewer.roadsall WHERE threedviewer.roadsall.the_geom @ ST_MakeEnvelope(" + bounds['bounds'] + ")&key=54ed6c30bec7a53df8202d6057806a03";
-                // var rURls = [roadsURL];
-                // console.log(roadsURL);
-                // async.map(rURls, function(url, done) {
-                //     req({
-                //         url: url,
-                //         headers: {
-                //             "Content-Type": "application/json"
-                //         }
-                //     }, function(err, response, body) {
-                //         if (err || response.statusCode !== 200) {
-                //             return done(err || new Error());
-                //         }
-                //         return done(null, JSON.parse(body));
-                //     });
-                // }, function(err, roads) {
-                //     if (err) return response.sendStatus(500);
-
-                //     var rfc = { "type": "FeatureCollection", "features": [] };
-                //     if (roads[0].features === null) {} else {
-                //         var rlen = roads[0].features.length;
-                //         for (var x5 = 0; x5 < rlen; x5++) {
-                //             var curroad = roads[0].features[x5];
-                //             var roadgj = JSON.parse(curroad.properties.st_asgeojson);
-                //             var f = { "type": "Feature", "properties": {}, "geometry": roadgj };
-                //             rfc.features.push(f);
-                //         }
-                //     }
-                // opts['roads'] = JSON.stringify(rfc);
-
                 async.map([synthesisid], function (sid, done) {
 
                     redisclient.get(sid, function (err, results) {
@@ -233,8 +203,6 @@
                         op = JSON.parse(op);
                         if (op.center === "0") {
                             const newLocal = 'sending to q';
-
-
                             ThreeDQueue.add({
                                 "gj": results[0],
                                 // "rfc": rfc,
