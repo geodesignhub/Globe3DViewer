@@ -1,4 +1,5 @@
-var turf = require('turf');
+var turf = require('@turf');
+
 
 var COMBuilding = function () {
     // this.name = name;
@@ -30,7 +31,6 @@ var COMBuilding = function () {
     this.generateBuildingFootprints = function (ptsWithin) {
         var allGeneratedFeats = [];
         var color = featProps.color;
-        var max_height = featProps.max_height;
         var systag = featProps.systag;
         var sysname = featProps.sysname;
         var ptslen = ptsWithin.features.length;
@@ -149,11 +149,7 @@ var COMBuilding = function () {
                     }
                 }
                 if (hasIntersect === false) {
-                    if (max_height !== 0) {
-                        var height = elevationoffset + comHeights[Math.floor(Math.random() * comHeights.length)];
-                    } else {
-                        var height = max_height;
-                    }
+                    var height = elevationoffset + comHeights[Math.floor(Math.random() * comHeights.length)];
                     var numFloors = Math.round(height / floorHeight); // 5 meter per floor
                     var numUnitsperFloor = Math.round(area / avgUnitsize);
                     var totalUnits = numUnitsperFloor * numFloors;
@@ -215,7 +211,6 @@ var LDHousing = function () {
         var color = featProps.color;
         var systag = featProps.systag;
         var sysname = featProps.sysname;
-        var max_height = featProps.max_height;
         var ptslen = ptsWithin.features.length;
         var bufferWidth = gridsize - 0.01; //30 meter buffer
 
@@ -234,12 +229,7 @@ var LDHousing = function () {
             var bdgply = turf.bbox(bldg); // get the extent of the buffered features
             var bpoly = turf.bboxPolygon(bdgply);
             var area = turf.area(bpoly);
-            if (max_height == 0) {
-                var height = elevationoffset + ldhheights[Math.floor(Math.random() * ldhheights.length)];
-
-            } else {
-                var height = max_height;
-            }
+            var height = elevationoffset + ldhheights[Math.floor(Math.random() * ldhheights.length)];
 
             var numFloors = Math.round(height / floorHeight); // 5 meter per floor
             var numUnitsperFloor = Math.round(area / avgUnitsize);
@@ -362,16 +352,11 @@ var HDHousing = function () {
             if (curarea > 2000) { //max area is 2500 gridsize squared
                 var chosenValue = Math.random() > 0.6 ? true : false;
                 if (chosenValue) {
-                    var max_height = featProps.max_height;
                     var centroid = turf.centroid(curconsfeat);
                     var bufferedCentroid = turf.buffer(centroid, footprintsize, 'kilometers');
                     var bbox = turf.bbox(bufferedCentroid);
                     var bboxpoly = turf.bboxPolygon(bbox);
-                    if (max_height == 0) {
-                        var height = elevationoffset + heights[Math.floor(Math.random() * heights.length)];
-                    } else {
-                        var height = max_height;
-                    }
+                    var height = elevationoffset + heights[Math.floor(Math.random() * heights.length)];
                     var area = turf.area(bboxpoly);
                     var numFloors = Math.round(height / floorHeight); // 5 meter per floor
                     var numUnitsperFloor = Math.round(area / avgUnitsize);
@@ -481,13 +466,8 @@ var MXDBuildings = function () {
 
                     // erease middle from hybrid hole
                     var buildingpoly = turf.difference(hybridhole, middleringpoly);
-                    var max_height = featProps.max_height;
-                    if (max_height == 0) {
-                        var height = elevationoffset + heights[Math.floor(Math.random() * heights.length)];
+                    var height = elevationoffset + heights[Math.floor(Math.random() * heights.length)];
 
-                    } else {
-                        var height = max_height;
-                    }
                     var numFloors = Math.round(height / floorHeight); // 5 meter per floor
                     var numUnitsperFloor = Math.round(curarea / avgUnitsize);
                     var totalUnits = numUnitsperFloor * numFloors;
@@ -568,7 +548,6 @@ var LABBuildings = function () {
         var roofColor = color;
         var systag = featProps.systag;
         var sysname = featProps.sysname;
-        var max_height = featProps.max_height;
         var alreadyAdded = {
             "type": "FeatureCollection",
             "features": []
@@ -639,12 +618,8 @@ var LABBuildings = function () {
                         }
                     }
                     if (hasIntersect === false) {
-                        if (max_height == 0) {
-                            var height = elevationoffset + labHeights[Math.floor(Math.random() * labHeights.length)];
 
-                        } else {
-                            var height = max_height;
-                        }
+                        var height = elevationoffset + labHeights[Math.floor(Math.random() * labHeights.length)];
                         var numFloors = Math.round(height / floorHeight); // 5 meter per floor
                         var numUnitsperFloor = Math.round(area / avgUnitsize);
                         var totalUnits = numUnitsperFloor * numFloors;
@@ -711,7 +686,6 @@ var SMBBuildings = function () {
         var roofColor = color;
         var systag = featProps.systag;
         var sysname = featProps.sysname;
-        var max_height = featProps.max_height;
         var alreadyAdded = {
             "type": "FeatureCollection",
             "features": []
@@ -731,12 +705,7 @@ var SMBBuildings = function () {
                 var bdgply = turf.bbox(bldg); // get the extent of the buffered features
                 var bpoly = turf.bboxPolygon(bdgply);
                 var area = turf.area(bpoly);
-                if (max_height == 0) {
-                    var height = elevationoffset + smbHeights[Math.floor(Math.random() * smbHeights.length)];
-
-                } else {
-                    var height = max_height;
-                }
+                var height = elevationoffset + smbHeights[Math.floor(Math.random() * smbHeights.length)];
                 var numFloors = Math.round(height / floorHeight); // 5 meter per floor
                 var numUnitsperFloor = Math.round(area / avgUnitsize);
                 var totalUnits = numUnitsperFloor * numFloors;
@@ -995,7 +964,7 @@ function generateCenter(constraintedModelDesigns) {
 function generateFinal3DGeoms(currentFeature, genstreets) {
     const elevationoffset = 1;
     var genstreets = (genstreets === 'false') ? false : true;
-    var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD', 'MIX'];
+    var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH',  'COM', 'COMIND', 'HSG', 'HSNG', 'MXD', 'MIX'];
     var curGJFeats = [];
     // get the center of the design so that the map once returned can be recentered.
     // var centerPt = turf.center(constraintedModelDesigns);
@@ -1049,7 +1018,7 @@ function generateFinal3DGeoms(currentFeature, genstreets) {
         if (whiteListedSysName.indexOf(curFeatSys) >= 0) { // system is whitelisted
             if (curFeat.properties.areatype === 'project') {
                 //100 meter cell width
-                if ((featProps.sysname === 'HDH') || (featProps.sysname === 'HSNG') || (featProps.sysname === 'HSG') || (featProps.sysname === 'MIX')) {
+                if ((featProps.sysname === 'HDH') || (featProps.sysname === 'HSNG') || (featProps.sysname === 'HSG')|| (featProps.sysname === 'MIX')) {
                     var hdh = new HDHousing();
                     var constrainedgrid = hdh.generateSquareGridandConstrain(curFeat);
                     var bldgs = hdh.generateBuildings(constrainedgrid);
@@ -1061,7 +1030,7 @@ function generateFinal3DGeoms(currentFeature, genstreets) {
                     var mxd = new MXDBuildings();
                     var mxdgrid = mxd.generateSquareGridandConstrain(curFeat);
                     var mxdbld = mxd.generateBuildings(mxdgrid);
-
+                    
                     for (var k3 = 0; k3 < mxdbld.features.length; k3++) {
                         mxdbld.features[k3].properties.description = diagramdesc;
                         curGJFeats.push(mxdbld.features[k3]);
