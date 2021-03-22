@@ -1,7 +1,10 @@
 (function () {
     'use strict';
     /*jshint node:true*/
-    var redisclient = require('redis').createClient(process.env.REDIS_URL || { host: '127.0.0.1', port: 6379 });
+    var redisclient = require('redis').createClient(process.env.REDIS_URL || {
+        host: '127.0.0.1',
+        port: 6379
+    });
 
     var express = require('express');
     const Server = require('socket.io');
@@ -10,7 +13,10 @@
     var compression = require('compression');
     var Queue = require('bull');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
-    var ThreeDQueue = new Queue('3D-proc', (process.env.REDIS_URL || { host: '127.0.0.1', port: 6379 }));
+    var ThreeDQueue = new Queue('3D-proc', (process.env.REDIS_URL || {
+        host: '127.0.0.1',
+        port: 6379
+    }));
 
     // Once a job is completed, then send a message via a socket. 
     ThreeDQueue.on('completed', function (job, synthesisid) {
@@ -121,19 +127,22 @@
 
     ThreeDQueue.process(5, __dirname + '/processor.js')
     app.post('/getthreeddata', function (request, response) {
-        
+
         var synthesisid = request.body.synthesisid;
 
         async.map([synthesisid], function (sid, done) {
 
-            redisclient.get(sid, function (err, results) {
-                if (err || results == null) {
-                    return done(null, JSON.stringify({ "finalGeoms": "", "center": "" }));
-                } else {
-                    return done(null, results);
-                }
-            });
-        },
+                redisclient.get(sid, function (err, results) {
+                    if (err || results == null) {
+                        return done(null, JSON.stringify({
+                            "finalGeoms": "",
+                            "center": ""
+                        }));
+                    } else {
+                        return done(null, results);
+                    }
+                });
+            },
             function (error, op) {
                 //only OK once set
                 op = JSON.parse(op);
@@ -149,7 +158,13 @@
         var opts = {};
         if (request.query.apitoken && request.query.projectid && request.query.synthesisid && request.query.cteamid) {
             // synthesis ID is given
-            opts = { 'apitoken': request.query.apitoken, 'projectid': request.query.projectid, 'synthesisid': request.query.synthesisid, 'cteamid': request.query.cteamid, 'diagramid': '0' };
+            opts = {
+                'apitoken': request.query.apitoken,
+                'projectid': request.query.projectid,
+                'synthesisid': request.query.synthesisid,
+                'cteamid': request.query.cteamid,
+                'diagramid': '0'
+            };
 
             var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
 
@@ -184,19 +199,25 @@
                 var sys = results[2];
                 opts['result'] = gj;
                 opts['systems'] = JSON.stringify(sys);
-                var rfc = { "type": "FeatureCollection", "features": [] };
+                var rfc = {
+                    "type": "FeatureCollection",
+                    "features": []
+                };
                 opts['roads'] = JSON.stringify(rfc);
                 async.map([synthesisid], function (sid, done) {
 
-                    redisclient.get(sid, function (err, results) {
-                        if (err || results == null) {
-                            return done(null, JSON.stringify({ "finalGeoms": "", "center": "0" }));
-                        } else {
-                            console.log('getting');
-                            return done(null, results);
-                        }
-                    });
-                },
+                        redisclient.get(sid, function (err, results) {
+                            if (err || results == null) {
+                                return done(null, JSON.stringify({
+                                    "finalGeoms": "",
+                                    "center": "0"
+                                }));
+                            } else {
+                                console.log('getting');
+                                return done(null, results);
+                            }
+                        });
+                    },
                     function (error, op) {
                         //only OK once set
 
@@ -256,11 +277,18 @@
     }
 
     function sendStdMsg(room, synthesisid) {
-        io.sockets.in(room).emit('message', { 'type': 'message', 'synthesisid': synthesisid });
+        io.sockets.in(room).emit('message', {
+            'type': 'message',
+            'synthesisid': synthesisid
+        });
     }
+
     function sendProgressMsg(room, percentcomplete) {
 
-        io.sockets.in(room).emit('message', { 'type': 'progress', 'percentcomplete': percentcomplete });
+        io.sockets.in(room).emit('message', {
+            'type': 'progress',
+            'percentcomplete': percentcomplete
+        });
     }
 
 
