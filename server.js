@@ -17,7 +17,7 @@
         host: '127.0.0.1',
         port: 6379
     }));
-
+    require("dotenv").config();
     // Once a job is completed, then send a message via a socket. 
     ThreeDQueue.on('completed', function (job, synthesisid) {
         // A job successfully completed with a `result`.
@@ -162,8 +162,7 @@
                 'apitoken': request.query.apitoken,
                 'projectid': request.query.projectid,
                 'synthesisid': request.query.synthesisid,
-                'cteamid': request.query.cteamid,
-                'diagramid': '0'
+                'cteamid': request.query.cteamid
             };
 
             var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
@@ -218,11 +217,12 @@
                             }
                         });
                     },
-                    function (error, op) {
+                    function (redis_error, redis_op) {
                         //only OK once set
 
-                        op = JSON.parse(op);
-                        if (op.center === "0") {
+                        if (redis_error) return response.sendStatus(500);
+                        var r_op = JSON.parse(redis_op);
+                        if (r_op.center === "0") {
                             const newLocal = 'sending to q';
                             ThreeDQueue.add({
                                 "gj": results[0],
@@ -233,8 +233,10 @@
 
                         }
 
-                        opts['final3DGeoms'] = JSON.stringify(op.finalGeoms);
-                        opts['center'] = op.center;
+                        opts['final3DGeoms'] = JSON.stringify(r_op.finalGeoms);
+                        opts['center'] = r_op.center;
+                        opts['bing_key'] = process.env.BING_KEY || 'bing-key';
+                        opts['mapbox_key'] = process.env.MAPBOX_KEY || 'mapbox-key';
 
                         response.render('index', opts);
                     });

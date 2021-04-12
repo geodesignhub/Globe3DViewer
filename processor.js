@@ -28,7 +28,7 @@ module.exports = function(job) {
     var fullproc = flen;
     var counter = 0;
     var finalGJFeats = [];
-    // console.log(flen)
+    
     
     for (var h = 0; h < flen; h++) {
         
