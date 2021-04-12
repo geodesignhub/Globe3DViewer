@@ -816,7 +816,8 @@ var StreetsHelper = function () {
             if (tmpPts.length > 1) {
                 var linestring = turf.lineString(tmpPts);
                 // allLines.push(linestring);
-                var d = turf.lineDistance(linestring, {
+
+                var d = turf.length(linestring, {
                     units: 'kilometers'
                 });
                 distance = (distance > Math.round(d)) ? distance : Math.round(d);
