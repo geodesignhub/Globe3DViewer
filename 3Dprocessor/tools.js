@@ -77,7 +77,7 @@ var COMBuilding = function () {
                         var cpt = availablePts[key];
                         availPts.features.push(cpt);
                     }
-                    var nearestpt = turf.nearest(curPt, availPts);
+                    var nearestpt = turf.nearestPoint(curPt, availPts);
                     if (nearestpt) {
                         delete availablePts[nearestpt.properties.id];
                         allPts.push(nearestpt.geometry.coordinates);
@@ -604,7 +604,7 @@ var LABBuildings = function () {
                         var cpt = availablePts[key];
                         availPts.features.push(cpt);
                     }
-                    var nearestpt = turf.nearest(curPt, availPts);
+                    var nearestpt = turf.nearestPoint(curPt, availPts);
                     if (nearestpt) {
                         delete availablePts[nearestpt.properties.id];
                         allPts.push(nearestpt.geometry.coordinates);
