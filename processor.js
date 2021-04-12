@@ -37,10 +37,10 @@ module.exports = function (job) {
         var cur3DGeom = [];
         // for every feature , create a point grid.
         var curFeat = curFeats[h];
-        try{
+        try {
         cur3DGeom = tools.generateFinal3DGeoms(curFeat, 0);
         } catch (error){
-            console.log(error);
+            
         }
         if (cur3DGeom) {
             finalGJFeats.push.apply(finalGJFeats, cur3DGeom);

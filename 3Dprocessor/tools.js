@@ -77,7 +77,11 @@ var COMBuilding = function () {
                         var cpt = availablePts[key];
                         availPts.features.push(cpt);
                     }
-                    var nearestpt = turf.nearestPoint(curPt, availPts);
+                    var nearestpt = false;
+                    if (availPts.features.length > 0) {
+                        nearestpt = turf.nearestPoint(curPt, availPts);
+                    } 
+                   
                     if (nearestpt) {
                         delete availablePts[nearestpt.properties.id];
                         allPts.push(nearestpt.geometry.coordinates);
@@ -571,7 +575,7 @@ var LABBuildings = function () {
 
         var availablePts = {};
         var ptslen = ptsWithin.features.length;
-
+        
         ptslen = (ptslen > 7500) ? 7500 : ptslen;
         // console.log(ptslen);
         for (var k = 0; k < ptslen; k++) {
@@ -581,7 +585,7 @@ var LABBuildings = function () {
         }
         // every point is avaiaable 
         for (var k1 = 0; k1 < ptslen; k1++) {
-            // console.log(k1);
+            
             var ifeat;
             var curalreadyadded;
             var alreadyaddedlen;
@@ -604,21 +608,31 @@ var LABBuildings = function () {
                         var cpt = availablePts[key];
                         availPts.features.push(cpt);
                     }
-                    var nearestpt = turf.nearestPoint(curPt, availPts);
+                    var nearestpt = false;
+                    if (availPts.features.length > 0) {
+                        nearestpt = turf.nearestPoint(curPt, availPts);
+                    } 
                     if (nearestpt) {
                         delete availablePts[nearestpt.properties.id];
                         allPts.push(nearestpt.geometry.coordinates);
                     }
                 }
                 if (allPts.length > 1) {
-                    var ls = turf.lineString(allPts);
-                    var buf = turf.buffer(ls, 0.0075, {
-                        units: 'kilometers'
-                    });
-                    // console.log(JSON.stringify(bldg));
-                    var bb = turf.bbox(buf);
-                    var bldg = turf.bboxPolygon(bb);
-                    var area = turf.area(bldg);
+                    try {
+                        var ls = turf.lineString(allPts);
+                        var buf = turf.buffer(ls, 0.0075, {
+                            units: 'kilometers'
+                        });
+                    } catch (err) {
+                        console.log("Test" + JSON.stringify(err));
+                    }
+                    try {
+                        var bb = turf.bbox(buf);
+                        var bldg = turf.bboxPolygon(bb);
+                        var area = turf.area(bldg);
+                    } catch (err) {
+                        console.log("Test" + JSON.stringify(err));
+                    }
                     var hasIntersect = false;
                     var alreadyaddedlen = alreadyAdded.features.length;
                     for (var x1 = 0; x1 < alreadyaddedlen; x1++) {
@@ -626,7 +640,7 @@ var LABBuildings = function () {
                         try {
                             ifeat = turf.intersect(curalreadyadded, bldg);
                         } catch (err) {
-                            // console.log(JSON.stringify(err));
+                            console.log(JSON.stringify(err));
                         }
                         if (ifeat) {
                             hasIntersect = true;
@@ -991,6 +1005,7 @@ function generateCenter(constraintedModelDesigns) {
 }
 
 function generateFinal3DGeoms(currentFeature, genstreets) {
+    console.log(currentFeature);
     const elevationoffset = 1;
     var genstreets = (genstreets === 'false') ? false : true;
     var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD', 'MIX'];
@@ -1101,7 +1116,7 @@ function generateFinal3DGeoms(currentFeature, genstreets) {
         }
         // for non white listed systems that are buildings
         else if ((featProps.systag === 'Large buildings, Industry, commerce') && (featProps.areatype === 'project')) { // 
-            // console.log('here')
+
             var lab = new LABBuildings();
             var labgrid = lab.genGrid(curFeat);
             var labptsWithin = labgrid[0];
