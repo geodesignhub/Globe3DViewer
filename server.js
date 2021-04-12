@@ -165,8 +165,8 @@
                 'cteamid': request.query.cteamid
             };
 
-            // var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
-            var baseurl= 'https://www.geodesignhub.com/api/v1/projects/';
+            var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
+            
 
             var apikey = request.query.apitoken;
             var cred = "Token " + apikey;
