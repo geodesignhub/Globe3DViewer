@@ -25,7 +25,7 @@
         "url": ""
     },
     "dependencies": {
-        "topojson-server":"^3.0.1",
+        "topojson-server":"3.0.0",
         "@turf/turf": "^6.2.0",
         "async": "^1.5.2",
         "body-parser": "^1.17.2",
