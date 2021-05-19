@@ -624,14 +624,14 @@ var LABBuildings = function () {
                             units: 'kilometers'
                         });
                     } catch (err) {
-                        console.log("Test" + JSON.stringify(err));
+                        // console.log("Test" + JSON.stringify(err));
                     }
                     try {
                         var bb = turf.bbox(buf);
                         var bldg = turf.bboxPolygon(bb);
                         var area = turf.area(bldg);
                     } catch (err) {
-                        console.log("Test" + JSON.stringify(err));
+                        // console.log("Test" + JSON.stringify(err));
                     }
                     var hasIntersect = false;
                     var alreadyaddedlen = alreadyAdded.features.length;
@@ -1005,7 +1005,7 @@ function generateCenter(constraintedModelDesigns) {
 }
 
 function generateFinal3DGeoms(currentFeature, genstreets) {
-    console.log(currentFeature);
+    
     const elevationoffset = 1;
     var genstreets = (genstreets === 'false') ? false : true;
     var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD', 'MIX'];
