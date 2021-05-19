@@ -17,6 +17,9 @@
         "map",
         "globe"
     ],
+    "engines": {
+        "node": "14.15.4"
+    },
     "repository": {
         "type": "git",
         "url": ""
