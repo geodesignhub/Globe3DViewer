@@ -1,12 +1,12 @@
 {
-    "name": "Geodesign-Hub-Globe-3D-Veiwer",
+    "name": "Geodesignhub-Globe-3D-Veiwer",
     "version": "1.0.1",
     "description": "A tool to view synthesized designs built on Geodesign Hub on a Cesium 3D viewer.",
     "homepage": "",
     "license": "MIT",
     "author": {
-        "name": "Hrishikesh Ballal",
-        "url": "http://www.hrishikeshballal.net"
+        "name": "Geodesignhub",
+        "url": "https://www.geodesignhub.com"
     },
     "keywords": [
         "3D",
@@ -37,7 +37,7 @@
         "redis": "^2.8.0",
         "request": "^2.88.2",
         "requirejs": "^2.2.0",
-        "socket.io": "2.0.4",
+        "socket.io": "^4.1.2",
         "yargs": "^4.3.2"
     },
     "scripts": {

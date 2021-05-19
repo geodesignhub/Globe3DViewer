@@ -8,7 +8,7 @@
 
     var express = require('express');
     const Server = require('socket.io');
-    const socketIO = new Server();
+    const socket = require("socket.io");
     var bodyParser = require('body-parser');
     var compression = require('compression');
     var Queue = require('bull');
@@ -259,9 +259,9 @@
 
 
     var server = app.listen(process.env.PORT || 5001); // for Heroku
-
-    var io = socketIO.listen(server);
-
+    
+    const io = socket(server);
+    
     io.on('connection', function (socket) {
         socket.on('room', function (room) {
             socket.join(room);
