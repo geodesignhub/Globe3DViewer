@@ -1,6 +1,5 @@
 var turf = require('@turf/turf');
 
-
 var COMBuilding = function () {
     // this.name = name;
     const gridsize = 0.03;
