@@ -834,7 +834,7 @@ var StreetsHelper = function () {
                     units: 'kilometers'
                 });
                 distance = (distance > Math.round(d)) ? distance : Math.round(d);
-                var street = turf.buffer(linestring, 0.0075, {
+                var street = turf.buffer(linestring, 0.0025, {
                     units: 'kilometers'
                 });
                 if (street['type'] === "Feature") {
@@ -866,7 +866,7 @@ var StreetsHelper = function () {
 
                 if (tmpPts.length > 1) { // valid line
                     var linestring = turf.lineString(tmpPts);
-                    var street = turf.buffer(linestring, 0.0075, {
+                    var street = turf.buffer(linestring, 0.0025, {
                         units: 'kilometers'
                     });
                     if (street['type'] === "Feature") {
