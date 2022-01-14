@@ -834,7 +834,7 @@ var StreetsHelper = function () {
                     units: 'kilometers'
                 });
                 distance = (distance > Math.round(d)) ? distance : Math.round(d);
-                var street = turf.buffer(linestring, 0.0005, {
+                var street = turf.buffer(linestring, 0.0075, {
                     units: 'kilometers'
                 });
                 if (street['type'] === "Feature") {
@@ -866,7 +866,7 @@ var StreetsHelper = function () {
 
                 if (tmpPts.length > 1) { // valid line
                     var linestring = turf.lineString(tmpPts);
-                    var street = turf.buffer(linestring, 0.0005, {
+                    var street = turf.buffer(linestring, 0.0075, {
                         units: 'kilometers'
                     });
                     if (street['type'] === "Feature") {
@@ -1017,7 +1017,7 @@ function generateFinal3DGeoms(currentFeature, genstreets) {
 
     // if it is a line then simply buffer it and paint it black with a small height
     if (curFeat.geometry.type === "LineString") {
-        f = turf.buffer(curFeat, 0.05, {
+        f = turf.buffer(curFeat, 0.001, {
             units: 'kilometers'
         });
         if (f['type'] === "Feature") {
