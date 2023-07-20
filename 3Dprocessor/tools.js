@@ -289,7 +289,7 @@ var HDHousing = function () {
         };
         var sqfeatslen = sqgrid.features.length;
         // number of extrusions is counted. 
-        // console.log(numberofextrusions, sqfeatslen);
+        
         var ratio = (numberofextrusions / sqfeatslen);
         var extrudedfeaturescount = 0;
         if (ratio < 0.20 || numberofextrusions < 15) {
@@ -1054,6 +1054,9 @@ function generateFinal3DGeoms(currentFeature, genstreets) {
                 if ((featProps.sysname === 'HDH') || (featProps.sysname === 'HSNG') || (featProps.sysname === 'HSG') || (featProps.sysname === 'MIX')) {
                     var hdh = new HDHousing();
                     var constrainedgrid = hdh.generateSquareGridandConstrain(curFeat);
+                    if (featProps.sysname === 'MIX'){
+                        console.log(constrainedgrid);
+                    }
                     var bldgs = hdh.generateBuildings(constrainedgrid);
                     for (var k2 = 0; k2 < bldgs.features.length; k2++) {
                         bldgs.features[k2].properties.description = diagramdesc;
@@ -1169,12 +1172,12 @@ function generateFinal3DGeoms(currentFeature, genstreets) {
                 curFeat.properties = prop;
                 curGJFeats.push.apply(curGJFeats, [curFeat]);
             }
-            // else if (curFeat.properties.areatype === 'policy') {
-            //     var policyF = generatePolicyFeatures(curFeat);
-            //     for (var pf = 0; pf < policyF.length; pf++) {
-            //         curGJFeats.push(policyF[pf]);
-            //     }
-            // }
+            else if (curFeat.properties.areatype === 'policy') {
+                var policyF = generatePolicyFeatures(curFeat);
+                for (var pf = 0; pf < policyF.length; pf++) {
+                    curGJFeats.push(policyF[pf]);
+                }
+            }
         }
 
     }

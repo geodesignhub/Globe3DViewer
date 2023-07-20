@@ -27,6 +27,8 @@
     <link type="text/css" rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
     <link rel="stylesheet" type="text/css" href="assets/css/base.css">
+    
+    
 
     <link rel="stylesheet" href="/assets/js/humane/flatty.css">
 
@@ -401,7 +403,7 @@
                     curFeat.polygon.outline = false;
                     curFeat.polygon.extrudedHeight = curProps.height;
                 }
-            }).otherwise(function(error) {
+            }).catch(function(error) {
                 //Display any errrors encountered while loading.
                 // window.alert(error);
                 console.log(error);

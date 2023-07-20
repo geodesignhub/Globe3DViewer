@@ -25,7 +25,6 @@ module.exports = function (job) {
     //     existingroads = tools.bufferExistingRoads(existingroads);
     // }
 
-
     var curFeats = constraintedDesigns.features;
     var flen = curFeats.length;
     var fullproc = flen;
