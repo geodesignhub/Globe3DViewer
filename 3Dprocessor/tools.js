@@ -1007,7 +1007,7 @@ function generateFinal3DGeoms(currentFeature, genstreets) {
     
     const elevationoffset = 1;
     var genstreets = (genstreets === 'false') ? false : true;
-    var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD', 'MIX'];
+    var whiteListedSysName = ['HIGH-H', 'LOW-H', 'HDH', 'LDH', 'COM', 'COMIND', 'HSG', 'HSNG', 'MXD', 'MIX','STL'];
     var curGJFeats = [];
     var curFeat = currentFeature
 
@@ -1051,12 +1051,9 @@ function generateFinal3DGeoms(currentFeature, genstreets) {
         if (whiteListedSysName.indexOf(curFeatSys) >= 0) { // system is whitelisted
             if (curFeat.properties.areatype === 'project') {
                 //100 meter cell width
-                if ((featProps.sysname === 'HDH') || (featProps.sysname === 'HSNG') || (featProps.sysname === 'HSG') || (featProps.sysname === 'MIX')) {
+                if ((featProps.sysname === 'HDH') || (featProps.sysname === 'HSNG') || (featProps.sysname === 'HSG') || (featProps.sysname === 'MIX') || (featProps.sysname === 'STL')) {
                     var hdh = new HDHousing();
                     var constrainedgrid = hdh.generateSquareGridandConstrain(curFeat);
-                    if (featProps.sysname === 'MIX'){
-                        console.log(constrainedgrid);
-                    }
                     var bldgs = hdh.generateBuildings(constrainedgrid);
                     for (var k2 = 0; k2 < bldgs.features.length; k2++) {
                         bldgs.features[k2].properties.description = diagramdesc;
