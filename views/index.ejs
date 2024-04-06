@@ -193,13 +193,10 @@
         }
         const bing_key = "<%= bing_key %>";
         const mapbox_key = "<%= mapbox_key %>";
-        var mapbox = new Cesium.ImageryLayer.fromProviderAsync(
-            new Cesium.MapboxImageryProvider({
-                mapId: 'mapbox.streets',
-                accessToken: mapbox_key
-            })
-
-        );
+        var mapbox = new Cesium.MapboxImageryProvider({
+            mapId: 'mapbox.streets',
+            accessToken: mapbox_key
+        });
 
         var bing = new Cesium.ImageryLayer.fromProviderAsync(
             Cesium.BingMapsImageryProvider.fromUrl(
@@ -220,6 +217,7 @@
             "fullscreenButton": false,
             "timeline": false,
             "navigationHelpButton": false,
+            "imageryLayers": bing
         });
         var allPolygons;
 
