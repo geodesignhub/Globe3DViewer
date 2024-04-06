@@ -188,11 +188,14 @@
             mapId: 'mapbox.streets',
             accessToken: mapbox_key
         });
-        var bing = new Cesium.BingMapsImageryProvider({
-            url: 'https://dev.virtualearth.net',
-            key: bing_key,
-            mapStyle: Cesium.BingMapsStyle.AERIAL
-        });
+        
+        var bing = new Cesium.ImageryLayer.fromProviderAsync(
+                    Cesium.BingMapsImageryProvider.fromUrl(
+                "https://dev.virtualearth.net", {
+                    key:'<%= bing_key %>',
+                    mapStyle: Cesium.BingMapsStyle.AERIAL
+                })
+                );
         
         var viewer = new Cesium.Viewer('cesiumContainer', {
             "geocoder": false,
@@ -205,6 +208,7 @@
             "fullscreenButton": false,
             "timeline": false,
             "navigationHelpButton": false,
+                    "imageryLayers": bing
         });
         var allPolygons;
 
@@ -275,7 +279,7 @@
             }
         }
 
-        setupLayers();
+        // setupLayers();
         updateLayerList();
         var toolbar = document.getElementById('toolbar');
         Cesium.knockout.applyBindings(viewModel, toolbar);
