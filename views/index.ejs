@@ -103,21 +103,7 @@
                     <!--</p>
                     </div> -->
 
-                    <div id="toolbar">
-                        <h4>Basemap</h4>
-                        <table>
-                            <tbody data-bind="foreach: layers">
-                                <tr
-                                    data-bind="css: { up: $parent.upLayer === $data, down: $parent.downLayer === $data }">
-
-                                    <td>
-                                        <span data-bind="text: name, visible: !$parent.isSelectableLayer($data)"></span>
-                                        <select
-                                            data-bind="visible: $parent.isSelectableLayer($data), options: $parent.baseLayers, optionsText: 'name', value: $parent.selectedLayer"></select>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    
                 </section>
 
                 <div id='downloadLink' style='display:none'>
@@ -191,24 +177,7 @@
 
 
         }
-        const bing_key = "<%= bing_key %>";
-        const mapbox_key = "<%= mapbox_key %>";
-        var mapbox =
-            new Cesium.ImageryLayer.fromProviderAsync(
-                new Cesium.MapboxImageryProvider({
-                    mapId: 'mapbox.streets',
-                    accessToken: mapbox_key
-                })
 
-            );
-
-        var bing = new Cesium.ImageryLayer.fromProviderAsync(
-            Cesium.BingMapsImageryProvider.fromUrl(
-                "https://dev.virtualearth.net", {
-                key: '<%= bing_key %>',
-                mapStyle: Cesium.BingMapsStyle.AERIAL
-            })
-        );
 
         var viewer = new Cesium.Viewer('cesiumContainer', {
             "geocoder": false,
@@ -220,31 +189,21 @@
             "selectionIndicator": false,
             "fullscreenButton": false,
             "timeline": false,
-            "navigationHelpButton": false,
-            "imageryLayers": bing
+            "navigationHelpButton": false
         });
         var allPolygons;
 
+        // Add an OpenStreetMaps layer
+        const imageryLayer = new Cesium.ImageryLayer(new Cesium.OpenStreetMapImageryProvider({
+        url: "https://tile.openstreetmap.org/"
+        }));
 
-        // document.getElementById("ccontrols").style.visibility = "hidden";
-        //default terrain
-        // var cesiumTerrainProviderMeshes = new Cesium.CesiumTerrainProvider({
-        //     url: 'https://assets.agi.com/stk-terrain/world',
-        //     requestWaterMask: true,
-        //     requestVertexNormals: true
-        // });
-        //highres terrain.
-        // var cesiumTerrainProviderMeshes = new Cesium.CesiumTerrainProvider({
-        //     url: 'https://assets.agi.com/stk-terrain/v1/tilesets/PAMAP/tiles',
-        //     requestWaterMask: true,
-        //     requestVertexNormals: true
-        // });
-        // viewer.terrainProvider = cesiumTerrainProviderMeshes;
-        var imageryLayers = viewer.imageryLayers;
+        
+        
         var scene = viewer.scene;
         var clock = viewer.clock;
         var camera = viewer.camera;
-
+        viewer.imageryLayers.add(imageryLayer)
         var cameralat;
         var cameralng;
 
@@ -259,75 +218,6 @@
             }
         };
 
-        function setupLayers() {
-            // Create all the base layers that this example will support.
-            // These base layers aren't really special.  It's possible to have multiple of them
-            // enabled at once, just like the other layers, but it doesn't make much sense because
-            // all of these layers cover the entire globe and are opaque.
-
-            addBaseLayerOption(
-                "Bing Maps Road",
-                Cesium.createWorldImageryAsync({
-                    style: Cesium.IonWorldImageryStyle.ROAD,
-                })
-            );
-            addBaseLayerOption('Mapbox Streets', mapbox);
-
-        }
-        Cesium.knockout.track(viewModel);
-
-        async function addBaseLayerOption(name, imageryProviderPromise) {
-            try {
-                const imageryProvider = await Promise.resolve(
-                    imageryProviderPromise
-                );
-
-                const layer = new Cesium.ImageryLayer(imageryProvider);
-                layer.name = name;
-                baseLayers.push(layer);
-                updateLayerList();
-            } catch (error) {
-                console.error(
-                    `There was an error while creating ${name}. ${error}`
-                );
-            }
-        }
-
-
-        var baseLayers = viewModel.baseLayers;
-
-        function updateLayerList() {
-            var numLayers = imageryLayers.length;
-            viewModel.layers.splice(0, viewModel.layers.length);
-            for (var i = numLayers - 1; i >= 0; --i) {
-                viewModel.layers.push(imageryLayers.get(i));
-            }
-        }
-
-        setupLayers();
-        updateLayerList();
-        var toolbar = document.getElementById('toolbar');
-        Cesium.knockout.applyBindings(viewModel, toolbar);
-
-        Cesium.knockout.getObservable(viewModel, 'selectedLayer').subscribe(function (baseLayer) {
-            // Handle changes to the drop-down base layer selector.
-            var activeLayerIndex = 0;
-            var numLayers = viewModel.layers.length;
-            for (var i = 0; i < numLayers; ++i) {
-                if (viewModel.isSelectableLayer(viewModel.layers[i])) {
-                    activeLayerIndex = i;
-                    break;
-                }
-            }
-            var activeLayer = viewModel.layers[activeLayerIndex];
-            var show = activeLayer.show;
-            var alpha = activeLayer.alpha;
-            imageryLayers.remove(activeLayer, false);
-            imageryLayers.add(baseLayer, numLayers - activeLayerIndex - 1);
-            baseLayer.show = show;
-            baseLayer.alpha = alpha;
-            updateLayerList();
-        });
 
         function generateSystemCB(systems) {
             for (var x = 0; x < systems.length; x++) {
