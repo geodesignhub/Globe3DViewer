@@ -260,24 +260,36 @@
             // These base layers aren't really special.  It's possible to have multiple of them
             // enabled at once, just like the other layers, but it doesn't make much sense because
             // all of these layers cover the entire globe and are opaque.
-            addBaseLayerOption('Bing Maps Aerial', undefined); // the current base layer
+
+            addBaseLayerOption(
+                "Bing Maps Road",
+                Cesium.createWorldImageryAsync({
+                    style: Cesium.IonWorldImageryStyle.ROAD,
+                })
+            );
             addBaseLayerOption('Mapbox Streets', mapbox);
 
         }
         Cesium.knockout.track(viewModel);
 
-        function addBaseLayerOption(name, imageryProvider) {
-            var layer;
-            if (typeof imageryProvider === 'undefined') {
-                layer = imageryLayers.get(0);
-                viewModel.selectedLayer = layer;
-            } else {
-                layer = new Cesium.ImageryLayer(imageryProvider);
-            }
+        async function addBaseLayerOption(name, imageryProviderPromise) {
+            try {
+                const imageryProvider = await Promise.resolve(
+                    imageryProviderPromise
+                );
 
-            layer.name = name;
-            baseLayers.push(layer);
+                const layer = new Cesium.ImageryLayer(imageryProvider);
+                layer.name = name;
+                baseLayers.push(layer);
+                updateLayerList();
+            } catch (error) {
+                console.error(
+                    `There was an error while creating ${name}. ${error}`
+                );
+            }
         }
+
+
         var baseLayers = viewModel.baseLayers;
 
         function updateLayerList() {
