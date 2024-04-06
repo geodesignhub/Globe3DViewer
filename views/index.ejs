@@ -27,8 +27,8 @@
     <link type="text/css" rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
     <link rel="stylesheet" type="text/css" href="assets/css/base.css">
-    
-    
+
+
 
     <link rel="stylesheet" href="/assets/js/humane/flatty.css">
 
@@ -39,6 +39,7 @@
     <script src="/assets/Build/Cesium/Cesium.js"></script>
     <style>
         @import url(/assets/Build/Cesium/Widgets/widgets.css);
+
         #controlPanel {
             position: absolute;
             top: 5px;
@@ -47,19 +48,19 @@
             padding: 2px 2px;
             border-radius: 2px;
         }
-        
+
         #controlPanel span {
             color: white;
         }
-        
+
         #controlPanel p {
             margin: 0;
         }
-        
+
         .densitydetails {
             border-bottom: 1px solid #e0e0e0;
         }
-        
+
         .systitle {
             border-bottom: 1px solid #e0e0e0;
             font-size: 16px;
@@ -76,9 +77,14 @@
             <div class="col-sm-2 col-md-2 main">
 
                 <h1 class="page-header">Geodesignhub Globe 3D Viewer</h1>
-                <small>&copy; 2023 <a href="https://www.geodesignhub.com/">Geodesignhub</a>, see the <a href="https://geodesignhub.github.io/Globe3DViewer">GitHub repository</a> for more information.</small>
+                <small>&copy; 2023 <a href="https://www.geodesignhub.com/">Geodesignhub</a>, see the <a
+                        href="https://geodesignhub.github.io/Globe3DViewer">GitHub repository</a> for more
+                    information.</small>
                 <section class="information">
-                    <div id="loadingGIF"><img src="/assets/objs/loading.gif">&nbsp;<span id="procstatus">Processing</span>...<br><small>It may take some time for the server to process all geometries for the first time, the scene will refresh once the processing is complete.</small></div>
+                    <div id="loadingGIF"><img src="/assets/objs/loading.gif">&nbsp;<span
+                            id="procstatus">Processing</span>...<br><small>It may take some time for the server to
+                            process all geometries for the first time, the scene will refresh once the processing is
+                            complete.</small></div>
                     <br>
                     <div id="systemsCBCont" style="display:none">
                         <h4>Systems</h4>
@@ -86,7 +92,8 @@
                     </div>
                     <br>
                     <h4>Streets</h4>
-                    <input id="showStreetsCB" class="checkbox-custom" name="checkbox-1" type="checkbox" checked> Display generated streets<br><br>
+                    <input id="showStreetsCB" class="checkbox-custom" name="checkbox-1" type="checkbox" checked> Display
+                    generated streets<br><br>
 
                     <!-- <h4>Refresh</h4>
                     <div>
@@ -100,11 +107,13 @@
                         <h4>Basemap</h4>
                         <table>
                             <tbody data-bind="foreach: layers">
-                                <tr data-bind="css: { up: $parent.upLayer === $data, down: $parent.downLayer === $data }">
+                                <tr
+                                    data-bind="css: { up: $parent.upLayer === $data, down: $parent.downLayer === $data }">
 
                                     <td>
                                         <span data-bind="text: name, visible: !$parent.isSelectableLayer($data)"></span>
-                                        <select data-bind="visible: $parent.isSelectableLayer($data), options: $parent.baseLayers, optionsText: 'name', value: $parent.selectedLayer"></select>
+                                        <select
+                                            data-bind="visible: $parent.isSelectableLayer($data), options: $parent.baseLayers, optionsText: 'name', value: $parent.selectedLayer"></select>
                                     </td>
                                 </tr>
                             </tbody>
@@ -117,26 +126,26 @@
                         <p><button class="button buttongreen" onclick="downloadGJ()">Download Data</button></p>
                     </div>
                 </div>
-                </div>
-
             </div>
 
-            <div class="col-sm-10 col-md-10 sidebar">
-                <div id="cesiumContainer"></div>
-                <div id="controlPanel">
+        </div>
 
-                    <p>
-                        <button class="cesium-button" id="def" onClick="setCameraHeadingPitch(this.id);">Default</button>
-                        <button class="cesium-button" id="td" onClick="setCameraHeadingPitch(this.id);">Top Down</button>
-                        <button class="cesium-button" id="ne" onClick="setCameraHeadingPitch(this.id);">North East</button>
-                        <button class="cesium-button" id="se" onClick="setCameraHeadingPitch(this.id);">South West</button>
-                        <button class="cesium-button" id="sw" onClick="setCameraHeadingPitch(this.id);">South East</button>
-                        <button class="cesium-button" id="nw" onClick="setCameraHeadingPitch(this.id);">North West</button>
+        <div class="col-sm-10 col-md-10 sidebar">
+            <div id="cesiumContainer"></div>
+            <div id="controlPanel">
 
-                    </p>
-                </div>
+                <p>
+                    <button class="cesium-button" id="def" onClick="setCameraHeadingPitch(this.id);">Default</button>
+                    <button class="cesium-button" id="td" onClick="setCameraHeadingPitch(this.id);">Top Down</button>
+                    <button class="cesium-button" id="ne" onClick="setCameraHeadingPitch(this.id);">North East</button>
+                    <button class="cesium-button" id="se" onClick="setCameraHeadingPitch(this.id);">South West</button>
+                    <button class="cesium-button" id="sw" onClick="setCameraHeadingPitch(this.id);">South East</button>
+                    <button class="cesium-button" id="nw" onClick="setCameraHeadingPitch(this.id);">North West</button>
+
+                </p>
             </div>
         </div>
+    </div>
     </div>
 
     <script>
@@ -184,19 +193,22 @@
         }
         const bing_key = "<%= bing_key %>";
         const mapbox_key = "<%= mapbox_key %>";
-        var mapbox = new Cesium.MapboxImageryProvider({
-            mapId: 'mapbox.streets',
-            accessToken: mapbox_key
-        });
-        
+        var mapbox = new Cesium.ImageryLayer.fromProviderAsync(
+            new Cesium.MapboxImageryProvider({
+                mapId: 'mapbox.streets',
+                accessToken: mapbox_key
+            })
+
+        );
+
         var bing = new Cesium.ImageryLayer.fromProviderAsync(
-                    Cesium.BingMapsImageryProvider.fromUrl(
+            Cesium.BingMapsImageryProvider.fromUrl(
                 "https://dev.virtualearth.net", {
-                    key:'<%= bing_key %>',
-                    mapStyle: Cesium.BingMapsStyle.AERIAL
-                })
-                );
-        
+                key: '<%= bing_key %>',
+                mapStyle: Cesium.BingMapsStyle.AERIAL
+            })
+        );
+
         var viewer = new Cesium.Viewer('cesiumContainer', {
             "geocoder": false,
             "homeButton": false,
@@ -208,7 +220,6 @@
             "fullscreenButton": false,
             "timeline": false,
             "navigationHelpButton": false,
-                    "imageryLayers": bing
         });
         var allPolygons;
 
@@ -241,7 +252,7 @@
             upLayer: null,
             downLayer: null,
             selectedLayer: null,
-            isSelectableLayer: function(layer) {
+            isSelectableLayer: function (layer) {
                 return baseLayers.indexOf(layer) >= 0;
             }
         };
@@ -284,7 +295,7 @@
         var toolbar = document.getElementById('toolbar');
         Cesium.knockout.applyBindings(viewModel, toolbar);
 
-        Cesium.knockout.getObservable(viewModel, 'selectedLayer').subscribe(function(baseLayer) {
+        Cesium.knockout.getObservable(viewModel, 'selectedLayer').subscribe(function (baseLayer) {
             // Handle changes to the drop-down base layer selector.
             var activeLayerIndex = 0;
             var numLayers = viewModel.layers.length;
@@ -337,8 +348,8 @@
             });
         }
 
-        var randomid = function() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var randomid = function () {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
                 var r = Math.random() * 16 | 0,
                     v = c == 'x' ? r : (r & 0x3 | 0x8);
                 return v.toString(16);
@@ -360,7 +371,7 @@
 
             // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
             var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
-            hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+            hex = hex.replace(shorthandRegex, function (m, r, g, b) {
                 return r + r + g + g + b + b;
             });
 
@@ -385,7 +396,7 @@
             $("#procstatus").html("Processing..");
             // for projects
             var promise = Cesium.GeoJsonDataSource.load(gjsonData);
-            promise.then(function(dataSource) {
+            promise.then(function (dataSource) {
                 viewer.dataSources.add(dataSource);
                 var allGeometryInstances = [];
                 var allpolicies = [];
@@ -407,7 +418,7 @@
                     curFeat.polygon.outline = false;
                     curFeat.polygon.extrudedHeight = curProps.height;
                 }
-            }).catch(function(error) {
+            }).catch(function (error) {
                 //Display any errrors encountered while loading.
                 // window.alert(error);
                 console.log(error);
@@ -419,32 +430,32 @@
 
 
         var socket = io.connect(socketHost);
-        socket.on('connect_failed', function() {
+        socket.on('connect_failed', function () {
             errorMsg('Data connection failed, please contact your administrator.');
         });
-        socket.on('disconnect', function() {
+        socket.on('disconnect', function () {
             console.log('disconnected');
         });
-        socket.on('welcome', function(msg) {
+        socket.on('welcome', function (msg) {
             console.log('Welcome message:', msg);
         });
-        socket.on('connect', function() {
+        socket.on('connect', function () {
             socket.emit('room', synthesisid);
         });
-        socket.on('connect_timeout', function() {
+        socket.on('connect_timeout', function () {
             console.log("timed out");
 
         });
-        socket.on('message', function(data) {
-            if(data.type =='message') {
+        socket.on('message', function (data) {
+            if (data.type == 'message') {
                 getSyndata(data.synthesisid);
             }
-            else if (data.type =='progress'){
+            else if (data.type == 'progress') {
                 // console.log(data.percentcomplete);
                 $("#procstatus").html(' ' + data.percentcomplete + '% complete');
             }
         });
-        
+
         function getSyndata(synthesisid) {
             // console.log(synthesisid);
             const d = {
@@ -456,7 +467,7 @@
                 type: 'POST',
                 data: d
             });
-            promise.done(function(data) {
+            promise.done(function (data) {
 
                 center = data.center;
                 final3DGeoms = data.final3DGeoms;
@@ -468,7 +479,7 @@
                 processGeoms();
             });
 
-            promise.fail(function(data) {
+            promise.fail(function (data) {
                 humane.log("Error in getting 3D data, you can refresh your screen.", {
                     addnCls: 'humane-flatty-error'
                 });
@@ -480,7 +491,7 @@
 
             setMapCenter(center);
             $("#loadingGIF").hide();
-            
+
             if (final3DGeoms.features.length > 0) {
                 // $("#gjTA").text(JSON.stringify(gjresults));
 
@@ -490,10 +501,10 @@
                 // updateGLData(final3DGeoms, true);
                 $('#systemsCBCont').show();
                 // submitGJ();
-                $("#showStreetsCB").click(function() {
+                $("#showStreetsCB").click(function () {
                     var showstreets = ($(this).is(":checked")) ? 1 : 0;
                     var selectedsystems = [];
-                    $('#systemsCB input:checked').each(function() {
+                    $('#systemsCB input:checked').each(function () {
                         selectedsystems.push($(this).attr('id'));
                     });
                     // $("#loadingGIF").show();
@@ -519,15 +530,15 @@
                     //     }
                     // }, false);
                 });
-                $('#systemsCB').click(function() {
+                $('#systemsCB').click(function () {
                     var selectedsystems = [];
-                    $('#systemsCB input:checked').each(function() {
+                    $('#systemsCB input:checked').each(function () {
                         selectedsystems.push($(this).attr('id'));
                     });
                     var showStreets = ($('#showStreetsCB').is(":checked")) ? 1 : 0;
                     $("#loadingGIF").show();
                     var constrainWorker = new Worker('/assets/workers/constrainGeneratedFeatures.js');
-                    constrainWorker.onerror = function(e) {
+                    constrainWorker.onerror = function (e) {
                         console.log('Error: Line ' + e.lineno + ' in ' + e.filename + ': ' + e.message);
                         $("#loadingGIF").hide();
                         humane.log("There was a error in processing, please try again.. ", {
@@ -540,7 +551,7 @@
                         'selectedsystems': JSON.stringify(selectedsystems),
                         'showstreets': showStreets
                     });
-                    constrainWorker.addEventListener('message', function(e) {
+                    constrainWorker.addEventListener('message', function (e) {
                         if (e.data.mode === 'status') {
                             updateWorkerStatus(e.data.percentcomplete);
                         } else {
@@ -559,16 +570,16 @@
         var projectid = "<%= projectid %>"; //var test is now assigned to getTest which will only work on browsers         
         var synthesisid = "<%= synthesisid %>"; //var test is now assigned to getTest which will only work on browsers  
         var cteamid = "<%= cteamid %>"; //var test is now assigned to getTest which will only work on browsers  
-        var systems = <%- systems %>; //var test is now assigned to getTest which will only work on browsers  
-        var gjresults = <%- result %>;
+        var systems = <% - systems %>; //var test is now assigned to getTest which will only work on browsers  
+        var gjresults = <% - result %>;
         // var roads = <%- roads %>;
         var center = "<%= center %>";
-        var final3DGeoms = <%- final3DGeoms %>;
-        
+        var final3DGeoms = <% - final3DGeoms %>;
+
         var dlData;
         // var inputGJ;
 
-        (function() {
+        (function () {
             if (apitoken !== "0" && projectid !== "0" && cteamid !== "0" && synthesisid !== "0") {
                 if (center !== "0") {
                     processGeoms();
@@ -578,8 +589,8 @@
             }
 
         })();
-        (function(console) {
-            console.save = function(data, filename) {
+        (function (console) {
+            console.save = function (data, filename) {
                 if (!data) {
                     console.error('Console.save: No data')
                     return;
@@ -589,8 +600,8 @@
                     data = JSON.stringify(data, undefined, 4)
                 }
                 var blob = new Blob([data], {
-                        type: 'text/json'
-                    }),
+                    type: 'text/json'
+                }),
                     e = document.createEvent('MouseEvents'),
                     a = document.createElement('a')
                 a.download = filename
@@ -612,7 +623,7 @@
             for (var k = 0; k < gendataFeatlen; k++) {
                 var curFeat = gd.features[k];
                 var prop = curFeat.properties;
-                if (prop.isStreet) {} else {
+                if (prop.isStreet) { } else {
                     filteredGJ.features.push(curFeat);
                 }
             }
