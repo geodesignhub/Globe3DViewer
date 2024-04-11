@@ -177,8 +177,8 @@
 
 
         }
-
-
+        
+        Cesium.Ion.defaultAccessToken = '<%- cesium_key %>';
         var viewer = new Cesium.Viewer('cesiumContainer', {
             "geocoder": false,
             "homeButton": false,
@@ -190,20 +190,15 @@
             "fullscreenButton": false,
             "timeline": false,
             "navigationHelpButton": false
+            
         });
         var allPolygons;
 
-        // Add an OpenStreetMaps layer
-        const imageryLayer = new Cesium.ImageryLayer(new Cesium.OpenStreetMapImageryProvider({
-        url: "https://tile.openstreetmap.org/"
-        }));
-
-        
         
         var scene = viewer.scene;
         var clock = viewer.clock;
         var camera = viewer.camera;
-        viewer.imageryLayers.add(imageryLayer)
+        // viewer.imageryLayers.add(imageryLayer);
         var cameralat;
         var cameralng;
 
