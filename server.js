@@ -234,7 +234,7 @@
 
                         opts['final3DGeoms'] = JSON.stringify(r_op.finalGeoms);
                         opts['center'] = r_op.center;
-                        opts['cesium_key'] = process.env.CESIUM_KEY || 'cesium-key';
+                        opts['bing_key'] = process.env.BING_KEY || 'bing-key';
 
                         response.render('index', opts);
                     });

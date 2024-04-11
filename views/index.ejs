@@ -177,8 +177,13 @@
 
 
         }
-        
-        Cesium.Ion.defaultAccessToken = '<%- cesium_key %>';
+        var bing = new Cesium.ImageryLayer.fromProviderAsync(
+            Cesium.BingMapsImageryProvider.fromUrl(
+                "https://dev.virtualearth.net", {
+                key: '<%= bing_key %>',
+                mapStyle: Cesium.BingMapsStyle.AERIAL
+            })
+        );
         var viewer = new Cesium.Viewer('cesiumContainer', {
             "geocoder": false,
             "homeButton": false,
@@ -189,16 +194,16 @@
             "selectionIndicator": false,
             "fullscreenButton": false,
             "timeline": false,
-            "navigationHelpButton": false
+            "navigationHelpButton": false,
+            
             
         });
         var allPolygons;
-
         
         var scene = viewer.scene;
         var clock = viewer.clock;
         var camera = viewer.camera;
-        // viewer.imageryLayers.add(imageryLayer);
+        viewer.imageryLayers.add(bing);
         var cameralat;
         var cameralng;
 
