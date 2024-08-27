@@ -221,7 +221,7 @@
 
         function generateSystemCB(systems) {
             for (var x = 0; x < systems.length; x++) {
-                $('#systemsCB').append('<tr><td class="systitle"><input name="sysCB" id=' + "'" + systems[x].sysname + "'" + 'type="checkbox"/> <span class="square c-' + systems[x].syscolor.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;</td></tr>');
+                $('#systemsCB').append('<tr><td class="systitle"><input name="sysCB" id=' + "'" + systems[x].name + "'" + 'type="checkbox"/> <span class="square c-' + systems[x].color.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].name + '</input>&nbsp;&nbsp;</td></tr>');
             }
         }
 
