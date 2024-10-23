@@ -4,14 +4,14 @@
     const redisclient = require('./redis-client');
 
 
+    require("dotenv").config();
     var express = require('express');
     const socket = require("socket.io");
     var bodyParser = require('body-parser');
     var compression = require('compression');
     var Queue = require('bull');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
-    var ThreeDQueue = new Queue('3D-proc', { redis: redisclient.redisConfig });
-    require("dotenv").config();
+    var ThreeDQueue = new Queue('3D-proc', { redis: redisclient.redis_config });
     // Once a job is completed, then send a message via a socket. 
     ThreeDQueue.on('completed', function (job, synthesisid) {
         // A job successfully completed with a `result`.

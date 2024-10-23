@@ -26,7 +26,7 @@ function redis_error_handler(err) {
 })();
 
 module.exports = {
-    ...redis_client,
+    ...redis_client,redis_config,
     get: (redis_client.get).bind(redis_client),
     hget: (redis_client.hGet).bind(redis_client),
     hgetall: (redis_client.hGetAll).bind(redis_client),
