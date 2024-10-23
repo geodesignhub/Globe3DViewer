@@ -1,8 +1,10 @@
 // processor.js
-var redisclient = require('redis').createClient(process.env.REDIS_URL || {
-    host: '127.0.0.1',
-    port: 6379
-});
+// var redisclient = require('redis').createClient(process.env.REDIS_URL || {
+//     host: '127.0.0.1',
+//     port: 6379
+// });
+const redisclient = require('./redis-client');
+
 // redisclient.on('ready', function() {
 //     console.log("Redis is ready");
 // });
@@ -11,7 +13,7 @@ var redisclient = require('redis').createClient(process.env.REDIS_URL || {
 //     console.log("Error in Redis");
 // });
 var tools = require('./3Dprocessor/tools');
-module.exports = function (job) {
+module.exports = async function (job) {
     // Do some heavy work
     const synthesisid = job.data.synthesisid;
     // var existingroads = job.data.rfc;

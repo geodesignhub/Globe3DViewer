@@ -1,13 +1,9 @@
-(function () {
+(async function () {
     'use strict';
     /*jshint node:true*/
-    var redisclient = require('redis').createClient(process.env.REDIS_URL || {
-        host: '127.0.0.1',
-        port: 6379
-    });
+    const redisclient = require('./redis-client');
 
     var express = require('express');
-    const Server = require('socket.io');
     const socket = require("socket.io");
     var bodyParser = require('body-parser');
     var compression = require('compression');
@@ -132,17 +128,17 @@
 
         async.map([synthesisid], function (sid, done) {
 
-                redisclient.get(sid, function (err, results) {
-                    if (err || results == null) {
-                        return done(null, JSON.stringify({
-                            "finalGeoms": "",
-                            "center": ""
-                        }));
-                    } else {
-                        return done(null, results);
-                    }
-                });
-            },
+            redisclient.get(sid, function (err, results) {
+                if (err || results == null) {
+                    return done(null, JSON.stringify({
+                        "finalGeoms": "",
+                        "center": ""
+                    }));
+                } else {
+                    return done(null, results);
+                }
+            });
+        },
             function (error, op) {
                 //only OK once set
                 op = JSON.parse(op);
@@ -162,7 +158,10 @@
                 'apitoken': request.query.apitoken,
                 'projectid': request.query.projectid,
                 'synthesisid': request.query.synthesisid,
-                'cteamid': request.query.cteamid
+                'cteamid': request.query.cteamid,
+                "final3DGeoms": JSON.stringify({"type":"FeatureCollection","features":[]}),
+                "center": "0",
+                "bing_key": process.env.BING_KEY || 'bing-key'
             };
 
             var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
@@ -202,49 +201,54 @@
                     "features": []
                 };
                 opts['roads'] = JSON.stringify(rfc);
-                async.map([synthesisid], function (sid, done) {
+                async.map([synthesisid], async function (sid, done) {
 
-                        redisclient.get(sid, function (err, results) {
-                            if (err || results == null) {
-                                return done(null, JSON.stringify({
-                                    "finalGeoms": "",
-                                    "center": "0"
-                                }));
-                            } else {
-                                console.log('getting');
-                                return done(null, results);
-                            }
-                        });
-                    },
-                    function (redis_error, redis_op) {
-                        //only OK once set
+                    let stored_synthesis_details = await redisclient.get(sid);
 
-                        if (redis_error) return response.sendStatus(500);
-                        var r_op = JSON.parse(redis_op);
-                        if (r_op.center === "0") {
-                            const newLocal = 'sending to q';
-                            ThreeDQueue.add({
-                                "gj": results[0],
-                                // "rfc": rfc,
-                                "sys": sys,
-                                "synthesisid": synthesisid
-                            });
-
-                        }
+                    if (stored_synthesis_details) {
+                        let r_op = JSON.parse(stored_synthesis_details);
 
                         opts['final3DGeoms'] = JSON.stringify(r_op.finalGeoms);
                         opts['center'] = r_op.center;
-                        opts['bing_key'] = process.env.BING_KEY || 'bing-key';
 
-                        response.render('index', opts);
-                    });
+                    }
 
-                // opts['final3DGeoms'] = JSON.stringify(final3DGeoms);
+                    else {
+                        console.log('sending to q...');
+                        ThreeDQueue.add({
+                            "gj": results[0],
+                            // "rfc": rfc,
+                            "sys": sys,
+                            "synthesisid": synthesisid
+                        });
+                    }
+                    response.render('index', opts);
 
-                // opts['center'] = JSON.stringify(center);
+                    //     await redisclient.get(sid, function (err, results) {
+                    //         if (err || results == null) {
+                    //             return done(null, JSON.stringify({
+                    //                 "finalGeoms": "",
+                    //                 "center": "0"
+                    //             }));
+                    //         } else {
+                    //             console.log('getting');
+                    //             return done(null, results);
+                    //         }
+                    //     });
+                    // },
+                    // function (redis_error, redis_op) {
+                    //     //only OK once set
+
+                    //     if (redis_error) return response.sendStatus(500);
+
+                    // });
+
+                    // opts['final3DGeoms'] = JSON.stringify(final3DGeoms);
+
+                    // opts['center'] = JSON.stringify(center);
 
 
-                // });
+                });
 
             });
 
@@ -257,9 +261,9 @@
 
 
     var server = app.listen(process.env.PORT || 5001); // for Heroku
-    
+
     const io = socket(server);
-    
+
     io.on('connection', function (socket) {
         socket.on('room', function (room) {
             socket.join(room);

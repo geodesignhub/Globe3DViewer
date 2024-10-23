@@ -18,26 +18,26 @@
         "globe"
     ],
     "engines": {
-        "node": "14.x"
+        "node": "20.x"
     },
     "repository": {
         "type": "git",
         "url": ""
     },
     "dependencies": {
-        "@turf/turf": "6.5.0",
-        "async": "3.2.4",
-        "body-parser": "1.19.0",
-        "bull": "4.10.4",
+        "@turf/turf": "7.1.0",
+        "async": "3.2.6",
+        "body-parser": "1.20.3",
+        "bull": "4.16.3",
         "compression": "1.7.4",
-        "dotenv": "16.3.1",
-        "ejs": "3.1.9",
+        "dotenv": "16.4.5",
+        "ejs": "3.1.10",
         "express": "4.18.2",
         "path": "0.12.7",
-        "redis": "3.1.2",
+        "redis": "4.7.0",
         "request": "2.88.2",
-        "requirejs": "2.3.6",
-        "socket.io": "4.7.1",
+        "requirejs": "2.3.7",
+        "socket.io": "4.8.0",
         "yargs": "17.7.2"
     },
     "scripts": {
