@@ -1,7 +1,9 @@
 const redis = require('redis');
 
 const redis_url = process.env.REDIS_URL;
-const redis_client = redis.createClient({ url: process.env.REDIS_URL }, {
+
+const redis_client = redis.createClient({
+    url: redis_url,
     socket: {
         tls: (redis_url.match(/rediss:/) != null),
         rejectUnauthorized: false,
