@@ -3,16 +3,14 @@
     /*jshint node:true*/
     const redisclient = require('./redis-client');
 
+
     var express = require('express');
     const socket = require("socket.io");
     var bodyParser = require('body-parser');
     var compression = require('compression');
     var Queue = require('bull');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
-    var ThreeDQueue = new Queue('3D-proc', (process.env.REDIS_URL || {
-        host: '127.0.0.1',
-        port: 6379
-    }));
+    var ThreeDQueue = new Queue('3D-proc', { redis: redisclient.redisConfig });
     require("dotenv").config();
     // Once a job is completed, then send a message via a socket. 
     ThreeDQueue.on('completed', function (job, synthesisid) {
@@ -159,7 +157,7 @@
                 'projectid': request.query.projectid,
                 'synthesisid': request.query.synthesisid,
                 'cteamid': request.query.cteamid,
-                "final3DGeoms": JSON.stringify({"type":"FeatureCollection","features":[]}),
+                "final3DGeoms": JSON.stringify({ "type": "FeatureCollection", "features": [] }),
                 "center": "0",
                 "bing_key": process.env.BING_KEY || 'bing-key'
             };
