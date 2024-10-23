@@ -1,7 +1,8 @@
 const redis = require('redis');
 
-const redis_client = redis.createClient({url:process.env.REDIS_URL},{tls: {
-    rejectUnauthorized: false
+const redis_client = redis.createClient({url:process.env.REDIS_URL}, {socket: {
+    tls: (redis_url.match(/rediss:/) != null),
+    rejectUnauthorized: false,
   }});
 function redis_error_handler(err) {
     console.debug(`node-redis version is ${require('redis/package.json').version}`);
