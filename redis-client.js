@@ -8,7 +8,7 @@ function redis_error_handler(err) {
   
 (async () => {
     redis_client.on('error', (err) => {
-      console.debug('Redis Client Error', err);
+      console.debug('Error from Redis Client:', err);
       process.exit(1);
     });
     redis_client.on('ready', () => console.debug('Redis is ready..'));
