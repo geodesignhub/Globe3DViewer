@@ -1,6 +1,6 @@
 const redis = require('redis');
 
-const redis_url = process.env.REDIS_URL;
+const redis_url = process.env.REDIS_URL ||"redis://127.0.0.1:6379/";
 const redis_config = {
     url: redis_url,
     socket: {
