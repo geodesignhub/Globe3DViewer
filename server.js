@@ -11,7 +11,7 @@
     var compression = require('compression');
     var Queue = require('bull');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
-    var ThreeDQueue = new Queue('3D-proc', { redis: redisclient.redis_config });
+    var ThreeDQueue = new Queue('3D-proc', { redis: redisclient.redis_url });
     // Once a job is completed, then send a message via a socket. 
     ThreeDQueue.on('completed', function (job, synthesisid) {
         // A job successfully completed with a `result`.
