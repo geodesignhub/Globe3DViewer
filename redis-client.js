@@ -2,8 +2,7 @@ const redis = require('redis');
 require("dotenv").config();
 const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379/";
 
-
-const redis_url = process.env.REDIS_URL;
+const redis_url = process.env.REDIS_URL || "redis://127.0.0.1:6379/";
 const redis_client = redis.createClient({
   url: redis_url,
   socket: {
@@ -12,7 +11,6 @@ const redis_client = redis.createClient({
   }
 });
 
-// const redis_client = redis.createClient(REDIS_URL);
 function redis_error_handler(err) {
   console.debug(`node-redis version is ${require('redis/package.json').version}`);
   console.debug(err);
