@@ -262,6 +262,7 @@
         console.log("Sending progress message...");
         const c = channels.filter(channel => channel.name === tmp_session_id);
         if (c) {
+            console.log(c);
             if (c[0].channel) {
                 c[0].channel.broadcast(percent_complete, "progress-message");
             }
