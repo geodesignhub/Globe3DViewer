@@ -2,8 +2,7 @@
     'use strict';
     /*jshint node:true*/
     require("dotenv").config();
-    const { redisclient,
-    } = require('./redis-client');
+    const  redisclient = require('./redis-client');
     const { createSession, createChannel } = require('better-sse');
     let express = require('express');
     let bodyParser = require('body-parser');
