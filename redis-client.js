@@ -5,11 +5,11 @@ const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379/";
 const redisOptions = REDIS_URL.includes("rediss://")
   ? {
     url: REDIS_URL,
-    socket: {
+
       tls: {
         rejectUnauthorized: false
       }
-    },
+  
   }
   : REDIS_URL;
 
