@@ -2,21 +2,21 @@ const redis = require('redis');
 require("dotenv").config();
 const REDIS_URL = process.env.REDIS_TEMPORARY_URL || "redis://127.0.0.1:6379/";
 
-const redisOptions = REDIS_URL.includes("rediss://")
-  ? {
-    url: REDIS_URL,
+// const redisOptions = REDIS_URL.includes("rediss://")
+//   ? {
+//     url: REDIS_URL,
 
-      tls: {
-        rejectUnauthorized: false
-      }
+//       tls: {
+//         rejectUnauthorized: false
+//       }
   
-  }
-  : REDIS_URL;
+//   }
+//   : REDIS_URL;
 
 
-  console.log(redisOptions)
+//   console.log(redisOptions)
 
-const redis_client = redis.createClient(redisOptions);
+const redis_client = redis.createClient(REDIS_URL);
 function redis_error_handler(err) {
   console.debug(`node-redis version is ${require('redis/package.json').version}`);
   console.debug(err);
