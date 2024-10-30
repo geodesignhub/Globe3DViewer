@@ -3,7 +3,7 @@
     /*jshint node:true*/
     const redisclient = require('./redis-client');
     const { createSession, createChannel } = require('better-sse');
-
+    const redis = require('redis');
     require("dotenv").config();
     let express = require('express');
     let bodyParser = require('body-parser');
