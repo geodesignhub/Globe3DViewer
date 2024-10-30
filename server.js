@@ -1,18 +1,19 @@
 (async function () {
     'use strict';
     /*jshint node:true*/
-    const redisclient = require('./redis-client');
-    const { createSession, createChannel } = require('better-sse');
-
     require("dotenv").config();
+    const {redisclient, redis_queue_url} = require('./redis-client');
+    const { createSession, createChannel } = require('better-sse');
     let express = require('express');
     let bodyParser = require('body-parser');
     let compression = require('compression');
     let Queue = require('bull');
+    let url = require('url');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
 
+    console.log('Ccreating q')
     
-    let ThreeDQueue = new Queue('3D-proc', redisclient);
+    let ThreeDQueue = new Queue('3D-proc',redis_queue_url);
     // Once a job is completed, then send a message via a socket. 
     ThreeDQueue.on('global:completed', function (job, synthesisid) {
         // A job successfully completed with a `result`.
@@ -30,7 +31,6 @@
     //     sendStdMsg(synthesisid, synthesisid);
     // });
 
-    let url = require('url');
     let req = require('request');
     let async = require('async');
     let tools = require('./3Dprocessor/tools');
