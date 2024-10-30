@@ -250,7 +250,7 @@
     async function sendStdMsg(synthesisid) {
         console.log("Sending standard message...");
         const c = channels.filter(channel => channel.name === tmp_session_id);
-        if (c) {
+        if (c.length >0) {
             if (c[0].channel) {
                 c[0].channel.broadcast(synthesisid.toString(), "standard-message");
             }
@@ -261,8 +261,8 @@
     async function sendProgressMsg(percent_complete) {
         console.log("Sending progress message...");
         const c = channels.filter(channel => channel.name === tmp_session_id);
-        if (c) {
-            console.log(c);
+        if (c.length >0) {
+            
             if (c[0].channel) {
                 c[0].channel.broadcast(percent_complete, "progress-message");
             }
