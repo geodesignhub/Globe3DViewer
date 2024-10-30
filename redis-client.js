@@ -2,7 +2,7 @@ const redis = require('redis');
 require("dotenv").config();
 
 const redis_url = process.env.REDIS_URL || "redis://127.0.0.1:6379/";
-const redis_queue_url = process.env.REDIS_TEMPORARY_URL || "redis://127.0.0.1:6379/";
+
 let redis_config = {
   url: redis_url,
   socket: {
@@ -29,7 +29,7 @@ function redis_error_handler(err) {
 })();
 
 module.exports = {
-  ...redis_client,redis_queue_url,
+  ...redis_client,
   get: (redis_client.get).bind(redis_client),
   hget: (redis_client.hGet).bind(redis_client),
   hgetall: (redis_client.hGetAll).bind(redis_client),
