@@ -1,14 +1,20 @@
 const redis = require('redis');
+let url = require('url');
+require("dotenv").config();
+const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379/";
 
-const redis_url = process.env.REDIS_URL || "redis://127.0.0.1:6379/";
-const redis_config = {
-    url: redis_url,
-    socket: {
-        tls: (redis_url.match(/rediss:/) != null),
-        rejectUnauthorized: false,
-    }
-};
-const redis_client = redis.createClient(redis_config);
+
+  const redisOptions = REDIS_URL.includes("rediss://")
+    ? {
+        url: REDIS_URL,  
+        socket:{ tls: {
+          rejectUnauthorized: false
+        }},
+      }
+    : REDIS_URL;
+
+    
+const redis_client = redis.createClient(redisOptions);
 function redis_error_handler(err) {
     console.debug(`node-redis version is ${require('redis/package.json').version}`);
     console.debug(err);
@@ -26,7 +32,7 @@ function redis_error_handler(err) {
 })();
 
 module.exports = {
-    ...redis_client, redis_config, redis_url,
+    ...redis_client,
     get: (redis_client.get).bind(redis_client),
     hget: (redis_client.hGet).bind(redis_client),
     hgetall: (redis_client.hGetAll).bind(redis_client),

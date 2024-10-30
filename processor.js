@@ -1,5 +1,5 @@
 // processor.js
-// var redisclient = require('redis').createClient(process.env.REDIS_URL || {
+// let redisclient = require('redis').createClient(process.env.REDIS_URL || {
 //     host: '127.0.0.1',
 //     port: 6379
 // });
@@ -12,13 +12,13 @@ const redisclient = require('./redis-client');
 // redisclient.on('error', function() {
 //     console.log("Error in Redis");
 // });
-var tools = require('./3Dprocessor/tools');
+let tools = require('./3Dprocessor/tools');
 module.exports = async function (job) {
     // Do some heavy work
     const synthesisid = job.data.synthesisid;
-    // var existingroads = job.data.rfc;
+    // let existingroads = job.data.rfc;
 
-    var constraintedDesigns = job.data.gj;
+    let constraintedDesigns = job.data.gj;
 
     const systems = job.data.sys;
 
@@ -27,17 +27,17 @@ module.exports = async function (job) {
     //     existingroads = tools.bufferExistingRoads(existingroads);
     // }
 
-    var curFeats = constraintedDesigns.features;
-    var flen = curFeats.length;
-    var fullproc = flen;
-    var counter = 0;
-    var finalGJFeats = [];
+    let curFeats = constraintedDesigns.features;
+    let flen = curFeats.length;
+    let fullproc = flen;
+    let counter = 0;
+    let finalGJFeats = [];
 
 
-    for (var h = 0; h < flen; h++) {
-        var cur3DGeom = [];
+    for (let h = 0; h < flen; h++) {
+        let cur3DGeom = [];
         // for every feature , create a point grid.
-        var curFeat = curFeats[h];
+        let curFeat = curFeats[h];
         try {
         cur3DGeom = tools.generateFinal3DGeoms(curFeat, 0);
         } catch (error){
@@ -54,7 +54,7 @@ module.exports = async function (job) {
 
     }
 
-    var final3DGeoms = {
+    let final3DGeoms = {
         "type": "FeatureCollection",
         "features": finalGJFeats
     };
@@ -63,7 +63,7 @@ module.exports = async function (job) {
 
     // job.progress(50);
 
-    var center = tools.generateCenter(constraintedDesigns);
+    let center = tools.generateCenter(constraintedDesigns);
 
     // console.log(center, unitCounts);
     // job.progress(100);

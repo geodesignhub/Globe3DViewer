@@ -35,7 +35,7 @@
     <script type="text/javascript" src="/assets/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="/assets/js/geojsonlint/geojsonlint.js"></script>
     <script type="text/javascript" src="/assets/js/humane/humane.min.js"></script>
-    <script type="text/javascript" src="/assets/js/socket.io/socket.io.min.js"></script>
+
     <script src="/assets/Build/Cesium/Cesium.js"></script>
     <style>
         @import url(/assets/Build/Cesium/Widgets/widgets.css);
@@ -74,7 +74,7 @@
     <div class="container-fluid">
         <div class="row">
 
-            <div class="col-sm-2 col-md-2 main">
+            <div class="col-sm-3 col-md-3 main">
 
                 <h1 class="page-header">Geodesignhub Globe 3D Viewer</h1>
                 <small>&copy; 2023 <a href="https://www.geodesignhub.com/">Geodesignhub</a>, see the <a
@@ -103,7 +103,7 @@
                     <!--</p>
                     </div> -->
 
-                    
+
                 </section>
 
                 <div id='downloadLink' style='display:none'>
@@ -116,7 +116,7 @@
 
         </div>
 
-        <div class="col-sm-10 col-md-10 sidebar">
+        <div class="col-sm-9 col-md-9 sidebar">
             <div id="cesiumContainer"></div>
             <div id="controlPanel">
 
@@ -195,11 +195,11 @@
             "fullscreenButton": false,
             "timeline": false,
             "navigationHelpButton": false,
-            
-            
+
+
         });
         var allPolygons;
-        
+
         var scene = viewer.scene;
         var clock = viewer.clock;
         var camera = viewer.camera;
@@ -225,8 +225,8 @@
             }
         }
 
-        function updateWorkerStatus(percentcomplete) {
-            var pc = percentcomplete.toString() + '% processing completed';
+        function updateWorkerStatus(percent_complete) {
+            var pc = percent_complete.toString() + '% processing completed';
             $("#procstatus").html(pc);
 
         }
@@ -330,35 +330,7 @@
         }
     </script>
     <script>
-        var socketHost = location.origin.replace(/^http/, 'ws');
 
-
-        var socket = io.connect(socketHost);
-        socket.on('connect_failed', function () {
-            errorMsg('Data connection failed, please contact your administrator.');
-        });
-        socket.on('disconnect', function () {
-            console.log('disconnected');
-        });
-        socket.on('welcome', function (msg) {
-            console.log('Welcome message:', msg);
-        });
-        socket.on('connect', function () {
-            socket.emit('room', synthesisid);
-        });
-        socket.on('connect_timeout', function () {
-            console.log("timed out");
-
-        });
-        socket.on('message', function (data) {
-            if (data.type == 'message') {
-                getSyndata(data.synthesisid);
-            }
-            else if (data.type == 'progress') {
-                // console.log(data.percentcomplete);
-                $("#procstatus").html(' ' + data.percentcomplete + '% complete');
-            }
-        });
 
         function getSyndata(synthesisid) {
             // console.log(synthesisid);
@@ -483,6 +455,27 @@
         var dlData;
         // var inputGJ;
 
+        function uuidv4() {
+            return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+                (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+            );
+        }
+
+        const sse = new EventSource("/sse?uuid=" + uuidv4());
+
+        sse.addEventListener("progress-message", ({ data }) => {
+            console.log(`${event.type} | ${event.data}`);
+        });
+        sse.addEventListener("channel-created", (event) => {
+            console.log(`${event.type} | ${event.data}`);
+        });
+
+        sse.addEventListener("standard-message",
+            ({ data }) => {
+                let syn_id = JSON.parse(data);
+                getSyndata(syn_id);
+
+            });
         (function () {
             if (apitoken !== "0" && projectid !== "0" && cteamid !== "0" && synthesisid !== "0") {
                 if (center !== "0") {

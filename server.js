@@ -2,23 +2,23 @@
     'use strict';
     /*jshint node:true*/
     const redisclient = require('./redis-client');
-
+    const { createSession, createChannel } = require('better-sse');
 
     require("dotenv").config();
-    var express = require('express');
-    const socket = require("socket.io");
-    var bodyParser = require('body-parser');
-    var compression = require('compression');
-    var Queue = require('bull');
+    let express = require('express');
+    let bodyParser = require('body-parser');
+    let compression = require('compression');
+    let Queue = require('bull');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
-    var ThreeDQueue = new Queue('3D-proc',process.env.REDIS_URL || "redis://127.0.0.1:6379/");
+
+    let ThreeDQueue = new Queue('3D-proc', redisclient);
     // Once a job is completed, then send a message via a socket. 
     ThreeDQueue.on('completed', function (job, synthesisid) {
         // A job successfully completed with a `result`.
         sendStdMsg(synthesisid, synthesisid);
-    }).on('progress', function (job, progressdata) {
-        console.log(progressdata.percent, progressdata.synthesisid);
-        sendProgressMsg(progressdata.synthesisid, progressdata.percent);
+    }).on('progress', function (job, progress_data) {
+        console.log(progress_data.percent, progress_data.synthesisid);
+        sendProgressMsg(progress_data.percent);
         // Job progress updated!
     });
 
@@ -29,11 +29,11 @@
     //     sendStdMsg(synthesisid, synthesisid);
     // });
 
-    var url = require('url');
-    var req = require('request');
-    var async = require('async');
-    var tools = require('./3Dprocessor/tools');
-    var yargs = require('yargs').options({
+    let url = require('url');
+    let req = require('request');
+    let async = require('async');
+    let tools = require('./3Dprocessor/tools');
+    let yargs = require('yargs').options({
         'port': {
             'default': 5000,
             'description': 'Port to listen on.'
@@ -54,7 +54,7 @@
             'description': 'Show this help.'
         }
     });
-    var argv = yargs.argv;
+    let argv = yargs.argv;
 
     if (argv.help) {
         return yargs.showHelp();
@@ -63,7 +63,7 @@
     // eventually this mime type configuration will need to change
     // https://github.com/visionmedia/send/commit/d2cb54658ce65948b0ed6e5fb5de69d022bef941
     // *NOTE* Any changes you make here must be mirrored in web.config.
-    var mime = express.static.mime;
+    let mime = express.static.mime;
     mime.define({
         'application/json': ['czml', 'json', 'geojson', 'topojson'],
         'model/vnd.gltf+json': ['gltf'],
@@ -71,10 +71,10 @@
         'text/plain': ['glsl']
     });
 
-    var app = express();
+    let app = express();
     app.use(compression());
 
-    var ejs = require('ejs');
+    let ejs = require('ejs');
     app.set('view engine', 'ejs');
 
     app.use(express.static(__dirname + '/views'));
@@ -84,24 +84,10 @@
     }));
     app.use(bodyParser.json());
 
-    function getRemoteUrlFromParam(req) {
-        var remoteUrl = req.params[0];
-        if (remoteUrl) {
-            // add http:// to the URL if no protocol is present
-            if (!/^https?:\/\//.test(remoteUrl)) {
-                remoteUrl = 'http://' + remoteUrl;
-            }
-            remoteUrl = url.parse(remoteUrl);
-            // copy query string
-            remoteUrl.search = url.parse(req.url).search;
-        }
-        return remoteUrl;
-    }
-
-    var dontProxyHeaderRegex = /^(?:Host|Proxy-Connection|Connection|Keep-Alive|Transfer-Encoding|TE|Trailer|Proxy-Authorization|Proxy-Authenticate|Upgrade)$/i;
+    let dontProxyHeaderRegex = /^(?:Host|Proxy-Connection|Connection|Keep-Alive|Transfer-Encoding|TE|Trailer|Proxy-Authorization|Proxy-Authenticate|Upgrade)$/i;
 
     function filterHeaders(req, headers) {
-        var result = {};
+        let result = {};
         // filter out headers that are listed in the regex above
         Object.keys(headers).forEach(function (name) {
             if (!dontProxyHeaderRegex.test(name)) {
@@ -111,8 +97,8 @@
         return result;
     }
 
-    var upstreamProxy = argv['upstream-proxy'];
-    var bypassUpstreamProxyHosts = {};
+
+    let bypassUpstreamProxyHosts = {};
     if (argv['bypass-upstream-proxy-hosts']) {
         argv['bypass-upstream-proxy-hosts'].split(',').forEach(function (host) {
             bypassUpstreamProxyHosts[host.toLowerCase()] = true;
@@ -120,39 +106,34 @@
     }
 
     ThreeDQueue.process(5, __dirname + '/processor.js')
-    app.post('/getthreeddata', function (request, response) {
+    app.post('/getthreeddata', async function (request, response) {
 
-        var synthesisid = request.body.synthesisid;
+        let synthesisid = request.body.synthesisid;
+        let stored_synthesis_details = await redisclient.get(synthesisid);
 
-        async.map([synthesisid], function (sid, done) {
-
-            redisclient.get(sid, function (err, results) {
-                if (err || results == null) {
-                    return done(null, JSON.stringify({
-                        "finalGeoms": "",
-                        "center": ""
-                    }));
-                } else {
-                    return done(null, results);
-                }
+        response.contentType('application/json');
+        if (stored_synthesis_details) {
+            let op = JSON.parse(stored_synthesis_details);
+            response.send({
+                "status": 1,
+                "final3DGeoms": op.finalGeoms,
+                "center": op.center,
             });
-        },
-            function (error, op) {
-                //only OK once set
-                op = JSON.parse(op);
-                response.contentType('application/json');
-                response.send({
-                    "status": 1,
-                    "final3DGeoms": op.finalGeoms,
-                    "center": op.center,
-                });
+        }
+
+        else {
+            response.send({
+                "finalGeoms": "",
+                "center": ""
             });
+        }
+
     });
-    app.get('/', function (request, response) {
-        var opts = {};
+    app.get('/', async function (request, response) {
+        let options = {};
         if (request.query.apitoken && request.query.projectid && request.query.synthesisid && request.query.cteamid) {
             // synthesis ID is given
-            opts = {
+            options = {
                 'apitoken': request.query.apitoken,
                 'projectid': request.query.projectid,
                 'synthesisid': request.query.synthesisid,
@@ -162,17 +143,17 @@
                 "bing_key": process.env.BING_KEY || 'bing-key'
             };
 
-            var baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
+            let baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
 
-            var apikey = request.query.apitoken;
-            var cred = "Token " + apikey;
-            var projectid = request.query.projectid;
-            var cteamid = request.query.cteamid;
-            var synthesisid = request.query.synthesisid;
-            var synprojectsurl = baseurl + projectid + '/cteams/' + cteamid + '/' + synthesisid + '/';
-            var systemsurl = baseurl + projectid + '/systems/';
-            var boundsurl = baseurl + projectid + '/bounds/';
-            var URLS = [synprojectsurl, boundsurl, systemsurl];
+            let apikey = request.query.apitoken;
+            let cred = "Token " + apikey;
+            let projectid = request.query.projectid;
+            let cteamid = request.query.cteamid;
+            let synthesisid = request.query.synthesisid;
+            let synprojectsurl = baseurl + projectid + '/cteams/' + cteamid + '/' + synthesisid + '/';
+            let systemsurl = baseurl + projectid + '/systems/';
+            let boundsurl = baseurl + projectid + '/bounds/';
+            let URLS = [synprojectsurl, boundsurl, systemsurl];
             async.map(URLS, function (url, done) {
                 req({
                     url: url,
@@ -186,67 +167,43 @@
                     }
                     return done(null, JSON.parse(body));
                 });
-            }, function (err, results) {
+            }, async function (err, results) {
 
                 if (err) return response.sendStatus(500);
-                var gj = JSON.stringify(results[0]);
-                var bounds = results[1];
-                var sys = results[2];
-                opts['result'] = gj;
-                opts['systems'] = JSON.stringify(sys);
-                var rfc = {
+                let gj = JSON.stringify(results[0]);
+                let bounds = results[1];
+                let sys = results[2];
+                options['result'] = gj;
+                options['systems'] = JSON.stringify(sys);
+                let rfc = {
                     "type": "FeatureCollection",
                     "features": []
                 };
-                opts['roads'] = JSON.stringify(rfc);
-                async.map([synthesisid], async function (sid, done) {
+                options['roads'] = JSON.stringify(rfc);
 
-                    let stored_synthesis_details = await redisclient.get(sid);
+                let stored_synthesis_details = await redisclient.get(synthesisid);
 
-                    if (stored_synthesis_details) {
-                        let r_op = JSON.parse(stored_synthesis_details);
+                if (stored_synthesis_details) {
+                    let r_op = JSON.parse(stored_synthesis_details);
 
-                        opts['final3DGeoms'] = JSON.stringify(r_op.finalGeoms);
-                        opts['center'] = r_op.center;
+                    options['final3DGeoms'] = JSON.stringify(r_op.finalGeoms);
+                    options['center'] = r_op.center;
 
-                    }
+                }
 
-                    else {
-                        console.log('sending to q...');
-                        ThreeDQueue.add({
-                            "gj": results[0],
-                            // "rfc": rfc,
-                            "sys": sys,
-                            "synthesisid": synthesisid
-                        });
-                    }
-                    response.render('index', opts);
+                else {
+                    console.log('sending to q...');
+                    ThreeDQueue.add({
+                        "gj": results[0],
+                        // "rfc": rfc,
+                        "sys": sys,
+                        "synthesisid": synthesisid
+                    });
+                }
+                response.render('index', options);
 
-                    //     await redisclient.get(sid, function (err, results) {
-                    //         if (err || results == null) {
-                    //             return done(null, JSON.stringify({
-                    //                 "finalGeoms": "",
-                    //                 "center": "0"
-                    //             }));
-                    //         } else {
-                    //             console.log('getting');
-                    //             return done(null, results);
-                    //         }
-                    //     });
-                    // },
-                    // function (redis_error, redis_op) {
-                    //     //only OK once set
+           
 
-                    //     if (redis_error) return response.sendStatus(500);
-
-                    // });
-
-                    // opts['final3DGeoms'] = JSON.stringify(final3DGeoms);
-
-                    // opts['center'] = JSON.stringify(center);
-
-
-                });
 
             });
 
@@ -256,43 +213,62 @@
         }
 
     });
+    const channels = [];
+    let tmp_session_id = "";
+    function uuidv4() {
+        return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
+            (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
+        );
+    }
 
 
-    var server = app.listen(process.env.PORT || 5001); // for Heroku
+    app.get("/sse", async (req, res) => {
+        const session = await createSession(req, res);
+        const name = req.query.uuid || uuidv4();
+        tmp_session_id = name;
+        // Error if no name is given
+        if (!name) {
+            return res.sendStatus(400);
+        }
 
-    const io = socket(server);
-
-    io.on('connection', function (socket) {
-        socket.on('room', function (room) {
-            socket.join(room);
-            sendWelcomeMsg(room);
-        });
-        socket.on('message', function (msg) {
-            var room = msg.room;
-            var data = msg.data;
-            sendStdMsg(room, data);
+        // session.push("Joined Session...", "ping"); 
+        const channel = createChannel().register(session);
+        channels.push({ name, channel });
+        channel.broadcast(name, "channel-created");
+        // Could also use `channel.once("session-deregistered", ...)`
+        session.once("disconnected", () => {
+            // Find where the channel is in the channels list
+            const index = channels.findIndex((channel) => channel.name === name);
+            // If the channel is not found do nothing
+            if (index === -1) {
+                return;
+            }
+            // Remove the channel from the list
+            channels.splice(index, 1);
         });
     });
+    async function sendStdMsg(synthesisid) {
+        console.log("Sending standard message...");
+        const c = channels.filter(channel => channel.name === tmp_session_id);
+        if (c) {
+            if (c[0].channel) {
+                c[0].channel.broadcast(synthesisid.toString(), "standard-message");
+            }
+        }
 
-    function sendWelcomeMsg(room) {
-        io.sockets.in(room).emit('welcome', 'Joined ' + room);
     }
 
-    function sendStdMsg(room, synthesisid) {
-        io.sockets.in(room).emit('message', {
-            'type': 'message',
-            'synthesisid': synthesisid
-        });
+    async function sendProgressMsg(percent_complete) {
+        console.log("Sending progress message...");
+        const c = channels.filter(channel => channel.name === tmp_session_id);
+        if (c) {
+            if (c[0].channel) {
+                c[0].channel.broadcast(percent_complete, "progress-message");
+            }
+        }
     }
 
-    function sendProgressMsg(room, percentcomplete) {
-
-        io.sockets.in(room).emit('message', {
-            'type': 'progress',
-            'percentcomplete': percentcomplete
-        });
-    }
-
+    let server = app.listen(process.env.PORT || 5001); // for Heroku
 
     server.on('error', function (e) {
         if (e.code === 'EADDRINUSE') {
@@ -311,7 +287,7 @@
     server.on('close', function () {
         console.log('Cesium development server stopped.');
     });
-    var isFirstSig = true;
+    let isFirstSig = true;
     process.on('SIGINT', function () {
         if (isFirstSig) {
             console.log('Cesium development server shutting down.');
