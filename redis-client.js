@@ -1,8 +1,7 @@
 const redis = require('redis');
 require("dotenv").config();
-const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379/";
 
-const redis_url = process.env.REDIS_URL || "redis://127.0.0.1:6379/";
+const redis_url = process.env.REDIS_TLS_URL || "redis://127.0.0.1:6379/";
 const redis_client = redis.createClient({
   url: redis_url,
   socket: {

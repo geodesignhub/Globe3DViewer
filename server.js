@@ -14,7 +14,7 @@
     
     let ThreeDQueue = new Queue('3D-proc', redisclient);
     // Once a job is completed, then send a message via a socket. 
-    ThreeDQueue.on('completed', function (job, synthesisid) {
+    ThreeDQueue.on('global:completed', function (job, synthesisid) {
         // A job successfully completed with a `result`.
         sendStdMsg(synthesisid, synthesisid);
     }).on('progress', function (job, progress_data) {
@@ -109,7 +109,7 @@
     ThreeDQueue.process(5, __dirname + '/processor.js')
     app.post('/getthreeddata', async function (request, response) {
 
-        let synthesisid = request.body.synthesisid;
+        let synthesisid = JSON.parse(request.body.synthesisid);
         let stored_synthesis_details = await redisclient.get(synthesisid);
 
         response.contentType('application/json');

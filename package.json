@@ -38,6 +38,7 @@
         "redis": "4.7.0",
         "request": "2.88.2",
         "requirejs": "2.3.7",
+        "throng": "^5.0.0",
         "yargs": "17.7.2"
     },
     "scripts": {
