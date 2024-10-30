@@ -11,8 +11,9 @@
     let Queue = require('bull');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
 
+    const redis_url = process.env.REDIS_URL;
     const r_client = redis.createClient({
-        url: process.env.REDIS_URL,
+        url: redis_url,
         socket: {
           tls: (redis_url.match(/rediss:/) != null),
           rejectUnauthorized: false,
