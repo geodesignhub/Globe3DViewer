@@ -269,7 +269,7 @@
         }
     }
 
-    let server = app.listen(process.env.PORT || 5001); // for Heroku
+    let server = app.listen(process.env.PORT || 3000); // for Heroku
 
     server.on('error', function (e) {
         if (e.code === 'EADDRINUSE') {
