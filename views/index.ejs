@@ -489,21 +489,6 @@
             );
         }
 
-        const sse = new EventSource("/sse?uuid=" + uuidv4());
-
-        sse.addEventListener("progress-message", ({ data }) => {
-            console.log(`${event.type} | ${event.data}`);
-        });
-        sse.addEventListener("channel-created", (event) => {
-            console.log(`${event.type} | ${event.data}`);
-        });
-
-        sse.addEventListener("standard-message",
-            ({ data }) => {
-                let syn_id = JSON.parse(data);
-                getSyndata(syn_id);
-
-            });
         (function () {
             if (apitoken !== "0" && projectid !== "0" && cteamid !== "0" && synthesisid !== "0") {
                 if (center !== "0") {
