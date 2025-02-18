@@ -12,7 +12,7 @@
     let Queue = require('bull');
     let url = require('url');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
-    const redis_queue_url = process.env.REDIS_TEMPORARY_URL || "redis://localhost:6379/0";
+    const redis_queue_url = process.env.REDIS_URL || "redis://localhost:6379/0";
 
     let ThreeDQueue = new Queue('3D-proc', redis_queue_url);
     // Once a job is completed, then send a message via a socket. 
