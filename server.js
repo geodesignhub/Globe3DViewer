@@ -3,10 +3,12 @@
     /*jshint node:true*/
     require("dotenv").config();
     const  redisclient = require('./redis-client');
-    const { createSession, createChannel } = require('better-sse');
+    
     let express = require('express');
     let bodyParser = require('body-parser');
     let compression = require('compression');
+    
+    const socket = require("socket.io");
     let Queue = require('bull');
     let url = require('url');
     // Set the Redis server instance either local or the Heroku one since this is deployed mostly on Heroku.
@@ -105,7 +107,12 @@
         });
     }
 
-    ThreeDQueue.process(5, __dirname + '/processor.js')
+    ThreeDQueue.process(5, __dirname + '/processor.js');
+
+
+
+
+    
     app.post('/getthreeddata', async function (request, response) {
 
         let synthesisid = JSON.parse(request.body.synthesisid);
@@ -213,63 +220,44 @@
         }
 
     });
-    let channels = [];
-    let tmp_session_id = "";
-    function uuidv4() {
-        return "10000000-1000-4000-8000-100000000000".replace(/[018]/g, c =>
-            (+c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> +c / 4).toString(16)
-        );
-    }
-
-
-    app.get("/sse", async (req, res) => {
-        const session = await createSession(req, res);
-        const name = req.query.uuid || uuidv4();
-        tmp_session_id = name;
-        // Error if no name is given
-        if (!name) {
-            return res.sendStatus(400);
-        }
-
-        // session.push("Joined Session...", "ping"); 
-        const channel = createChannel().register(session);
-        channels.push({ name, channel });
-        channel.broadcast(name, "channel-created");
-        // Could also use `channel.once("session-deregistered", ...)`
-        session.once("disconnected", () => {
-            // Find where the channel is in the channels list
-            const index = channels.findIndex((channel) => channel.name === name);
-            // If the channel is not found do nothing
-            if (index === -1) {
-                return;
-            }
-            // Remove the channel from the list
-            channels.splice(index, 1);
-        });
-    });
-    async function sendStdMsg(synthesisid) {
-        console.log("Sending standard message...");
-        const c = channels.filter(channel => channel.name === tmp_session_id);
-        if (c.length >0) {
-            if (c[0].channel) {
-                c[0].channel.broadcast(synthesisid.toString(), "standard-message");
-            }
-        }
-
-    }
-
-    async function sendProgressMsg(percent_complete) {
-        console.log("Sending progress message...");
-        const c = channels.filter(channel => channel.name === tmp_session_id);
-        if (c.length >0) {
-            
-            if (c[0].channel) {
-                c[0].channel.broadcast(percent_complete, "progress-message");
-            }
-        }
-    }
+ 
+    
 
     let server = app.listen(process.env.PORT || 3000); // for Heroku
+
+    const io = socket(server);
+
+    io.on('connection', function (socket) {
+        socket.on('room', function (room) {
+            socket.join(room);
+            sendWelcomeMsg(room);
+        });
+        socket.on('message', function (msg) {
+            var room = msg.room;
+            var data = msg.data;
+            sendStdMsg(room, data);
+        });
+    });
+
+    function sendWelcomeMsg(room) {
+        io.sockets.in(room).emit('welcome', 'Joined ' + room);
+    }
+
+    function sendStdMsg(room, synthesisid) {
+        io.sockets.in(room).emit('message', {
+            'type': 'message',
+            'synthesisid': synthesisid
+        });
+    }
+
+    function sendProgressMsg(room, percentcomplete) {
+
+        io.sockets.in(room).emit('message', {
+            'type': 'progress',
+            'percentcomplete': percentcomplete
+        });
+    }
+
 
     server.on('error', function (e) {
         if (e.code === 'EADDRINUSE') {
