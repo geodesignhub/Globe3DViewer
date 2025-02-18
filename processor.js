@@ -1,28 +1,14 @@
 // processor.js
-// let redisclient = require('redis').createClient(process.env.REDIS_URL || {
-//     host: '127.0.0.1',
-//     port: 6379
-// });
+
 const redisclient = require('./redis-client');
 
-// redisclient.on('ready', function() {
-//     console.log("Redis is ready");
-// });
-
-// redisclient.on('error', function() {
-//     console.log("Error in Redis");
-// });
 let tools = require('./3Dprocessor/tools');
 module.exports = async function (job) {
     // Do some heavy work
     const synthesisid = job.data.synthesisid;
     // let existingroads = job.data.rfc;
-
     let constraintedDesigns = job.data.gj;
-
     const systems = job.data.sys;
-
-
     // if (existingroads.features.length > 0) {
     //     existingroads = tools.bufferExistingRoads(existingroads);
     // }
@@ -39,9 +25,9 @@ module.exports = async function (job) {
         // for every feature , create a point grid.
         let curFeat = curFeats[h];
         try {
-        cur3DGeom = tools.generateFinal3DGeoms(curFeat, 0);
-        } catch (error){
-            
+            cur3DGeom = tools.generateFinal3DGeoms(curFeat, 0);
+        } catch (error) {
+
         }
         if (cur3DGeom) {
             finalGJFeats.push.apply(finalGJFeats, cur3DGeom);
@@ -72,6 +58,5 @@ module.exports = async function (job) {
         "finalGeoms": final3DGeoms,
         "center": center
     }));
-
     return Promise.resolve(synthesisid);
 }

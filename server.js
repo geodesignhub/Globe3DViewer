@@ -2,12 +2,12 @@
     'use strict';
     /*jshint node:true*/
     require("dotenv").config();
-    const  redisclient = require('./redis-client');
-    
+    const redisclient = require('./redis-client');
+
     let express = require('express');
     let bodyParser = require('body-parser');
     let compression = require('compression');
-    
+
     const socket = require("socket.io");
     let Queue = require('bull');
     let url = require('url');
@@ -112,7 +112,7 @@
 
 
 
-    
+
     app.post('/getthreeddata', async function (request, response) {
 
         let synthesisid = JSON.parse(request.body.synthesisid);
@@ -208,10 +208,6 @@
                     });
                 }
                 response.render('index', options);
-
-
-
-
             });
 
         } else {
@@ -220,8 +216,8 @@
         }
 
     });
- 
-    
+
+
 
     let server = app.listen(process.env.PORT || 3000); // for Heroku
 
