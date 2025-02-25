@@ -35,7 +35,7 @@
     <script type="text/javascript" src="/assets/js/jquery/jquery.min.js"></script>
     <script type="text/javascript" src="/assets/js/geojsonlint/geojsonlint.js"></script>
     <script type="text/javascript" src="/assets/js/humane/humane.min.js"></script>
-
+    <script type="text/javascript" src="/assets/js/socket.io/socket.io.min.js"></script>
     <script src="/assets/Build/Cesium/Cesium.js"></script>
     <style>
         @import url(/assets/Build/Cesium/Widgets/widgets.css);
@@ -331,7 +331,35 @@
     </script>
     <script>
 
+            var socketHost = location.origin.replace(/^http/, 'ws');
 
+
+            var socket = io.connect(socketHost);
+            socket.on('connect_failed', function () {
+                errorMsg('Data connection failed, please contact your administrator.');
+            });
+            socket.on('disconnect', function () {
+                console.log('disconnected');
+            });
+            socket.on('welcome', function (msg) {
+                console.log('Welcome message:', msg);
+            });
+            socket.on('connect', function () {
+                socket.emit('room', synthesisid);
+            });
+            socket.on('connect_timeout', function () {
+                console.log("timed out");
+
+            });
+            socket.on('message', function (data) {
+                if (data.type == 'message') {
+                    getSyndata(data.synthesisid);
+                }
+                else if (data.type == 'progress') {
+                    // console.log(data.percentcomplete);
+                    $("#procstatus").html(' ' + data.percentcomplete + '% complete');
+                }
+            });
         function getSyndata(synthesisid) {
             // console.log(synthesisid);
             const d = {
@@ -461,21 +489,6 @@
             );
         }
 
-        const sse = new EventSource("/sse?uuid=" + uuidv4());
-
-        sse.addEventListener("progress-message", ({ data }) => {
-            console.log(`${event.type} | ${event.data}`);
-        });
-        sse.addEventListener("channel-created", (event) => {
-            console.log(`${event.type} | ${event.data}`);
-        });
-
-        sse.addEventListener("standard-message",
-            ({ data }) => {
-                let syn_id = JSON.parse(data);
-                getSyndata(syn_id);
-
-            });
         (function () {
             if (apitoken !== "0" && projectid !== "0" && cteamid !== "0" && synthesisid !== "0") {
                 if (center !== "0") {
