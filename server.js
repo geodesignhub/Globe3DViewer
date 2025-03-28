@@ -111,112 +111,116 @@
 
 
 
-
-
     app.post('/getthreeddata', async function (request, response) {
+        try {
+            const { synthesisid } = request.body;
 
-        let synthesisid = JSON.parse(request.body.synthesisid);
-        let stored_synthesis_details = await redisclient.get(synthesisid);
+            if (!synthesisid) {
+                return response.status(400).json({ status: 0, message: "Missing synthesisid in request body." });
+            }
 
-        response.contentType('application/json');
-        if (stored_synthesis_details) {
-            let op = JSON.parse(stored_synthesis_details);
-            response.send({
-                "status": 1,
-                "final3DGeoms": op.finalGeoms,
-                "center": op.center,
+            const storedSynthesisDetails = await redisclient.get(synthesisid);
+
+            if (storedSynthesisDetails) {
+                const parsedDetails = JSON.parse(storedSynthesisDetails);
+                return response.json({
+                    status: 1,
+                    final3DGeoms: parsedDetails.finalGeoms,
+                    center: parsedDetails.center,
+                });
+            }
+
+            response.json({
+                status: 0,
+                final3DGeoms: "",
+                center: "",
             });
+        } catch (error) {
+            console.error('Error in /getthreeddata:', error);
+            response.status(500).json({ status: 0, message: "Internal server error." });
         }
-
-        else {
-            response.send({
-                "finalGeoms": "",
-                "center": ""
-            });
-        }
-
     });
     app.get('/', async function (request, response) {
-        let options = {};
-        if (request.query.apitoken && request.query.projectid && request.query.synthesisid && request.query.cteamid) {
-            // synthesis ID is given
-            options = {
-                'apitoken': request.query.apitoken,
-                'projectid': request.query.projectid,
-                'synthesisid': request.query.synthesisid,
-                'cteamid': request.query.cteamid,
-                "final3DGeoms": JSON.stringify({ "type": "FeatureCollection", "features": [] }),
-                "center": "0",
-                "bing_key": process.env.BING_KEY || 'bing-key'
+        try {
+            const { apitoken, projectid, synthesisid, cteamid } = request.query;
+
+            if (!apitoken || !projectid || !synthesisid || !cteamid) {
+                return response.status(400).send('Please pass all the valid parameters.');
+            }
+
+            const options = {
+                apitoken,
+                projectid,
+                synthesisid,
+                cteamid,
+                final3DGeoms: JSON.stringify({ type: "FeatureCollection", features: [] }),
+                center: "0",
+                bing_key: process.env.BING_KEY || 'bing-key'
             };
 
-            let baseurl = (process.env.PORT) ? 'https://www.geodesignhub.com/api/v1/projects/' : 'http://local.test:8000/api/v1/projects/';
+            const baseurl = process.env.PORT
+                ? 'https://www.geodesignhub.com/api/v1/projects/'
+                : 'http://local.test:8000/api/v1/projects/';
 
-            let apikey = request.query.apitoken;
-            let cred = "Token " + apikey;
-            let projectid = request.query.projectid;
-            let cteamid = request.query.cteamid;
-            let synthesisid = request.query.synthesisid;
-            let synprojectsurl = baseurl + projectid + '/cteams/' + cteamid + '/' + synthesisid + '/';
-            let systemsurl = baseurl + projectid + '/systems/';
-            let boundsurl = baseurl + projectid + '/bounds/';
-            let URLS = [synprojectsurl, boundsurl, systemsurl];
-            async.map(URLS, function (url, done) {
-                req({
-                    url: url,
-                    headers: {
-                        "Authorization": cred,
-                        "Content-Type": "application/json"
+            const cred = `Token ${apitoken}`;
+            const synprojectsurl = `${baseurl}${projectid}/cteams/${cteamid}/${synthesisid}/`;
+            const systemsurl = `${baseurl}${projectid}/systems/`;
+            const boundsurl = `${baseurl}${projectid}/bounds/`;
+            const URLS = [synprojectsurl, boundsurl, systemsurl];
+
+            async.map(
+                URLS,
+                (url, done) => {
+                    req(
+                        {
+                            url,
+                            headers: {
+                                Authorization: cred,
+                                "Content-Type": "application/json"
+                            }
+                        },
+                        (err, res, body) => {
+                            if (err || res.statusCode !== 200) {
+                                return done(err || new Error());
+                            }
+                            return done(null, JSON.parse(body));
+                        }
+                    );
+                },
+                async (err, results) => {
+                    if (err) {
+                        console.error('Error fetching data:', err);
+                        return response.sendStatus(500);
                     }
-                }, function (err, response, body) {
-                    if (err || response.statusCode !== 200) {
-                        return done(err || new Error());
+
+                    const [synthesisData, bounds, systems] = results;
+                    options.result = JSON.stringify(synthesisData);
+                    options.systems = JSON.stringify(systems);
+                    options.roads = JSON.stringify({ type: "FeatureCollection", features: [] });
+
+                    const storedSynthesisDetails = await redisclient.get(synthesisid);
+
+                    if (storedSynthesisDetails) {
+                        const parsedDetails = JSON.parse(storedSynthesisDetails);
+                        options.final3DGeoms = JSON.stringify(parsedDetails.finalGeoms);
+                        options.center = parsedDetails.center;
+                    } else {
+                        console.log('Adding synthesis data to queue...');
+                        ThreeDQueue.add({
+                            gj: synthesisData,
+                            sys: systems,
+                            synthesisid
+                        });
                     }
-                    return done(null, JSON.parse(body));
-                });
-            }, async function (err, results) {
 
-                if (err) return response.sendStatus(500);
-                let gj = JSON.stringify(results[0]);
-                let bounds = results[1];
-                let sys = results[2];
-                options['result'] = gj;
-                options['systems'] = JSON.stringify(sys);
-                let rfc = {
-                    "type": "FeatureCollection",
-                    "features": []
-                };
-                options['roads'] = JSON.stringify(rfc);
-
-                let stored_synthesis_details = await redisclient.get(synthesisid);
-
-                if (stored_synthesis_details) {
-                    let r_op = JSON.parse(stored_synthesis_details);
-
-                    options['final3DGeoms'] = JSON.stringify(r_op.finalGeoms);
-                    options['center'] = r_op.center;
-
+                    response.render('index', options);
                 }
-
-                else {
-                    console.log('sending to q...');
-                    ThreeDQueue.add({
-                        "gj": results[0],
-                        // "rfc": rfc,
-                        "sys": sys,
-                        "synthesisid": synthesisid
-                    });
-                }
-                response.render('index', options);
-            });
-
-        } else {
-            response.status(400);
-            response.send('Please pass all the valid parameters.');
+            );
+        } catch (error) {
+            console.error('Unexpected error:', error);
+            response.sendStatus(500);
         }
-
     });
-
 
 
     let server = app.listen(process.env.PORT || 3000); // for Heroku
