@@ -1,32 +1,28 @@
-function constrainFeatures(allFeaturesList, selectedsystems, showstreets) {
-    // constrain output ot only features in the list. 
-    var constraintedFeatures = { "type": "FeatureCollection", "features": [] };
-    var allFeatures = JSON.parse(allFeaturesList);
-    var selectedsystems = JSON.parse(selectedsystems);
-    var af = allFeatures.features;
-    var featlen = af.length;
-    var counter = 0;
-    var fullproc = featlen;
-    for (var d = 0; d < featlen; d++) {
-        var curfeatprop = af[d].properties;
-        var curFeatSys = curfeatprop.sysname;
-        var isStreet = curfeatprop.isStreet;
-        if (isStreet && JSON.parse(showstreets)) {
-            constraintedFeatures.features.push(af[d]);
-        } else {
-            if (selectedsystems.indexOf(curFeatSys) > -1) {
-                constraintedFeatures.features.push(af[d]);
-            }
+function constrainFeatures(allFeaturesList, selectedSystems, showStreets) {
+    const constrainedFeatures = { type: "FeatureCollection", features: [] };
+    const allFeatures = JSON.parse(allFeaturesList);
+    const selectedSystemsParsed = JSON.parse(selectedSystems);
+    const showStreetsParsed = JSON.parse(showStreets);
+    const features = allFeatures.features;
+    const totalFeatures = features.length;
+
+    features.forEach((feature, index) => {
+        const { sysname: currentSystem, isStreet } = feature.properties;
+
+        if (isStreet && showStreetsParsed) {
+            constrainedFeatures.features.push(feature);
+        } else if (selectedSystemsParsed.includes(currentSystem)) {
+            constrainedFeatures.features.push(feature);
         }
-        counter += 1;
+
         self.postMessage({
-            'percentcomplete': parseInt((100 * counter) / fullproc),
-            'mode': 'status',
+            percentcomplete: Math.floor((100 * (index + 1)) / totalFeatures),
+            mode: "status",
         });
-    }
+    });
 
     self.postMessage({
-        'polygons': JSON.stringify(constraintedFeatures)
+        polygons: JSON.stringify(constrainedFeatures),
     });
 }
 
