@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+
+  globe3d:
+    build: .
+    container_name: globe3d
+    ports:
+      - "3000:3000"
+    restart: always
+    depends_on:
+      - redis        # Ensure Redis starts before the Flask app
+    network_mode: "host"
+
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"  # Expose Redis on port 6379
